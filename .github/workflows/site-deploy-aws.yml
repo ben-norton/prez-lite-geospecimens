@@ -110,7 +110,7 @@ jobs:
           NODE_OPTIONS: '--max-old-space-size=4096'
           NUXT_PUBLIC_GITHUB_CLIENT_ID: ${{ vars.GH_CLIENT_ID }}
           NUXT_PUBLIC_GITHUB_AUTH_WORKER_URL: ${{ vars.GH_AUTH_WORKER_URL }}
-          NUXT_PUBLIC_GITHUB_REPO: ${{ vars.GH_REPO_SLUG }}
+          NUXT_PUBLIC_GITHUB_REPO: ${{ vars.GH_REPO }}
           NUXT_PUBLIC_GITHUB_BRANCH: ${{ vars.GH_BRANCH }}
           NUXT_PUBLIC_GITHUB_VOCAB_PATH: ${{ vars.GH_VOCAB_PATH }}
 
