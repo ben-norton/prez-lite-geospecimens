@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import type { WorkspaceState, WorkspaceDefinition } from '~/composables/useWorkspace'
 
-// Mock sessionStorage
-const sessionStore = new Map<string, string>()
-const mockSessionStorage = {
-  getItem: vi.fn((key: string) => sessionStore.get(key) ?? null),
-  setItem: vi.fn((key: string, value: string) => { sessionStore.set(key, value) }),
-  removeItem: vi.fn((key: string) => { sessionStore.delete(key) }),
+// Mock localStorage
+const localStore = new Map<string, string>()
+const mockLocalStorage = {
+  getItem: vi.fn((key: string) => localStore.get(key) ?? null),
+  setItem: vi.fn((key: string, value: string) => { localStore.set(key, value) }),
+  removeItem: vi.fn((key: string) => { localStore.delete(key) }),
 }
 
 vi.mock('#app', () => ({
@@ -26,19 +26,19 @@ const WORKSPACE_KEY = 'prez_workspace'
 
 describe('workspace state serialisation', () => {
   beforeEach(() => {
-    sessionStore.clear()
-    vi.stubGlobal('sessionStorage', mockSessionStorage)
+    localStore.clear()
+    vi.stubGlobal('localStorage', mockLocalStorage)
   })
 
   afterEach(() => {
     vi.unstubAllGlobals()
   })
 
-  it('stores WorkspaceState as JSON in sessionStorage', () => {
+  it('stores WorkspaceState as JSON in localStorage', () => {
     const state: WorkspaceState = { workspaceSlug: 'staging', vocabSlug: 'colours' }
-    sessionStorage.setItem(WORKSPACE_KEY, JSON.stringify(state))
+    localStorage.setItem(WORKSPACE_KEY, JSON.stringify(state))
 
-    const raw = sessionStorage.getItem(WORKSPACE_KEY)
+    const raw = localStorage.getItem(WORKSPACE_KEY)
     expect(raw).not.toBeNull()
 
     const parsed = JSON.parse(raw!)
@@ -48,27 +48,27 @@ describe('workspace state serialisation', () => {
 
   it('deserialises workspace-only state (no vocab)', () => {
     const state: WorkspaceState = { workspaceSlug: 'dev', vocabSlug: null }
-    sessionStorage.setItem(WORKSPACE_KEY, JSON.stringify(state))
+    localStorage.setItem(WORKSPACE_KEY, JSON.stringify(state))
 
-    const parsed = JSON.parse(sessionStorage.getItem(WORKSPACE_KEY)!)
+    const parsed = JSON.parse(localStorage.getItem(WORKSPACE_KEY)!)
     expect(parsed.workspaceSlug).toBe('dev')
     expect(parsed.vocabSlug).toBeNull()
   })
 
-  it('clears workspace from sessionStorage', () => {
-    sessionStorage.setItem(WORKSPACE_KEY, JSON.stringify({ workspaceSlug: 'staging', vocabSlug: null }))
-    sessionStorage.removeItem(WORKSPACE_KEY)
-    expect(sessionStorage.getItem(WORKSPACE_KEY)).toBeNull()
+  it('clears workspace from localStorage', () => {
+    localStorage.setItem(WORKSPACE_KEY, JSON.stringify({ workspaceSlug: 'staging', vocabSlug: null }))
+    localStorage.removeItem(WORKSPACE_KEY)
+    expect(localStorage.getItem(WORKSPACE_KEY)).toBeNull()
   })
 
   it('returns null when no workspace stored', () => {
-    expect(sessionStorage.getItem(WORKSPACE_KEY)).toBeNull()
+    expect(localStorage.getItem(WORKSPACE_KEY)).toBeNull()
   })
 
   it('handles old format (plain string) gracefully', () => {
     // Old format stored a plain branch name string
-    sessionStorage.setItem(WORKSPACE_KEY, 'dev')
-    const raw = sessionStorage.getItem(WORKSPACE_KEY)!
+    localStorage.setItem(WORKSPACE_KEY, 'dev')
+    const raw = localStorage.getItem(WORKSPACE_KEY)!
 
     // Attempting to parse as WorkspaceState should fail JSON.parse or fail validation
     let parsed: WorkspaceState | null = null

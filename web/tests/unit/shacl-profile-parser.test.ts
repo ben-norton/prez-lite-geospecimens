@@ -114,6 +114,53 @@ const PROPERTY_SHAPES_PROFILE = `
     ] .
 `
 
+const NESTED_NODE_PROFILE = `
+@prefix prof: <http://www.w3.org/ns/dx/prof/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix prez: <https://prez.dev/> .
+@prefix sdo: <https://schema.org/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+<http://example.com/profile/nested>
+    a prof:Profile ;
+    dcterms:identifier "nested" ;
+    sh:targetClass skos:Concept ;
+    sh:property [
+        sh:path skos:prefLabel ;
+        sh:order 1
+    ] , [
+        sh:path sdo:temporalCoverage ;
+        sh:order 2 ;
+        sh:node [
+            sh:property [
+                sh:path sdo:startTime ;
+                sh:name "Start Time" ;
+                sh:order 0
+            ] , [
+                sh:path sdo:endTime ;
+                sh:name "End Time" ;
+                sh:order 1
+            ]
+        ]
+    ] , [
+        sh:path prov:qualifiedAttribution ;
+        sh:order 3 ;
+        sh:node [
+            sh:property [
+                sh:path prov:agent ;
+                sh:name "Agent" ;
+                sh:order 0
+            ] , [
+                sh:path prov:hadRole ;
+                sh:name "Role" ;
+                sh:order 1
+            ]
+        ]
+    ] .
+`
+
 // ============================================================================
 // parseTTL
 // ============================================================================
@@ -226,6 +273,35 @@ describe('parseProfilesContent', () => {
     expect(profile.properties[1]!.order).toBe(2)
     expect(profile.properties[2]!.name).toBe('broader')
     expect(profile.properties[2]!.order).toBe(3)
+  })
+
+  it('parses sh:node with nested property shapes', () => {
+    const config = parseProfilesContent(NESTED_NODE_PROFILE)
+    const profile = Object.values(config.profiles)[0]!
+
+    expect(profile.properties).toHaveLength(3)
+
+    // First property: simple path, no nesting
+    expect(profile.properties[0]!.paths).toEqual(['http://www.w3.org/2004/02/skos/core#prefLabel'])
+    expect(profile.properties[0]!.nestedProperties).toBeUndefined()
+
+    // Second property: sdo:temporalCoverage with sh:node
+    const temporal = profile.properties[1]!
+    expect(temporal.paths).toEqual(['https://schema.org/temporalCoverage'])
+    expect(temporal.nestedProperties).toHaveLength(2)
+    expect(temporal.nestedProperties![0]!.paths).toEqual(['https://schema.org/startTime'])
+    expect(temporal.nestedProperties![0]!.name).toBe('Start Time')
+    expect(temporal.nestedProperties![0]!.order).toBe(0)
+    expect(temporal.nestedProperties![1]!.paths).toEqual(['https://schema.org/endTime'])
+    expect(temporal.nestedProperties![1]!.name).toBe('End Time')
+    expect(temporal.nestedProperties![1]!.order).toBe(1)
+
+    // Third property: prov:qualifiedAttribution with sh:node
+    const attr = profile.properties[2]!
+    expect(attr.paths).toEqual(['http://www.w3.org/ns/prov#qualifiedAttribution'])
+    expect(attr.nestedProperties).toHaveLength(2)
+    expect(attr.nestedProperties![0]!.paths).toEqual(['http://www.w3.org/ns/prov#agent'])
+    expect(attr.nestedProperties![1]!.paths).toEqual(['http://www.w3.org/ns/prov#hadRole'])
   })
 
   it('returns empty config for TTL with no profiles', () => {

@@ -185,6 +185,10 @@ const NESTED_FIELD_ORDER = {
     { path: PROV + 'agent', order: 0 },
     { path: PROV + 'hadRole', order: 1 },
   ],
+  [SCHEMA + 'temporalCoverage']: [
+    { path: SCHEMA + 'startTime', order: 0 },
+    { path: SCHEMA + 'endTime', order: 1 },
+  ],
 };
 
 // List (concept table on vocab page) column order: prefLabel, iri, broader
@@ -619,25 +623,24 @@ function addPrezAnnotationsForIri(iri, annotatedStore, backgroundStore) {
  */
 function collectRequiredIRIs(sourceStore) {
   const iris = new Set();
+  const visitedBnodes = new Set();
 
-  for (const quad of sourceStore.getQuads(null, null, null, null)) {
-    if (quad.predicate.termType === 'NamedNode') {
-      iris.add(quad.predicate.value);
-    }
-    if (quad.object.termType === 'NamedNode') {
-      iris.add(quad.object.value);
-    }
-  }
-
-  // Also collect IRIs reachable through blank nodes
-  const blankNodePredicates = [`${PROV}agent`, `${PROV}hadRole`];
-  for (const pred of blankNodePredicates) {
-    for (const quad of sourceStore.getQuads(null, pred, null, null)) {
-      if (quad.object.termType === 'NamedNode') {
-        iris.add(quad.object.value);
+  const processQuads = (quads) => {
+    for (const q of quads) {
+      if (q.predicate.termType === 'NamedNode') {
+        iris.add(q.predicate.value);
+      }
+      if (q.object.termType === 'NamedNode') {
+        iris.add(q.object.value);
+      }
+      if (q.object.termType === 'BlankNode' && !visitedBnodes.has(q.object.value)) {
+        visitedBnodes.add(q.object.value);
+        processQuads(sourceStore.getQuads(q.object, null, null, null));
       }
     }
-  }
+  };
+
+  processQuads(sourceStore.getQuads(null, null, null, null));
 
   return iris;
 }
@@ -865,10 +868,16 @@ function createAnnotatedConceptStore(sourceStore, backgroundStore, conceptIri, s
   const conceptCurie = iriToCurie(conceptIri, dynamicPrefixes);
   const schemeCurie = iriToCurie(schemeIri, dynamicPrefixes);
   
-  // Copy all source quads for the concept
-  for (const sourceQuad of sourceStore.getQuads(conceptIri, null, null, null)) {
-    annotated.addQuad(sourceQuad);
-  }
+  // Copy all source quads for the concept (recursing into blank nodes)
+  const addConceptQuads = (subjectTerm) => {
+    for (const q of sourceStore.getQuads(subjectTerm, null, null, null)) {
+      annotated.addQuad(q);
+      if (q.object.termType === 'BlankNode') {
+        addConceptQuads(q.object);
+      }
+    }
+  };
+  addConceptQuads(namedNode(conceptIri));
   
   // Generate prez:identifier
   annotated.addQuad(quad(
@@ -1571,6 +1580,53 @@ function collectPredicates(store, subject) {
 const LIST_COLUMN_LABELS = { prefLabel: 'Label', iri: 'IRI', broader: 'Broader' };
 
 /**
+ * Render blank node objects as nested card HTML.
+ * @param {Store} sourceStore - The RDF store containing blank node triples
+ * @param {string} subjectIri - The subject IRI that has blank node objects
+ * @param {string} predicate - The predicate linking to blank nodes
+ * @param {Array} nestedOrder - Optional array of { path, order } for nested property ordering
+ * @param {Function} createObjectLink - Helper to render an IRI as a link
+ * @param {Function} getPredicateLabel - Helper to get a predicate label
+ * @returns {string} HTML string of nested cards
+ */
+function renderBlankNodeCards(sourceStore, subjectIri, predicate, nestedOrder, createObjectLink, getPredicateLabel) {
+  const bnodeQuads = sourceStore.getQuads(subjectIri, predicate, null, null)
+    .filter(q => q.object.termType === 'BlankNode');
+  if (bnodeQuads.length === 0) return '';
+
+  return bnodeQuads.map(bq => {
+    const bnode = bq.object;
+    const bnodeProps = sourceStore.getQuads(bnode, null, null, null);
+
+    // Determine property order: use nested profile order, or collect from data
+    const orderedPaths = nestedOrder && nestedOrder.length > 0
+      ? nestedOrder.slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0)).map(e => e.path)
+      : [...new Set(bnodeProps.map(q => q.predicate.value))];
+
+    const rows = orderedPaths.map(path => {
+      const propQuads = sourceStore.getQuads(bnode, path, null, null);
+      if (propQuads.length === 0) return '';
+      const label = getPredicateLabel(path, localName(path));
+      const values = propQuads.map(pq => {
+        if (pq.object.termType === 'NamedNode') return createObjectLink(pq.object.value);
+        if (pq.object.termType === 'Literal') return escapeHtml(pq.object.value);
+        return '';
+      }).filter(Boolean).join(', ');
+      if (!values) return '';
+      return `<tr><th style="width: 100px;">${escapeHtml(label)}</th><td>${values}</td></tr>`;
+    }).filter(Boolean).join('\n              ');
+
+    if (!rows) return '';
+    return `
+          <div class="box" style="margin-bottom: 0.5rem; padding: 0.75rem;">
+            <table class="table is-narrow is-fullwidth" style="margin-bottom: 0;">
+              ${rows}
+            </table>
+          </div>`;
+  }).filter(Boolean).join('');
+}
+
+/**
  * Generate HTML page with generic property handling
  * Renders ordered properties first, then any "leftover" properties.
  * If profile is provided, uses profile.conceptScheme.propertyOrder and profile.list.propertyOrder; else object order.
@@ -1625,7 +1681,6 @@ function generateHTML(annotatedStore, sourceStore, concepts, profile) {
 
   // Collect all predicates used
   const allPredicates = collectPredicates(sourceStore, schemeIri);
-  const predicateToConfig = new Map(HTML_PROPERTY_ORDER.map(p => [p.predicate, p]));
 
   // Order for scheme metadata: profile.conceptScheme.propertyOrder or HTML_PROPERTY_ORDER
   const schemeOrderEntries = profile?.conceptScheme?.propertyOrder?.length
@@ -1634,63 +1689,24 @@ function generateHTML(annotatedStore, sourceStore, concepts, profile) {
   const schemeOrderPaths = schemeOrderEntries.map(p => (typeof p === 'object' ? p.path : p));
   const schemeEntryByPath = new Map(schemeOrderEntries.map(e => [e.path, e]));
 
-  // Build property rows in profile order (or HTML_PROPERTY_ORDER), then leftovers
-  const propertyRows = [];
-  const orderedRendered = new Set();
+  // Generic property renderer using RDF term type detection
+  const renderProperty = (predicate, profileEntry) => {
+    const quads = sourceStore.getQuads(schemeIri, predicate, null, null);
+    if (quads.length === 0) return null;
 
-  for (const predicate of schemeOrderPaths) {
-    if (!allPredicates.has(predicate)) continue;
-    const propConfig = predicateToConfig.get(predicate);
-    const profileEntry = schemeEntryByPath.get(predicate);
-    if (propConfig) {
-      if (propConfig.type === 'literal') {
-        const value = getLiteral(sourceStore, schemeIri, predicate);
-        if (value) {
-          propertyRows.push(`<tr><th>${createPropertyHeader(predicate, propConfig.label)}</th><td>${escapeHtml(value)}</td></tr>`);
-          orderedRendered.add(predicate);
-        }
-      } else if (propConfig.type === 'iri') {
-        const iris = getIRIs(sourceStore, schemeIri, predicate);
-        if (iris.length > 0) {
-          const links = iris.map(iri => createObjectLink(iri)).join(', ');
-          propertyRows.push(`<tr><th>${createPropertyHeader(predicate, propConfig.label)}</th><td>${links}</td></tr>`);
-          orderedRendered.add(predicate);
-        }
-      } else if (propConfig.type === 'attribution') {
-        const attributions = extractQualifiedAttributions(sourceStore, schemeIri);
-        if (attributions.length > 0) {
-          const nestedOrder = profileEntry?.propertyOrder && Array.isArray(profileEntry.propertyOrder)
-            ? profileEntry.propertyOrder.slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-            : [{ path: `${PROV}agent`, order: 0 }, { path: `${PROV}hadRole`, order: 1 }];
-          const nestedLabels = { [`${PROV}agent`]: 'Agent', [`${PROV}hadRole`]: 'Role' };
-          const attrHtml = attributions.map(attr => {
-            const rows = nestedOrder.map(({ path }) => {
-              const label = nestedLabels[path] ?? getPredicateLabel(path, localName(path));
-              const value = path === `${PROV}agent` ? attr.agentIri : path === `${PROV}hadRole` ? attr.roleIri : null;
-              if (!value) return '';
-              return `<tr><th style="width: 100px;">${escapeHtml(label)}</th><td>${createObjectLink(value)}</td></tr>`;
-            }).filter(Boolean).join('\n              ');
-            return `
-          <div class="box" style="margin-bottom: 0.5rem; padding: 0.75rem;">
-            <table class="table is-narrow is-fullwidth" style="margin-bottom: 0;">
-              ${rows}
-            </table>
-          </div>`;
-          }).join('');
-          propertyRows.push(`<tr><th>${createPropertyHeader(predicate, propConfig.label)}</th><td>${attrHtml}</td></tr>`);
-          orderedRendered.add(predicate);
-        }
+    // Check if any objects are blank nodes
+    const hasBlanks = quads.some(q => q.object.termType === 'BlankNode');
+    if (hasBlanks) {
+      const nestedOrder = profileEntry?.propertyOrder && Array.isArray(profileEntry.propertyOrder)
+        ? profileEntry.propertyOrder
+        : null;
+      const cardsHtml = renderBlankNodeCards(sourceStore, schemeIri, predicate, nestedOrder, createObjectLink, getPredicateLabel);
+      if (cardsHtml) {
+        return `<tr><th>${createPropertyHeader(predicate, localName(predicate))}</th><td>${cardsHtml}</td></tr>`;
       }
     }
-  }
 
-  // Then, render any "leftover" properties not in the ordered list
-  for (const predicate of allPredicates) {
-    if (SKIP_PROPERTIES.has(predicate) || orderedRendered.has(predicate)) continue;
-
-    const quads = sourceStore.getQuads(schemeIri, predicate, null, null);
     const values = [];
-
     for (const q of quads) {
       if (q.object.termType === 'Literal') {
         values.push(escapeHtml(q.object.value));
@@ -1698,9 +1714,30 @@ function generateHTML(annotatedStore, sourceStore, concepts, profile) {
         values.push(createObjectLink(q.object.value));
       }
     }
+    if (values.length === 0) return null;
+    return `<tr><th>${createPropertyHeader(predicate, localName(predicate))}</th><td>${values.join(', ')}</td></tr>`;
+  };
 
-    if (values.length > 0) {
-      propertyRows.push(`<tr><th>${createPropertyHeader(predicate, localName(predicate))}</th><td>${values.join(', ')}</td></tr>`);
+  // Build property rows in profile order, then leftovers
+  const propertyRows = [];
+  const orderedRendered = new Set();
+
+  for (const predicate of schemeOrderPaths) {
+    if (!allPredicates.has(predicate)) continue;
+    const profileEntry = schemeEntryByPath.get(predicate);
+    const row = renderProperty(predicate, profileEntry);
+    if (row) {
+      propertyRows.push(row);
+      orderedRendered.add(predicate);
+    }
+  }
+
+  // Then, render any "leftover" properties not in the ordered list
+  for (const predicate of allPredicates) {
+    if (SKIP_PROPERTIES.has(predicate) || orderedRendered.has(predicate)) continue;
+    const row = renderProperty(predicate, null);
+    if (row) {
+      propertyRows.push(row);
     }
   }
 
@@ -1999,131 +2036,94 @@ function generateConceptHTML(annotatedStore, sourceStore, conceptIri, schemeIri,
     return `<span class="object-link"><a href="${escapeHtml(iri)}"${titleAttr} target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a> <a href="${escapeHtml(iri)}"${titleAttr} target="_blank" rel="noopener noreferrer" class="external-icon">${externalLinkIcon}</a></span>`;
   };
 
-  // Build primary and further metadata rows as { path, html } for profile ordering
-  const primaryRows = [];
-  const furtherRows = [];
+  // Generic concept property renderer using RDF term type detection
+  const renderConceptProperty = (predicate, profileEntry) => {
+    // Special handling for rdf:type — always render as "Concept"
+    if (predicate === `${RDF}type`) {
+      const conceptTypeIri = `${SKOS}Concept`;
+      const conceptLabel = getLiteral(annotatedStore, conceptTypeIri, PREZ_LABEL) || 'Concept';
+      const conceptDesc = getLiteral(annotatedStore, conceptTypeIri, PREZ_DESCRIPTION) || '';
+      const conceptTitleAttr = conceptDesc ? ` title="${escapeHtml(conceptDesc)}"` : '';
+      return `<tr><th>${createPropertyHeader(predicate, 'type')}</th><td><span class="object-link">${escapeHtml(conceptLabel)} <a href="${escapeHtml(conceptTypeIri)}"${conceptTitleAttr} target="_blank" rel="noopener noreferrer" class="external-icon">${externalLinkIcon}</a></span></td></tr>`;
+    }
 
-  // Type
-  const typeIri = `${RDF}type`;
-  const conceptTypeIri = `${SKOS}Concept`;
-  const typeLabel = getPredicateLabel(typeIri, 'type');
-  const typeDesc = getPredicateDescription(typeIri);
-  const conceptLabel = getLiteral(annotatedStore, conceptTypeIri, PREZ_LABEL) || 'Concept';
-  const conceptDesc = getLiteral(annotatedStore, conceptTypeIri, PREZ_DESCRIPTION) || '';
-  const typeTitleAttr = typeDesc ? ` title="${escapeHtml(typeDesc)}"` : '';
-  const conceptTitleAttr = conceptDesc ? ` title="${escapeHtml(conceptDesc)}"` : '';
-  primaryRows.push({ path: typeIri, html: `<tr><th><span class="property-label">${escapeHtml(typeLabel)}</span><a href="${escapeHtml(typeIri)}"${typeTitleAttr} target="_blank" rel="noopener noreferrer" class="property-link">${externalLinkIcon}</a></th><td><span class="object-link">${escapeHtml(conceptLabel)} <a href="${escapeHtml(conceptTypeIri)}"${conceptTitleAttr} target="_blank" rel="noopener noreferrer" class="external-icon">${externalLinkIcon}</a></span></td></tr>` });
+    const quads = sourceStore.getQuads(conceptIri, predicate, null, null);
 
-  // Definition
-  const definitionPred = `${SKOS}definition`;
-  const definition = getLiteral(sourceStore, conceptIri, definitionPred);
-  if (definition) {
-    primaryRows.push({ path: definitionPred, html: `<tr><th>${createPropertyHeader(definitionPred, 'definition')}</th><td>${escapeHtml(definition)}</td></tr>` });
+    // Special handling for skos:inScheme — fallback to schemeIri
+    if (predicate === `${SKOS}inScheme` && quads.length === 0 && schemeIri) {
+      return `<tr><th>${createPropertyHeader(predicate, localName(predicate))}</th><td>${createObjectLink(schemeIri)}</td></tr>`;
+    }
+
+    if (quads.length === 0) return null;
+
+    // Check for blank node objects
+    const hasBlanks = quads.some(q => q.object.termType === 'BlankNode');
+    if (hasBlanks) {
+      const nestedOrder = profileEntry?.propertyOrder && Array.isArray(profileEntry.propertyOrder)
+        ? profileEntry.propertyOrder
+        : null;
+      const cardsHtml = renderBlankNodeCards(sourceStore, conceptIri, predicate, nestedOrder, createObjectLink, getPredicateLabel);
+      if (cardsHtml) {
+        return `<tr><th>${createPropertyHeader(predicate, localName(predicate))}</th><td>${cardsHtml}</td></tr>`;
+      }
+    }
+
+    const values = [];
+    for (const q of quads) {
+      if (q.object.termType === 'Literal') {
+        values.push(escapeHtml(q.object.value));
+      } else if (q.object.termType === 'NamedNode') {
+        values.push(createObjectLink(q.object.value));
+      }
+    }
+    if (values.length === 0) return null;
+
+    // Use <br> separator for IRI-heavy properties (narrower, broader, etc.)
+    const allIRIs = quads.every(q => q.object.termType === 'NamedNode');
+    const separator = allIRIs && values.length > 1 ? '<br>' : ', ';
+    return `<tr><th>${createPropertyHeader(predicate, localName(predicate))}</th><td>${values.join(separator)}</td></tr>`;
+  };
+
+  // Collect all predicates used on the concept
+  const allConceptPredicates = collectPredicates(sourceStore, conceptIri);
+
+  // Get profile-ordered properties, or use DEFAULT_FIELD_ORDER.concept
+  const conceptOrderEntries = profile?.concept?.propertyOrder?.length
+    ? profile.concept.propertyOrder.slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+    : DEFAULT_FIELD_ORDER.concept;
+  const conceptEntryByPath = new Map(conceptOrderEntries.map(e => [e.path, e]));
+
+  // Build rows in profile order
+  const metadataRows = [];
+  const renderedPredicates = new Set();
+
+  for (const entry of conceptOrderEntries) {
+    const predicate = entry.path;
+    if (!allConceptPredicates.has(predicate) && predicate !== `${RDF}type` && predicate !== `${SKOS}inScheme`) continue;
+    const row = renderConceptProperty(predicate, entry);
+    if (row) {
+      metadataRows.push({ path: predicate, html: row });
+      renderedPredicates.add(predicate);
+    }
   }
 
-  // Narrower concepts
-  const narrowerPred = `${SKOS}narrower`;
-  const narrower = getIRIs(sourceStore, conceptIri, narrowerPred);
-  if (narrower.length > 0) {
-    const links = narrower.map(iri => createObjectLink(iri)).join('<br>');
-    primaryRows.push({ path: narrowerPred, html: `<tr><th>${createPropertyHeader(narrowerPred, 'has narrower')}</th><td>${links}</td></tr>` });
+  // Render leftover properties not in profile order
+  const leftoverRows = [];
+  for (const predicate of allConceptPredicates) {
+    if (renderedPredicates.has(predicate) || predicate === `${RDF}type`) continue;
+    const row = renderConceptProperty(predicate, null);
+    if (row) {
+      leftoverRows.push({ path: predicate, html: row });
+    }
   }
 
-  // Broader concepts
-  const broaderPred = `${SKOS}broader`;
-  const broader = getIRIs(sourceStore, conceptIri, broaderPred);
-  if (broader.length > 0) {
-    const links = broader.map(iri => createObjectLink(iri)).join('<br>');
-    primaryRows.push({ path: broaderPred, html: `<tr><th>${createPropertyHeader(broaderPred, 'has broader')}</th><td>${links}</td></tr>` });
-  }
-
-  // Related concepts
-  const relatedPred = `${SKOS}related`;
-  const related = getIRIs(sourceStore, conceptIri, relatedPred);
-  if (related.length > 0) {
-    const links = related.map(iri => createObjectLink(iri)).join('<br>');
-    primaryRows.push({ path: relatedPred, html: `<tr><th>${createPropertyHeader(relatedPred, 'related')}</th><td>${links}</td></tr>` });
-  }
-
-  // In Scheme
-  const inSchemePred = `${SKOS}inScheme`;
-  const inScheme = getIRIs(sourceStore, conceptIri, inSchemePred);
-  if (inScheme.length > 0) {
-    const links = inScheme.map(iri => createObjectLink(iri)).join('<br>');
-    primaryRows.push({ path: inSchemePred, html: `<tr><th>${createPropertyHeader(inSchemePred, 'is in scheme')}</th><td>${links}</td></tr>` });
-  } else if (schemeIri) {
-    primaryRows.push({ path: inSchemePred, html: `<tr><th>${createPropertyHeader(inSchemePred, 'is in scheme')}</th><td>${createObjectLink(schemeIri)}</td></tr>` });
-  }
-
-  // --- Further Metadata ---
-
-  // Identifier
-  const identifierPred = `${DCTERMS}identifier`;
-  const identifier = getLiteral(sourceStore, conceptIri, identifierPred);
-  if (identifier) {
-    furtherRows.push({ path: identifierPred, html: `<tr><th>${createPropertyHeader(identifierPred, 'identifier')}</th><td>${escapeHtml(identifier)}</td></tr>` });
-  }
-
-  // Top Concept Of
-  const topConceptOfPred = `${SKOS}topConceptOf`;
-  const topConceptOf = getIRIs(sourceStore, conceptIri, topConceptOfPred);
-  if (topConceptOf.length > 0) {
-    const links = topConceptOf.map(iri => createObjectLink(iri)).join('<br>');
-    furtherRows.push({ path: topConceptOfPred, html: `<tr><th>${createPropertyHeader(topConceptOfPred, 'is top concept in scheme')}</th><td>${links}</td></tr>` });
-  }
-
-  // Preferred Label
-  const prefLabelPred = `${SKOS}prefLabel`;
-  const prefLabel = getLiteral(sourceStore, conceptIri, prefLabelPred);
-  if (prefLabel) {
-    furtherRows.push({ path: prefLabelPred, html: `<tr><th>${createPropertyHeader(prefLabelPred, 'preferred label')}</th><td>${escapeHtml(prefLabel)}</td></tr>` });
-  }
-
-  // Alt Labels
-  const altLabelPred = `${SKOS}altLabel`;
-  const altLabels = getAllLiterals(sourceStore, conceptIri, altLabelPred);
-  if (altLabels.length > 0) {
-    furtherRows.push({ path: altLabelPred, html: `<tr><th>${createPropertyHeader(altLabelPred, 'alternative label')}</th><td>${altLabels.map(l => escapeHtml(l)).join('<br>')}</td></tr>` });
-  }
-
-  // Notation
-  const notationPred = `${SKOS}notation`;
-  const notation = getLiteral(sourceStore, conceptIri, notationPred);
-  if (notation) {
-    furtherRows.push({ path: notationPred, html: `<tr><th>${createPropertyHeader(notationPred, 'notation')}</th><td>${escapeHtml(notation)}</td></tr>` });
-  }
-
-  // Scope Note
-  const scopeNotePred = `${SKOS}scopeNote`;
-  const scopeNote = getLiteral(sourceStore, conceptIri, scopeNotePred);
-  if (scopeNote) {
-    furtherRows.push({ path: scopeNotePred, html: `<tr><th>${createPropertyHeader(scopeNotePred, 'scope note')}</th><td>${escapeHtml(scopeNote)}</td></tr>` });
-  }
-
-  // History Note
-  const historyNotePred = `${SKOS}historyNote`;
-  const historyNote = getLiteral(sourceStore, conceptIri, historyNotePred);
-  if (historyNote) {
-    furtherRows.push({ path: historyNotePred, html: `<tr><th>${createPropertyHeader(historyNotePred, 'history note')}</th><td>${escapeHtml(historyNote)}</td></tr>` });
-  }
-
-  // Example
-  const examplePred = `${SKOS}example`;
-  const example = getLiteral(sourceStore, conceptIri, examplePred);
-  if (example) {
-    furtherRows.push({ path: examplePred, html: `<tr><th>${createPropertyHeader(examplePred, 'example')}</th><td>${escapeHtml(example)}</td></tr>` });
-  }
-
-  const primaryOrdered = sortConceptRowsByProfile(primaryRows, profile);
-  const furtherOrdered = sortConceptRowsByProfile(furtherRows, profile);
-
-  // Build further metadata section if we have rows
-  const furtherMetadataSection = furtherOrdered.length > 0 ? `
+  // Build further metadata section from leftovers
+  const furtherMetadataSection = leftoverRows.length > 0 ? `
       <div class="box" style="margin-top: 1rem;">
         <h2 class="title is-4">Further Metadata</h2>
         <table class="table is-fullwidth metadata-table">
           <tbody>
-            ${furtherOrdered.map(r => r.html).join('\n            ')}
+            ${leftoverRows.map(r => r.html).join('\n            ')}
           </tbody>
         </table>
       </div>` : '';
@@ -2165,7 +2165,7 @@ function generateConceptHTML(annotatedStore, sourceStore, conceptIri, schemeIri,
         <h2 class="title is-4">Metadata</h2>
         <table class="table is-fullwidth metadata-table">
           <tbody>
-            ${primaryOrdered.map(r => r.html).join('\n            ')}
+            ${metadataRows.map(r => r.html).join('\n            ')}
           </tbody>
         </table>
       </div>
@@ -3030,10 +3030,20 @@ function buildProfileJson(shaclConfig, cardinalityMap) {
 
     if (profile.properties && profile.properties.length > 0) {
       const sorted = [...profile.properties].sort((a, b) => (a.order || 0) - (b.order || 0));
-      result[key].propertyOrder = sorted.map((p) => ({
-        path: p.paths && p.paths[0] ? p.paths[0] : '',
-        order: p.order ?? 0,
-      }));
+      result[key].propertyOrder = sorted.map((p) => {
+        const entry = {
+          path: p.paths && p.paths[0] ? p.paths[0] : '',
+          order: p.order ?? 0,
+        };
+        // Embed nested property order from sh:node
+        if (p.nestedProperties && p.nestedProperties.length > 0) {
+          entry.propertyOrder = p.nestedProperties.map((np) => ({
+            path: np.paths && np.paths[0] ? np.paths[0] : '',
+            order: np.order ?? 0,
+          }));
+        }
+        return entry;
+      });
     } else {
       result[key].propertyOrder = (DEFAULT_FIELD_ORDER[key] || []).map((p) => ({
         path: typeof p === 'object' ? p.path : p,
@@ -3043,6 +3053,7 @@ function buildProfileJson(shaclConfig, cardinalityMap) {
   }
 
   // Denormalize nested ordering onto the property nodes themselves.
+  // Skip entries that already have SHACL-derived propertyOrder from sh:node.
   // Keep result.nestedOrder for backwards compatibility, but also embed:
   // {
   //   path: prov:qualifiedAttribution,
@@ -3053,6 +3064,8 @@ function buildProfileJson(shaclConfig, cardinalityMap) {
     const arr = result[section]?.propertyOrder;
     if (!Array.isArray(arr)) continue;
     result[section].propertyOrder = arr.map((entry) => {
+      // Skip if SHACL sh:node already provided nested properties
+      if (entry.propertyOrder) return entry;
       const nested = entry?.path ? result.nestedOrder?.[entry.path] : undefined;
       return nested ? { ...entry, propertyOrder: nested } : entry;
     });

@@ -278,6 +278,22 @@ async function generateSystemFiles() {
     console.warn('      ⚠ Failed to generate search index:', error.message)
   }
 
+  // Generate workspaces configuration
+  const workspacesFile = join(ROOT_DIR, 'data', 'config', 'workspaces.ttl')
+  if (existsSync(workspacesFile)) {
+    console.log('   Generating workspaces.json...')
+    const workspacesScript = join(DATA_PROCESSING_DIR, 'scripts', 'generate-workspaces.js')
+    try {
+      execSync(`node "${workspacesScript}" --source "${workspacesFile}" --output "${join(SYSTEM_DIR, 'workspaces.json')}"`, {
+        stdio: 'pipe',
+        cwd: ROOT_DIR
+      })
+      console.log('      ✓ workspaces.json')
+    } catch (error) {
+      console.warn('      ⚠ Failed to generate workspaces:', error.message)
+    }
+  }
+
   console.log('   ✓ System files generated')
 }
 

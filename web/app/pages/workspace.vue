@@ -51,21 +51,21 @@ function handleChangeWorkspace() {
   workspace.clearWorkspace()
 }
 
-async function handleSelectVocab(vocabSlug: string) {
-  selectingVocab.value = vocabSlug
+async function handleSelectVocab(vocab: VocabMetadata) {
+  selectingVocab.value = vocab.slug
   selectError.value = null
-  const ok = await workspace.selectVocab(vocabSlug)
+  const ok = await workspace.selectVocab(vocab.slug)
   selectingVocab.value = null
   if (ok) {
-    router.back()
+    navigateTo({ path: '/scheme', query: { uri: vocab.iri } })
   } else {
-    selectError.value = `Failed to set up branch for "${vocabSlug}". Check that you have write access to the repository.`
+    selectError.value = `Failed to set up branch for "${vocab.slug}". Check that you have write access to the repository.`
   }
 }
 
 function vocabBranchName(vocabSlug: string): string {
   if (!workspace.state.value) return ''
-  return `${workspace.state.value.workspaceSlug}/${vocabSlug}`
+  return `edit/${workspace.state.value.workspaceSlug}/${vocabSlug}`
 }
 
 function isVocabActive(vocabSlug: string): boolean {
@@ -164,7 +164,7 @@ function isVocabActive(vocabSlug: string): boolean {
           class="w-full flex items-center gap-4 px-4 py-3.5 rounded-lg hover:bg-muted/50 transition-colors text-left group"
           :class="{ 'bg-primary/10 ring-1 ring-primary/30': workspace.activeVocabSlug.value === vocab.slug }"
           :disabled="selectingVocab === vocab.slug"
-          @click="handleSelectVocab(vocab.slug)"
+          @click="handleSelectVocab(vocab)"
         >
           <div class="flex-1 min-w-0">
             <p class="font-medium truncate">{{ vocab.prefLabel }}</p>

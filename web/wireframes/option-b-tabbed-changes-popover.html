@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Option B: Tabbed Changes Popover</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <style>
+    .toolbar { background: #363636; color: white; padding: 0.5rem 1rem; display: flex; align-items: center; gap: 0.75rem; }
+    .toolbar .button { height: 2rem; font-size: 0.8rem; }
+    .separator { width: 1px; height: 20px; background: #666; margin: 0 0.25rem; }
+    .tree-panel { border-right: 1px solid #dbdbdb; min-height: 500px; overflow-y: auto; }
+    .detail-panel { min-height: 500px; overflow-y: auto; }
+    .tree-node { padding: 0.3rem 0.5rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer; font-size: 0.9rem; }
+    .tree-node:hover { background: #f5f5f5; }
+    .tree-indent { padding-left: 1.5rem; }
+
+    /* Popover positioned relative to toolbar badge */
+    .changes-popover {
+      position: absolute;
+      top: calc(100% + 4px);
+      right: 200px;
+      width: 420px;
+      background: white;
+      border: 1px solid #dbdbdb;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      z-index: 100;
+      color: #363636;
+    }
+    .popover-tabs {
+      display: flex;
+      border-bottom: 1px solid #dbdbdb;
+    }
+    .popover-tab {
+      flex: 1;
+      text-align: center;
+      padding: 0.6rem 0.5rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .popover-tab:hover { background: #f5f5f5; }
+    .popover-tab.active { border-bottom-color: #3e8ed0; font-weight: 600; }
+    .popover-tab .tag { vertical-align: middle; }
+    .change-list { max-height: 280px; overflow-y: auto; }
+    .change-row { padding: 0.5rem 0.75rem; border-bottom: 1px solid #f5f5f5; display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; }
+    .change-row:hover { background: #fafafa; }
+    .change-row:last-child { border-bottom: none; }
+    .change-icon { width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold; flex-shrink: 0; }
+    .ci-modified { background: #fff3cd; color: #856404; }
+    .ci-added { background: #d4edda; color: #155724; }
+    .ci-removed { background: #f8d7da; color: #721c24; }
+    .popover-footer { padding: 0.5rem 0.75rem; border-top: 1px solid #dbdbdb; font-size: 0.75rem; color: #888; display: flex; justify-content: space-between; align-items: center; }
+    .stacked-badge { position: relative; display: inline-flex; align-items: center; cursor: pointer; }
+    .stacked-badge .ring { display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.15rem 0.5rem; border-radius: 10px; font-size: 0.75rem; font-weight: 600; }
+    .ring-local { background: #fff3cd; color: #856404; border: 1px solid #ffc107; }
+    .ring-branch { background: #cce5ff; color: #004085; border: 1px solid #3e8ed0; margin-left: -4px; }
+    .ring-staging { background: #d4edda; color: #155724; border: 1px solid #48c78e; margin-left: -4px; }
+  </style>
+</head>
+<body>
+
+  <!-- DESCRIPTION -->
+  <section class="section pb-3">
+    <div class="container">
+      <h2 class="title is-4">Option B: Tabbed Changes Popover</h2>
+      <p class="subtitle is-6 has-text-grey">
+        The existing changes popover gains three tabs: Local, Branch, Staging.
+        The toolbar badge shows stacked counts. No extra bars — fits existing UI pattern.
+      </p>
+      <div class="notification is-info is-light">
+        <strong>Concept:</strong> Extends the current "2 changes" badge into a stacked badge
+        showing all three layers. Clicking opens the popover which now has tabs.
+        Each tab lists the changes for that layer. This is the minimal-disruption option.
+      </div>
+    </div>
+  </section>
+
+  <div class="container" style="position: relative;">
+
+    <!-- Simulated toolbar -->
+    <div class="toolbar">
+      <span class="icon is-small"><i>&#9998;</i></span>
+      <strong style="font-size:0.85rem">Full Edit</strong>
+      <div class="separator"></div>
+      <button class="button is-small is-dark">Undo</button>
+      <button class="button is-small is-dark">Redo</button>
+      <div class="separator"></div>
+
+      <!-- Stacked badge -->
+      <div class="stacked-badge">
+        <span class="ring ring-local">2 local</span>
+        <span class="ring ring-branch">5 branch</span>
+        <span class="ring ring-staging">12 staging</span>
+        <span style="color:white; font-size:0.75rem; margin-left:0.4rem">&#9660;</span>
+      </div>
+
+      <div style="flex:1"></div>
+      <span style="font-size:0.8rem; opacity:0.7">staging / industry-vocab</span>
+      <div class="separator"></div>
+      <button class="button is-small is-dark">History</button>
+      <button class="button is-small is-success">Save</button>
+      <button class="button is-small is-dark">&times;</button>
+    </div>
+
+    <!-- TABBED POPOVER (shown open) -->
+    <div class="changes-popover">
+      <div class="popover-tabs">
+        <div class="popover-tab active">
+          Local <span class="tag is-warning is-small ml-1">2</span>
+        </div>
+        <div class="popover-tab">
+          Branch <span class="tag is-info is-small ml-1">5</span>
+        </div>
+        <div class="popover-tab">
+          Staging <span class="tag is-success is-small ml-1">12</span>
+        </div>
+      </div>
+
+      <div class="change-list">
+        <div class="change-row">
+          <span class="change-icon ci-modified">~</span>
+          <div>
+            <div>Industry Classification</div>
+            <div style="font-size:0.75rem; color:#888">prefLabel corrected</div>
+          </div>
+          <span style="margin-left:auto; font-size:0.75rem; color:#888">2 props</span>
+          <button class="button is-small is-text" title="Revert">&#x21b6;</button>
+        </div>
+        <div class="change-row">
+          <span class="change-icon ci-added">+</span>
+          <div>
+            <div>Digital Services</div>
+            <div style="font-size:0.75rem; color:#888">new concept</div>
+          </div>
+          <span style="margin-left:auto; font-size:0.75rem; color:#888">5 props</span>
+          <button class="button is-small is-text" title="Revert">&#x21b6;</button>
+        </div>
+      </div>
+
+      <div class="popover-footer">
+        <span>Changes not yet committed to branch</span>
+        <button class="button is-small is-text">View all</button>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="columns is-gapless" style="margin-top:0">
+      <div class="column is-5 tree-panel p-3">
+        <div class="field">
+          <div class="control has-icons-left">
+            <input class="input is-small" type="text" placeholder="Search concepts...">
+            <span class="icon is-small is-left"><i>&#128269;</i></span>
+          </div>
+        </div>
+
+        <div class="tree-node">
+          <span>&#9660;</span>
+          <span>Agriculture</span>
+        </div>
+        <div class="tree-indent">
+          <div class="tree-node"><span>&#9654;</span> Crops</div>
+          <div class="tree-node"><span>&#9654;</span> Livestock</div>
+        </div>
+        <div class="tree-node">
+          <span>&#9660;</span>
+          <span>Manufacturing</span>
+        </div>
+        <div class="tree-indent">
+          <div class="tree-node"><span>&#9654;</span> Heavy Industry</div>
+          <div class="tree-node" style="background: #fff8e1;">
+            <span>&#9654;</span>
+            <strong>Industry Classification</strong>
+            <span class="tag is-warning is-small" style="font-size:0.6rem">unsaved</span>
+          </div>
+        </div>
+        <div class="tree-node" style="background: #e8f5e9;">
+          <span>&bull;</span>
+          <em>Digital Services</em>
+          <span class="tag is-success is-small" style="font-size:0.6rem">new</span>
+        </div>
+        <div class="tree-node"><span>&#9654;</span> Financial Services</div>
+        <div class="tree-node"><span>&#9654;</span> Health Care</div>
+      </div>
+
+      <div class="column is-7 detail-panel p-4">
+        <p class="has-text-grey is-size-7">(Detail panel — same as current)</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- BRANCH TAB VARIANT -->
+  <section class="section">
+    <div class="container">
+      <h5 class="title is-5">Branch tab (when clicked)</h5>
+      <p class="subtitle is-6 has-text-grey mb-4">Shows commits on this branch that aren't in staging yet</p>
+
+      <div class="changes-popover" style="position: static; max-width: 420px;">
+        <div class="popover-tabs">
+          <div class="popover-tab">
+            Local <span class="tag is-warning is-small ml-1">2</span>
+          </div>
+          <div class="popover-tab active">
+            Branch <span class="tag is-info is-small ml-1">5</span>
+          </div>
+          <div class="popover-tab">
+            Staging <span class="tag is-success is-small ml-1">12</span>
+          </div>
+        </div>
+
+        <div class="change-list">
+          <div class="change-row">
+            <span class="change-icon ci-modified">~</span>
+            <div>
+              <div>Livestock</div>
+              <div style="font-size:0.75rem; color:#888">definition updated</div>
+            </div>
+            <span style="margin-left:auto; font-size:0.75rem; color:#888">1 prop</span>
+          </div>
+          <div class="change-row">
+            <span class="change-icon ci-modified">~</span>
+            <div>
+              <div>Heavy Industry</div>
+              <div style="font-size:0.75rem; color:#888">altLabel added, notation changed</div>
+            </div>
+            <span style="margin-left:auto; font-size:0.75rem; color:#888">2 props</span>
+          </div>
+          <div class="change-row">
+            <span class="change-icon ci-added">+</span>
+            <div>
+              <div>Light Manufacturing</div>
+              <div style="font-size:0.75rem; color:#888">new concept</div>
+            </div>
+            <span style="margin-left:auto; font-size:0.75rem; color:#888">4 props</span>
+          </div>
+          <div class="change-row">
+            <span class="change-icon ci-modified">~</span>
+            <div>
+              <div>Agriculture</div>
+              <div style="font-size:0.75rem; color:#888">broader hierarchy restructured</div>
+            </div>
+            <span style="margin-left:auto; font-size:0.75rem; color:#888">3 props</span>
+          </div>
+          <div class="change-row">
+            <span class="change-icon ci-removed">&minus;</span>
+            <div>
+              <div>Deprecated: Old Mining</div>
+              <div style="font-size:0.75rem; color:#888">concept removed</div>
+            </div>
+            <span style="margin-left:auto; font-size:0.75rem; color:#888">6 props</span>
+          </div>
+        </div>
+
+        <div class="popover-footer">
+          <span>3 commits ahead of <strong>staging</strong></span>
+          <button class="button is-small is-text">Compare</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pros/cons -->
+  <section class="section pt-3">
+    <div class="container">
+      <div class="columns">
+        <div class="column">
+          <div class="notification is-success is-light">
+            <strong>Pros</strong>
+            <ul>
+              <li>Minimal UI disruption — extends existing popover pattern</li>
+              <li>No extra vertical space consumed</li>
+              <li>Familiar tab pattern for switching contexts</li>
+              <li>Progressive disclosure — detail only when requested</li>
+              <li>Stacked badge is compact but information-rich</li>
+            </ul>
+          </div>
+        </div>
+        <div class="column">
+          <div class="notification is-danger is-light">
+            <strong>Cons</strong>
+            <ul>
+              <li>Branch + Staging tabs need API calls (may be slow)</li>
+              <li>Stacked badge could feel busy with 3 segments</li>
+              <li>Tab context-switch within popover may feel clunky</li>
+              <li>No at-a-glance visibility without opening popover</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Option C: Change Drawer</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <style>
+    .toolbar { background: #363636; color: white; padding: 0.5rem 1rem; display: flex; align-items: center; gap: 0.75rem; }
+    .toolbar .button { height: 2rem; font-size: 0.8rem; }
+    .separator { width: 1px; height: 20px; background: #666; margin: 0 0.25rem; }
+    .page-layout { display: flex; height: 600px; }
+    .tree-panel { width: 300px; border-right: 1px solid #dbdbdb; overflow-y: auto; flex-shrink: 0; }
+    .detail-panel { flex: 1; overflow-y: auto; }
+    .change-drawer { width: 320px; border-left: 1px solid #dbdbdb; background: #fafafa; overflow-y: auto; flex-shrink: 0; }
+    .tree-node { padding: 0.3rem 0.5rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer; font-size: 0.9rem; }
+    .tree-node:hover { background: #f5f5f5; }
+    .tree-indent { padding-left: 1.5rem; }
+
+    .drawer-section { border-bottom: 1px solid #dbdbdb; }
+    .drawer-header { padding: 0.6rem 0.75rem; display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+    .drawer-header:hover { background: #f0f0f0; }
+    .drawer-body { padding: 0 0.75rem 0.5rem; }
+    .drawer-item { padding: 0.35rem 0; font-size: 0.8rem; display: flex; align-items: center; gap: 0.4rem; border-bottom: 1px solid #f0f0f0; }
+    .drawer-item:last-child { border-bottom: none; }
+    .layer-icon { width: 18px; height: 18px; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: bold; flex-shrink: 0; }
+    .li-local { background: #fff3cd; color: #856404; }
+    .li-branch { background: #cce5ff; color: #004085; }
+    .li-staging { background: #d4edda; color: #155724; }
+    .flow-arrow { color: #ccc; font-size: 0.7rem; text-align: center; padding: 0.15rem 0; }
+    .drawer-toggle { background: #363636; color: white; border: none; padding: 0.3rem 0.5rem; font-size: 0.75rem; cursor: pointer; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+  <!-- DESCRIPTION -->
+  <section class="section pb-3">
+    <div class="container">
+      <h2 class="title is-4">Option C: Change Drawer</h2>
+      <p class="subtitle is-6 has-text-grey">
+        A right-side drawer panel shows all three change layers stacked vertically
+        with collapsible sections. The drawer is togglable from the toolbar.
+      </p>
+      <div class="notification is-info is-light">
+        <strong>Concept:</strong> Like a "Source Control" panel in VS Code. The drawer
+        lives alongside the detail panel and shows a cascading view: your local edits at
+        top, branch changes in middle, staging changes at bottom. Each section is collapsible.
+        A flow diagram shows the direction: you &rarr; branch &rarr; staging &rarr; main.
+      </div>
+    </div>
+  </section>
+
+  <div class="container">
+
+    <!-- Simulated toolbar -->
+    <div class="toolbar">
+      <span class="icon is-small"><i>&#9998;</i></span>
+      <strong style="font-size:0.85rem">Full Edit</strong>
+      <div class="separator"></div>
+      <button class="button is-small is-dark">Undo</button>
+      <button class="button is-small is-dark">Redo</button>
+      <div class="separator"></div>
+      <span class="tag is-warning is-light" style="font-size:0.75rem">2 unsaved</span>
+      <div style="flex:1"></div>
+      <button class="drawer-toggle" style="background: #4a4a4a;">
+        &#9776; Changes
+        <span class="tag is-small is-light ml-1" style="font-size:0.65rem">19</span>
+      </button>
+      <div class="separator"></div>
+      <button class="button is-small is-dark">History</button>
+      <button class="button is-small is-success">Save</button>
+      <button class="button is-small is-dark">&times;</button>
+    </div>
+
+    <!-- Three-panel layout -->
+    <div class="page-layout">
+
+      <!-- Tree panel -->
+      <div class="tree-panel p-3">
+        <div class="field">
+          <div class="control has-icons-left">
+            <input class="input is-small" type="text" placeholder="Search...">
+            <span class="icon is-small is-left"><i>&#128269;</i></span>
+          </div>
+        </div>
+        <div class="tree-node"><span>&#9660;</span> Agriculture</div>
+        <div class="tree-indent">
+          <div class="tree-node"><span>&#9654;</span> Crops</div>
+          <div class="tree-node"><span>&#9654;</span> Livestock</div>
+        </div>
+        <div class="tree-node"><span>&#9660;</span> Manufacturing</div>
+        <div class="tree-indent">
+          <div class="tree-node"><span>&#9654;</span> Heavy Industry</div>
+          <div class="tree-node" style="background:#fff8e1"><span>&#9654;</span> <strong>Industry Classification</strong></div>
+        </div>
+        <div class="tree-node" style="background:#e8f5e9"><span>&bull;</span> <em>Digital Services</em></div>
+        <div class="tree-node"><span>&#9654;</span> Financial Services</div>
+        <div class="tree-node"><span>&#9654;</span> Health Care</div>
+      </div>
+
+      <!-- Detail panel (narrower when drawer open) -->
+      <div class="detail-panel p-4">
+        <h4 class="title is-5 mb-2">Industry Classification</h4>
+        <p class="subtitle is-7 has-text-grey mb-4">http://example.com/vocab/industry-classification</p>
+        <table class="table is-fullwidth is-striped is-size-7">
+          <tbody>
+            <tr><th width="30%">prefLabel</th><td>Industry Classification</td></tr>
+            <tr><th>definition</th><td>A classification of industries...</td></tr>
+            <tr><th>broader</th><td>Manufacturing</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- CHANGE DRAWER -->
+      <div class="change-drawer">
+
+        <!-- Flow indicator -->
+        <div style="padding: 0.5rem 0.75rem; background: #eee; font-size: 0.7rem; display: flex; align-items: center; gap: 0.3rem; color: #666;">
+          <strong>you</strong> <span>&rarr;</span>
+          <span style="color:#004085">branch</span> <span>&rarr;</span>
+          <span style="color:#155724">staging</span> <span>&rarr;</span>
+          <span>main</span>
+        </div>
+
+        <!-- LOCAL CHANGES -->
+        <div class="drawer-section">
+          <div class="drawer-header">
+            <span class="layer-icon li-local">~</span>
+            Unsaved Changes
+            <span class="tag is-warning is-small ml-auto">2</span>
+          </div>
+          <div class="drawer-body">
+            <div class="drawer-item">
+              <span class="layer-icon li-local" style="font-size:0.6rem">~</span>
+              <div>
+                <div>Industry Classification</div>
+                <div style="font-size:0.7rem; color:#888">prefLabel</div>
+              </div>
+            </div>
+            <div class="drawer-item">
+              <span class="layer-icon li-local" style="background:#d4edda; color:#155724; font-size:0.6rem">+</span>
+              <div>
+                <div>Digital Services</div>
+                <div style="font-size:0.7rem; color:#888">new concept</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-arrow">&darr; save</div>
+
+        <!-- BRANCH CHANGES -->
+        <div class="drawer-section">
+          <div class="drawer-header">
+            <span class="layer-icon li-branch">&#8710;</span>
+            Branch Changes
+            <span class="tag is-info is-small ml-auto">5</span>
+          </div>
+          <div class="drawer-body">
+            <div style="font-size:0.7rem; color:#888; margin-bottom:0.3rem">
+              3 commits ahead of staging
+            </div>
+            <div class="drawer-item">
+              <span class="layer-icon li-branch" style="font-size:0.6rem">~</span>
+              <span>Livestock</span>
+            </div>
+            <div class="drawer-item">
+              <span class="layer-icon li-branch" style="font-size:0.6rem">~</span>
+              <span>Heavy Industry</span>
+            </div>
+            <div class="drawer-item">
+              <span class="layer-icon li-branch" style="font-size:0.6rem">+</span>
+              <span>Light Manufacturing</span>
+            </div>
+            <div class="drawer-item">
+              <span class="layer-icon li-branch" style="font-size:0.6rem">~</span>
+              <span>Agriculture</span>
+            </div>
+            <div class="drawer-item">
+              <span class="layer-icon li-branch" style="font-size:0.6rem">&minus;</span>
+              <span style="text-decoration:line-through">Old Mining</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-arrow">&darr; merge</div>
+
+        <!-- STAGING CHANGES -->
+        <div class="drawer-section">
+          <div class="drawer-header">
+            <span class="layer-icon li-staging">&#8710;</span>
+            Staging vs Main
+            <span class="tag is-success is-small ml-auto">12</span>
+          </div>
+          <div class="drawer-body">
+            <div style="font-size:0.7rem; color:#888; margin-bottom:0.3rem">
+              8 commits ahead of main
+            </div>
+            <div class="drawer-item">
+              <span class="layer-icon li-staging" style="font-size:0.6rem">~</span>
+              <span>Financial Services</span>
+            </div>
+            <div class="drawer-item">
+              <span class="layer-icon li-staging" style="font-size:0.6rem">~</span>
+              <span>Health Care</span>
+            </div>
+            <div class="drawer-item" style="color:#888; font-size:0.75rem">
+              ... and 10 more concepts
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Pros/cons -->
+  <section class="section pt-5">
+    <div class="container">
+      <div class="columns">
+        <div class="column">
+          <div class="notification is-success is-light">
+            <strong>Pros</strong>
+            <ul>
+              <li>Full picture always visible without popover</li>
+              <li>Flow arrows make the promotion path obvious</li>
+              <li>Collapsible sections let you focus on one layer</li>
+              <li>Familiar "source control" metaphor</li>
+              <li>Natural place for merge/promote actions later</li>
+            </ul>
+          </div>
+        </div>
+        <div class="column">
+          <div class="notification is-danger is-light">
+            <strong>Cons</strong>
+            <ul>
+              <li>Consumes significant horizontal space (320px)</li>
+              <li>Detail panel gets squeezed on smaller screens</li>
+              <li>Three panels + drawer = four columns on desktop</li>
+              <li>Overkill for users who just want quick edits</li>
+              <li>Needs toggle to hide/show — more UI to manage</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>

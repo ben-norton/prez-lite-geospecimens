@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Change Visibility Wireframes</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+</head>
+<body>
+  <section class="section">
+    <div class="container" style="max-width: 800px;">
+      <h1 class="title">Change Visibility: Design Options</h1>
+      <p class="subtitle">How to show what's changed at each layer: local edits, branch, staging, main</p>
+
+      <div class="content">
+        <h4>The Problem</h4>
+        <p>When editing a vocabulary, the user needs to understand three layers of changes:</p>
+        <ol>
+          <li><strong>Local (unsaved)</strong> &mdash; edits in memory, not yet committed to the branch</li>
+          <li><strong>Branch vs Staging</strong> &mdash; commits on <code>edit/staging/vocab</code> not yet merged into <code>staging</code></li>
+          <li><strong>Staging vs Main</strong> &mdash; changes in <code>staging</code> not yet promoted to <code>main</code></li>
+        </ol>
+
+        <h4>Options</h4>
+        <table class="table is-fullwidth">
+          <thead>
+            <tr>
+              <th>Option</th>
+              <th>Approach</th>
+              <th>Where</th>
+              <th>Disruption</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><a href="option-a-layered-status-bar.html"><strong>A: Layered Status Bar</strong></a></td>
+              <td>Thin bar below toolbar with 3 clickable layer pills + flyout</td>
+              <td>Scheme page</td>
+              <td>Medium</td>
+            </tr>
+            <tr>
+              <td><a href="option-b-tabbed-changes-popover.html"><strong>B: Tabbed Changes Popover</strong></a></td>
+              <td>Extend existing changes popover with Local/Branch/Staging tabs</td>
+              <td>Scheme page</td>
+              <td>Low</td>
+            </tr>
+            <tr>
+              <td><a href="option-c-change-drawer.html"><strong>C: Change Drawer</strong></a></td>
+              <td>Right-side panel showing all layers stacked with flow arrows</td>
+              <td>Scheme page</td>
+              <td>High</td>
+            </tr>
+            <tr>
+              <td><a href="option-d-branch-pipeline.html"><strong>D: Branch Pipeline</strong></a></td>
+              <td>Horizontal pipeline (main &larr; staging &larr; branch &larr; you)</td>
+              <td>Scheme page</td>
+              <td>Medium</td>
+            </tr>
+            <tr>
+              <td><a href="option-e-workspace-overview.html"><strong>E: Workspace Overview</strong></a></td>
+              <td>Vocab cards with change bars and expandable layer details</td>
+              <td>Workspace page</td>
+              <td>Low (additive)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Recommendation</h4>
+        <p>
+          These aren't mutually exclusive. A strong combination would be:
+        </p>
+        <ul>
+          <li><strong>B or D</strong> for the scheme page (in-edit visibility)</li>
+          <li><strong>E</strong> for the workspace page (pre-edit overview)</li>
+        </ul>
+        <p>
+          <strong>B</strong> is lowest disruption (extends existing popover), while
+          <strong>D</strong> makes the git flow more explicit. Both need the same
+          underlying data: branch comparison via GitHub API.
+        </p>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

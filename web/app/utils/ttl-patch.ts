@@ -541,19 +541,90 @@ export function quadKey(q: Quad): string {
   return `${q.subject.value}|${q.predicate.value}|I|${obj.value}`
 }
 
+// ============================================================================
+// Blank node fingerprinting
+// ============================================================================
+
+/**
+ * Build a content-based fingerprint for a blank node by sorting its
+ * predicate-object pairs. Recursive for nested blank nodes.
+ * Uses a visited set to prevent infinite loops on circular references.
+ */
+function blankNodeFingerprint(store: Store, bnId: string, visited: Set<string> = new Set()): string {
+  if (visited.has(bnId)) return 'CIRCULAR'
+  visited.add(bnId)
+
+  const quads = store.getQuads(DataFactory.blankNode(bnId), null, null, null) as Quad[]
+  const parts = quads.map((q) => {
+    const obj = q.object
+    let objKey: string
+    if (obj.termType === 'BlankNode') {
+      objKey = `BN(${blankNodeFingerprint(store, obj.value, visited)})`
+    } else if (obj.termType === 'Literal') {
+      objKey = `L:${obj.value}|${(obj as any).language || ''}|${(obj as any).datatype?.value || ''}`
+    } else {
+      objKey = obj.value
+    }
+    return `${q.predicate.value}=${objKey}`
+  }).sort()
+
+  return parts.join(',')
+}
+
+/**
+ * Build fingerprints for all blank nodes that appear as subjects in a store.
+ * Returns a map from blank node ID → content fingerprint.
+ */
+function buildBlankNodeFingerprints(store: Store): Map<string, string> {
+  const fps = new Map<string, string>()
+  for (const q of store.getQuads(null, null, null, null) as Quad[]) {
+    if (q.subject.termType === 'BlankNode' && !fps.has(q.subject.value)) {
+      fps.set(q.subject.value, blankNodeFingerprint(store, q.subject.value))
+    }
+  }
+  return fps
+}
+
+/**
+ * Quad key that replaces blank node IDs with content fingerprints.
+ * This makes keys stable across parser runs where blank node IDs change.
+ */
+function normalizedQuadKey(q: Quad, bnFingerprints: Map<string, string>): string {
+  const subj = q.subject.termType === 'BlankNode'
+    ? (bnFingerprints.get(q.subject.value) ?? q.subject.value)
+    : q.subject.value
+
+  const obj = q.object
+  if (obj.termType === 'Literal') {
+    return `${subj}|${q.predicate.value}|L|${obj.value}|${(obj as any).language || ''}|${(obj as any).datatype?.value || ''}`
+  }
+  if (obj.termType === 'BlankNode') {
+    const fp = bnFingerprints.get(obj.value) ?? obj.value
+    return `${subj}|${q.predicate.value}|BN|${fp}`
+  }
+  return `${subj}|${q.predicate.value}|I|${obj.value}`
+}
+
 /** Compute added and removed quads between two stores */
 export function computeQuadDiff(
   originalStore: Store,
   currentStore: Store,
 ): { added: Quad[]; removed: Quad[] } {
-  const origQuads = originalStore.getQuads(null, null, null, null) as Quad[]
-  const currQuads = currentStore.getQuads(null, null, null, null) as Quad[]
+  const origBnFp = buildBlankNodeFingerprints(originalStore)
+  const currBnFp = buildBlankNodeFingerprints(currentStore)
 
-  const origKeys = new Set(origQuads.map(quadKey))
-  const currKeys = new Set(currQuads.map(quadKey))
+  // Only compare named-subject quads — blank node subject quads are captured
+  // via their parent's object reference fingerprint
+  const origQuads = (originalStore.getQuads(null, null, null, null) as Quad[])
+    .filter(q => q.subject.termType !== 'BlankNode')
+  const currQuads = (currentStore.getQuads(null, null, null, null) as Quad[])
+    .filter(q => q.subject.termType !== 'BlankNode')
 
-  const added = currQuads.filter(q => !origKeys.has(quadKey(q)))
-  const removed = origQuads.filter(q => !currKeys.has(quadKey(q)))
+  const origKeys = new Set(origQuads.map(q => normalizedQuadKey(q, origBnFp)))
+  const currKeys = new Set(currQuads.map(q => normalizedQuadKey(q, currBnFp)))
+
+  const added = currQuads.filter(q => !origKeys.has(normalizedQuadKey(q, currBnFp)))
+  const removed = origQuads.filter(q => !currKeys.has(normalizedQuadKey(q, origBnFp)))
 
   return { added, removed }
 }
@@ -598,7 +669,13 @@ export function buildChangeSummary(
   predicateLabelResolver: (iri: string) => string,
 ): ChangeSummary {
   const { added, removed } = computeQuadDiff(olderStore, newerStore)
-  const modifiedSubjects = getModifiedSubjects(added, removed)
+  const allModifiedSubjects = getModifiedSubjects(added, removed)
+
+  // Filter out blank node subjects — their changes are already surfaced
+  // via property changes on their parent named subject
+  const modifiedSubjects = new Set(
+    [...allModifiedSubjects].filter(s => !s.startsWith('_:')),
+  )
 
   const origSubjects = new Set<string>()
   for (const q of olderStore.getQuads(null, null, null, null) as Quad[]) {

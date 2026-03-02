@@ -14,6 +14,7 @@ const props = defineProps<{
   selectedId?: string
   editMode?: boolean
   expandToId?: string
+  changeCountMap?: Map<string, number>
 }>()
 
 const emit = defineEmits<{
@@ -34,6 +35,7 @@ const level = props.level ?? 0
         :selected-id="selectedId"
         :edit-mode="editMode"
         :expand-to-id="expandToId"
+        :change-count-map="changeCountMap"
         @select="emit('select', $event)"
         @edit="emit('edit', $event)"
       />

@@ -112,8 +112,8 @@ const isTransitioning = computed(() => isLoading.value && !!lastValidConcept.val
         <!-- Properties summary - rich rendering when available -->
         <div v-if="displayRichMetadata.length || displayCoreProperties.length" class="mb-4">
           <h4 class="text-xs font-semibold text-muted uppercase tracking-wide mb-2">Properties</h4>
-          <!-- Rich metadata (limited for panel view) -->
-          <RichMetadataTable v-if="displayRichMetadata.length" :properties="displayRichMetadata.slice(0, 6)" />
+          <!-- Rich metadata -->
+          <RichMetadataTable v-if="displayRichMetadata.length" :properties="displayRichMetadata" />
           <!-- Fallback to simple display -->
           <div v-else class="space-y-2">
             <div v-for="prop in displayCoreProperties.slice(0, 4)" :key="prop.property" class="text-sm">

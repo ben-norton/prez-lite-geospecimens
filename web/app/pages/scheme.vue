@@ -15,6 +15,44 @@ const fluid = useFluidLayout()
 const selectedConceptUri = computed(() => route.query.concept as string | undefined)
 const historySha = computed(() => route.query.sha as string | undefined)
 
+// Resizable panel state
+const treePanelWidth = ref(33) // percentage
+const isResizing = ref(false)
+const containerRef = ref<HTMLElement | null>(null)
+
+function startResize(e: MouseEvent) {
+  isResizing.value = true
+  const handle = e.currentTarget as HTMLElement
+  containerRef.value = handle.parentElement
+  e.preventDefault()
+}
+
+function stopResize() {
+  isResizing.value = false
+  containerRef.value = null
+}
+
+function resize(e: MouseEvent) {
+  if (!isResizing.value || !containerRef.value) return
+
+  const containerRect = containerRef.value.getBoundingClientRect()
+  const offsetX = e.clientX - containerRect.left
+  const percentage = (offsetX / containerRect.width) * 100
+
+  // Constrain between 20% and 80%
+  treePanelWidth.value = Math.min(Math.max(percentage, 20), 80)
+}
+
+onMounted(() => {
+  document.addEventListener('mouseup', stopResize)
+  document.addEventListener('mousemove', resize)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('mouseup', stopResize)
+  document.removeEventListener('mousemove', resize)
+})
+
 const {
   scheme,
   concepts,
@@ -94,7 +132,7 @@ const githubEditUrl = computed(() => {
 })
 
 // --- Editor State ---
-const { isAuthenticated, isEnabled: authEnabled, token: authToken, login: authLogin } = useGitHubAuth()
+const { isAuthenticated, token: authToken } = useGitHubAuth()
 
 const vocabSlugForEditor = computed(() => getVocabByIri(uri.value)?.slug)
 const [editorOwner, editorRepoName] = (githubRepo as string).split('/')
@@ -105,13 +143,13 @@ const editorFilePath = computed(() => {
   return base ? `${base}/${slug}.ttl` : `${slug}.ttl`
 })
 
-// Edit view driven by URL param `edit` (full | inline | absent=none)
-const editQueryParam = computed(() => route.query.edit as string | undefined)
-const editView = computed(() => {
-  // History mode forces read-only
+// Always-on edit mode: active when authenticated, unless viewing history
+const appConfig = useAppConfig()
+const configuredEditMode = ((appConfig.site as any)?.editor?.defaultMode ?? 'inline') as 'inline' | 'full'
+const editView = computed<'none' | 'full' | 'inline'>(() => {
   if (historySha.value) return 'none'
-  if (editQueryParam.value === 'full' || editQueryParam.value === 'inline') return editQueryParam.value
-  return 'none'
+  if (!isAuthenticated.value) return 'none'
+  return configuredEditMode
 })
 
 // Monaco theme (used by TTL viewer modal and SaveConfirmModal)
@@ -489,37 +527,37 @@ const editErrorModal = ref(false)
 const editErrorMessage = ref('')
 const editErrorPath = ref('')
 
-async function enterEdit(mode: 'full' | 'inline' = 'full') {
-  const wasOff = editView.value === 'none'
-  if (wasOff && editMode) {
+// Auto-enter edit mode when authenticated + vocab ready.
+// On page load auth token and vocab metadata may not be available yet, so watch all three.
+watch([editView, authToken, vocabSlugForEditor], async ([view]) => {
+  if (view !== 'none' && editMode && !editMode.isEditMode.value && vocabSlugForEditor.value) {
     await editMode.enterEditMode()
     if (editMode.error.value) {
       editErrorMessage.value = editMode.error.value
       editErrorPath.value = editorFilePath.value
       editErrorModal.value = true
-      return
     }
   }
-  router.push({ path: '/scheme', query: buildQuery({ edit: mode }) })
-}
+})
 
-function exitEdit() {
-  if (editMode?.isEditMode.value) {
-    const exited = editMode.exitEditMode()
-    if (!exited) return
+// Unsaved changes guard: route navigation
+onBeforeRouteLeave(() => {
+  if (editMode?.isDirty.value) {
+    return confirm('You have unsaved changes. Leave this page?')
   }
-  const query: Record<string, string> = { uri: uri.value }
-  if (selectedConceptUri.value) query.concept = selectedConceptUri.value
-  router.push({ path: '/scheme', query })
-}
+})
 
-// Sync edit mode composable with URL param changes (including page reload).
-// On reload the URL already has ?edit=full but auth token and vocab metadata
-// aren't available yet, so watch all three dependencies.
-watch([editView, authToken, vocabSlugForEditor], async ([view]) => {
-  if (view !== 'none' && editMode && !editMode.isEditMode.value && vocabSlugForEditor.value) {
-    await editMode.enterEditMode()
+// Unsaved changes guard: tab close / refresh
+function handleBeforeUnload(e: BeforeUnloadEvent) {
+  if (editMode?.isDirty.value) {
+    e.preventDefault()
   }
+}
+onMounted(() => {
+  window.addEventListener('beforeunload', handleBeforeUnload)
+})
+onUnmounted(() => {
+  window.removeEventListener('beforeunload', handleBeforeUnload)
 })
 
 // --- Concept selection ---
@@ -527,7 +565,6 @@ watch([editView, authToken, vocabSlugForEditor], async ([view]) => {
 function buildQuery(extra: Record<string, string | undefined> = {}): Record<string, string> {
   const q: Record<string, string> = { uri: uri.value }
   if (historySha.value) q.sha = historySha.value
-  if (editQueryParam.value) q.edit = editQueryParam.value
   // Preserve view mode param if set
   const currentView = route.query.view as string | undefined
   if (currentView && VALID_VIEW_MODES.includes(currentView as ConceptViewMode) && currentView !== 'tree') {
@@ -676,6 +713,49 @@ const pendingChanges = computed(() => {
   void editMode.storeVersion.value
   const summary = editMode.getChangeSummary()
   return summary.subjects
+})
+
+// --- Change indicators for tree nodes ---
+
+interface TreeItem {
+  id: string
+  label: string
+  children?: TreeItem[]
+  [key: string]: unknown
+}
+
+const changeCountMap = computed<Map<string, number>>(() => {
+  if (!pendingChanges.value.length) return new Map()
+  const changed = new Set(pendingChanges.value.map(c => c.subjectIri))
+  const counts = new Map<string, number>()
+  function walk(items: TreeItem[]): number {
+    let subtotal = 0
+    for (const item of items) {
+      let count = changed.has(item.id) ? 1 : 0
+      if (item.children?.length) {
+        count += walk(item.children)
+      }
+      if (count > 0) counts.set(item.id, count)
+      subtotal += count
+    }
+    return subtotal
+  }
+  walk(activeTreeItems.value)
+  return counts
+})
+
+// --- Change indicators for form fields ---
+
+const selectedConceptChanges = computed(() => {
+  if (!editMode || !selectedConceptUri.value) return null
+  void editMode.storeVersion.value
+  return editMode.getChangesForSubject(selectedConceptUri.value)
+})
+
+const schemeChanges = computed(() => {
+  if (!editMode) return null
+  void editMode.storeVersion.value
+  return editMode.getChangesForSubject(uri.value)
 })
 
 function truncateValue(val: string, max = 30): string {
@@ -847,10 +927,6 @@ const conceptViewModeParam = computed(() => {
 const conceptViewMode = computed({
   get: () => conceptViewModeParam.value,
   set: (val: ConceptViewMode) => {
-    // Auto-enter inline edit mode when switching to spreadsheet
-    if (val === 'spreadsheet' && editView.value === 'none' && editorAvailable.value) {
-      enterEdit('inline')
-    }
     router.push({ path: '/scheme', query: buildQuery({ view: val === 'tree' ? undefined : val }) })
   },
 })
@@ -993,10 +1069,6 @@ function copyIriToClipboard(iri: string) {
     <!-- Edit Toolbar (always visible, fixed at top below header) -->
     <EditToolbar
       v-if="displayScheme && !historySha && isAuthenticated"
-      :edit-view="editView"
-      :editor-available="editorAvailable"
-      :is-authenticated="isAuthenticated"
-      :auth-enabled="authEnabled"
       :is-edit-mode="!!editMode?.isEditMode.value"
       :is-dirty="!!editMode?.isDirty.value"
       :loading="!!editMode?.loading.value"
@@ -1011,12 +1083,8 @@ function copyIriToClipboard(iri: string) {
       :can-redo="!!editMode?.canRedo.value"
       :undo-label="undoLabel"
       :redo-label="redoLabel"
-      @enter-edit="enterEdit"
-      @exit-edit="exitEdit"
-      @toggle-mode="router.push({ path: '/scheme', query: buildQuery({ edit: editView === 'full' ? 'inline' : 'full' }) })"
       @save="pendingChanges.length === 1 ? openSaveModal(pendingChanges[0]!.subjectIri) : openSaveModal(selectedConceptUri || uri)"
       @toggle-view-mode="toggleViewMode"
-      @sign-in="authLogin"
       @open-workspace="navigateTo('/workspace')"
       @load-history="vocabHistory?.fetchCommits()"
       @browse-version="browseVersion"
@@ -1040,7 +1108,7 @@ function copyIriToClipboard(iri: string) {
           <h1 class="text-3xl font-bold">
             {{ historySchemeTitle ?? editModeTitle ?? getLabel(displayScheme.prefLabel) }}
             <UButton
-              v-if="editView !== 'none'"
+              v-if="isAuthenticated"
               icon="i-heroicons-arrow-down-circle"
               variant="ghost"
               size="xs"
@@ -1173,7 +1241,7 @@ function copyIriToClipboard(iri: string) {
           >
             {{ historySchemeDefinition ?? editModeDefinition ?? getLabel(displayScheme.definition) }}
             <UButton
-              v-if="editView !== 'none'"
+              v-if="isAuthenticated"
               icon="i-heroicons-arrow-down-circle"
               variant="ghost"
               size="xs"
@@ -1380,7 +1448,7 @@ function copyIriToClipboard(iri: string) {
           <!-- Tree view with detail panel -->
           <template v-else>
           <div
-            class="flex gap-6"
+            class="flex"
             :class="[
               selectedConceptUri ? 'flex-col lg:flex-row' : '',
               immersiveMode ? 'h-[calc(100dvh-10rem)]' : '',
@@ -1388,10 +1456,9 @@ function copyIriToClipboard(iri: string) {
           >
             <!-- Tree panel -->
             <div
+              :style="selectedConceptUri ? { width: `${treePanelWidth}%` } : {}"
               :class="[
-                selectedConceptUri
-                  ? (immersiveMode ? 'lg:w-1/3' : 'lg:w-1/2')
-                  : 'w-full',
+                selectedConceptUri ? '' : 'w-full',
                 immersiveMode ? 'h-full' : 'max-h-[600px]',
               ]"
               class="flex flex-col"
@@ -1403,19 +1470,30 @@ function copyIriToClipboard(iri: string) {
                   :selected-id="selectedConceptUri"
                   :edit-mode="treeEditMode"
                   :expand-to-id="expandToId"
+                  :change-count-map="changeCountMap"
                   @select="selectConcept"
                   @edit="selectConcept"
                 />
               </div>
             </div>
 
+            <!-- Resize handle -->
+            <div
+              v-if="selectedConceptUri"
+              class="hidden lg:flex items-center justify-center w-3 cursor-col-resize hover:bg-primary/20 transition-colors group relative shrink-0"
+              @mousedown="startResize"
+            >
+              <div class="w-px h-full bg-gray-300 dark:bg-gray-600 group-hover:bg-primary transition-colors" />
+            </div>
+
             <!-- Concept detail panel -->
             <div
               v-if="selectedConceptUri"
+              :style="{ width: `${100 - treePanelWidth}%` }"
               :class="[
-                immersiveMode ? 'lg:w-2/3 h-full' : 'lg:w-1/2 max-h-[600px]',
+                immersiveMode ? 'h-full' : 'max-h-[600px]',
               ]"
-              class="lg:border-l lg:border-default lg:pl-6 min-h-[200px] overflow-y-auto"
+              class="pl-6 min-h-[200px] overflow-y-auto"
             >
               <!-- Collection membership badges -->
               <div v-if="conceptCollections.length" class="flex items-center gap-1.5 flex-wrap mb-2">
@@ -1473,6 +1551,7 @@ function copyIriToClipboard(iri: string) {
                   :subject-iri="selectedConceptUri"
                   :properties="selectedConceptProperties"
                   :concepts="editMode.concepts.value"
+                  :subject-changes="selectedConceptChanges"
                   @update:value="(pred, oldVal, newVal) => editMode!.updateValue(selectedConceptUri!, pred, oldVal, newVal)"
                   @update:language="(pred, oldVal, newLang) => editMode!.updateValueLanguage(selectedConceptUri!, pred, oldVal, newLang)"
                   @add:value="(pred) => editMode!.addValue(selectedConceptUri!, pred)"
@@ -1527,6 +1606,7 @@ function copyIriToClipboard(iri: string) {
                   :subject-iri="selectedConceptUri"
                   :properties="selectedConceptProperties"
                   :concepts="editMode.concepts.value"
+                  :subject-changes="selectedConceptChanges"
                   @update:value="(pred, oldVal, newVal) => editMode!.updateValue(selectedConceptUri!, pred, oldVal, newVal)"
                   @update:language="(pred, oldVal, newLang) => editMode!.updateValueLanguage(selectedConceptUri!, pred, oldVal, newLang)"
                   @add:value="(pred) => editMode!.addValue(selectedConceptUri!, pred)"
@@ -1625,6 +1705,14 @@ function copyIriToClipboard(iri: string) {
             />
             <UIcon name="i-heroicons-information-circle" />
             Vocabulary
+            <UBadge
+              v-if="schemeChanges?.propertyChanges.length"
+              color="warning"
+              variant="subtle"
+              size="xs"
+            >
+              {{ schemeChanges.propertyChanges.length }} changed
+            </UBadge>
           </h2>
         </template>
 
@@ -1639,6 +1727,7 @@ function copyIriToClipboard(iri: string) {
             :properties="schemeProperties"
             :concepts="editMode!.concepts.value"
             :is-scheme="true"
+            :subject-changes="schemeChanges"
             @update:value="(pred, oldVal, newVal) => editMode!.updateValue(uri, pred, oldVal, newVal)"
             @update:language="(pred, oldVal, newLang) => editMode!.updateValueLanguage(uri, pred, oldVal, newLang)"
             @add:value="(pred) => editMode!.addValue(uri, pred)"
@@ -1654,6 +1743,7 @@ function copyIriToClipboard(iri: string) {
             :concepts="editMode!.concepts.value"
             :is-scheme="true"
             :auto-edit-predicate="autoEditPredicate"
+            :subject-changes="schemeChanges"
             @update:value="(pred, oldVal, newVal) => editMode!.updateValue(uri, pred, oldVal, newVal)"
             @update:language="(pred, oldVal, newLang) => editMode!.updateValueLanguage(uri, pred, oldVal, newLang)"
             @add:value="(pred) => editMode!.addValue(uri, pred)"

@@ -495,6 +495,89 @@ describe('computeQuadDiff', () => {
     expect(added[0]!.object.value).toBe('Chat')
     expect(removed).toHaveLength(0)
   })
+
+  it('ignores blank node ID changes when content is identical', () => {
+    // Parse the same TTL twice — N3 assigns different blank node IDs each time
+    const ttl = `
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix schema: <http://schema.org/> .
+
+<http://example.com/concept> a skos:Concept ;
+    skos:prefLabel "Test"@en ;
+    prov:qualifiedAttribution [
+        prov:agent <http://example.com/agent> ;
+        prov:hadRole schema:author ;
+    ] .
+`
+    const store1 = parseTTL(ttl)
+    const store2 = parseTTL(ttl)
+
+    // Verify blank node IDs differ between parses
+    const bn1 = (store1.getQuads(null, null, null, null) as Quad[])
+      .filter(q => q.object.termType === 'BlankNode')
+    const bn2 = (store2.getQuads(null, null, null, null) as Quad[])
+      .filter(q => q.object.termType === 'BlankNode')
+    expect(bn1.length).toBeGreaterThan(0)
+    // IDs are typically different (n3-0 vs n3-N), but even if not, the diff should still be empty
+
+    const { added, removed } = computeQuadDiff(store1, store2)
+    expect(added).toHaveLength(0)
+    expect(removed).toHaveLength(0)
+  })
+
+  it('detects real blank node content changes', () => {
+    const ttl1 = `
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix schema: <http://schema.org/> .
+
+<http://example.com/concept> a <http://www.w3.org/2004/02/skos/core#Concept> ;
+    prov:qualifiedAttribution [
+        prov:agent <http://example.com/agent-old> ;
+    ] .
+`
+    const ttl2 = `
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix schema: <http://schema.org/> .
+
+<http://example.com/concept> a <http://www.w3.org/2004/02/skos/core#Concept> ;
+    prov:qualifiedAttribution [
+        prov:agent <http://example.com/agent-new> ;
+    ] .
+`
+    const store1 = parseTTL(ttl1)
+    const store2 = parseTTL(ttl2)
+
+    const { added, removed } = computeQuadDiff(store1, store2)
+    // The blank node content changed (agent-old → agent-new), so the parent's
+    // prov:qualifiedAttribution quad should show as removed + added
+    expect(removed).toHaveLength(1)
+    expect(added).toHaveLength(1)
+    expect(removed[0]!.predicate.value).toBe('http://www.w3.org/ns/prov#qualifiedAttribution')
+    expect(added[0]!.predicate.value).toBe('http://www.w3.org/ns/prov#qualifiedAttribution')
+  })
+
+  it('handles multiple blank nodes on the same subject', () => {
+    const ttl = `
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix schema: <http://schema.org/> .
+
+<http://example.com/concept>
+    prov:qualifiedAttribution [
+        prov:agent <http://example.com/agent1> ;
+        prov:hadRole schema:author ;
+    ] , [
+        prov:agent <http://example.com/agent2> ;
+        prov:hadRole schema:editor ;
+    ] .
+`
+    const store1 = parseTTL(ttl)
+    const store2 = parseTTL(ttl)
+
+    const { added, removed } = computeQuadDiff(store1, store2)
+    expect(added).toHaveLength(0)
+    expect(removed).toHaveLength(0)
+  })
 })
 
 // ============================================================================
@@ -639,5 +722,55 @@ describe('buildChangeSummary', () => {
     const propChange = summary.subjects[0]!.propertyChanges[0]!
     expect(propChange.oldValues).toEqual(['Old'])
     expect(propChange.newValues).toEqual(['New'])
+  })
+
+  it('omits blank node subjects from change summary', () => {
+    const ttl1 = `
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+<http://example.com/concept> a <http://www.w3.org/2004/02/skos/core#Concept> ;
+    prov:qualifiedAttribution [
+        prov:agent <http://example.com/agent-old> ;
+    ] .
+`
+    const ttl2 = `
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+<http://example.com/concept> a <http://www.w3.org/2004/02/skos/core#Concept> ;
+    prov:qualifiedAttribution [
+        prov:agent <http://example.com/agent-new> ;
+    ] .
+`
+    const older = parseTTL(ttl1)
+    const newer = parseTTL(ttl2)
+
+    const summary = buildChangeSummary(older, newer, identityLabel, identityPredLabel)
+    // Should only show the named concept, not any blank node subjects
+    for (const s of summary.subjects) {
+      expect(s.subjectIri).not.toMatch(/^_:/)
+    }
+    expect(summary.subjects).toHaveLength(1)
+    expect(summary.subjects[0]!.subjectIri).toBe('http://example.com/concept')
+  })
+
+  it('shows zero changes for re-parsed identical TTL with blank nodes', () => {
+    const ttl = `
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+<http://example.com/concept> a skos:Concept ;
+    skos:prefLabel "Test"@en ;
+    prov:qualifiedAttribution [
+        prov:agent <http://example.com/agent> ;
+    ] .
+`
+    const older = parseTTL(ttl)
+    const newer = parseTTL(ttl)
+
+    const summary = buildChangeSummary(older, newer, identityLabel, identityPredLabel)
+    expect(summary.subjects).toHaveLength(0)
+    expect(summary.totalAdded).toBe(0)
+    expect(summary.totalRemoved).toBe(0)
+    expect(summary.totalModified).toBe(0)
   })
 })

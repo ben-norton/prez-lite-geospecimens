@@ -34,6 +34,16 @@
         "path": "http://www.w3.org/ns/prov#hadRole",
         "order": 1
       }
+    ],
+    "https://schema.org/temporalCoverage": [
+      {
+        "path": "https://schema.org/startTime",
+        "order": 0
+      },
+      {
+        "path": "https://schema.org/endTime",
+        "order": 1
+      }
     ]
   }
 }

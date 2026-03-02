@@ -15,6 +15,9 @@ export default defineAppConfig({
     footerLinks: [
       { label: 'GitHub', href: 'https://github.com/Kurrawong/prez-lite' },
       { label: 'Documentation', href: '/about' }
-    ]
+    ],
+    editor: {
+      defaultMode: 'inline' as 'inline' | 'full'
+    }
   }
 })

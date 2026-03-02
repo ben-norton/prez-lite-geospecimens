@@ -1,12 +1,18 @@
 <script setup lang="ts">
-import type { EditableProperty, EditableValue, ConceptSummary } from '~/composables/useEditMode'
+import type { EditableProperty, EditableValue, ConceptSummary, SubjectChange } from '~/composables/useEditMode'
 
 const props = defineProps<{
   subjectIri: string
   properties: EditableProperty[]
   concepts: ConceptSummary[]
   isScheme?: boolean
+  subjectChanges?: SubjectChange | null
 }>()
+
+const changedPredicates = computed(() => {
+  if (!props.subjectChanges) return new Set<string>()
+  return new Set(props.subjectChanges.propertyChanges.map(c => c.predicateIri))
+})
 
 const emit = defineEmits<{
   'update:value': [predicate: string, oldValue: EditableValue, newValue: string]
@@ -145,7 +151,12 @@ function formatIri(iri: string): string {
       </div>
 
       <!-- Properties -->
-      <div v-for="prop in properties" :key="prop.predicate" class="space-y-1.5">
+      <div
+        v-for="prop in properties"
+        :key="prop.predicate"
+        class="space-y-1.5"
+        :class="{ 'border-l-2 border-warning pl-2': changedPredicates.has(prop.predicate) }"
+      >
         <!-- Property label with link icon (matching RichMetadataTable pattern) -->
         <div class="flex items-center gap-1 text-sm font-medium text-muted">
           <span>{{ prop.label }}</span>

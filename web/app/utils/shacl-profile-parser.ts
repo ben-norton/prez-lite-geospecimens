@@ -50,6 +50,7 @@ export interface PropertyShape {
   description: string | null
   order: number
   paths: string[]
+  nestedProperties?: PropertyShape[]
 }
 
 /** Parsed profile from SHACL */
@@ -260,6 +261,22 @@ function parsePropertyShape(store: Store, shapeNode: Term): PropertyShape {
         // Parse the union list
         shape.paths = parseRdfList(store, unionQuads[0].object)
       }
+    }
+  }
+
+  // Check for sh:node (nested shape with its own sh:property children)
+  const nodeQuads = store.getQuads(shapeNode, `${SH}node`, null, null)
+  if (nodeQuads.length > 0) {
+    const nodeShape = nodeQuads[0].object
+    const nestedPropertyQuads = store.getQuads(nodeShape, `${SH}property`, null, null)
+    if (nestedPropertyQuads.length > 0) {
+      shape.nestedProperties = []
+      for (const npq of nestedPropertyQuads) {
+        if (npq.object.termType === 'BlankNode') {
+          shape.nestedProperties.push(parsePropertyShape(store, npq.object))
+        }
+      }
+      shape.nestedProperties.sort((a, b) => a.order - b.order)
     }
   }
 

@@ -3,10 +3,6 @@ import type { SubjectChange } from '~/composables/useEditMode'
 import type { HistoryCommit } from '~/composables/useVocabHistory'
 
 const props = defineProps<{
-  editView: 'none' | 'full' | 'inline'
-  editorAvailable: boolean
-  isAuthenticated: boolean
-  authEnabled: boolean
   isEditMode: boolean
   isDirty: boolean
   loading: boolean
@@ -27,12 +23,8 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  'enter-edit': [mode: 'full' | 'inline']
-  'exit-edit': []
-  'toggle-mode': []
   'save': []
   'toggle-view-mode': []
-  'sign-in': []
   'open-workspace': []
   // History
   'load-history': []
@@ -85,9 +77,17 @@ function truncateCommitMsg(msg: string, max = 50): string {
   <div class="h-12" />
 
   <Teleport to="header">
-    <div class="absolute top-full inset-x-0 z-50 bg-muted border-y border-default">
+    <div class="absolute top-full inset-x-0 z-50 bg-primary-50 dark:bg-primary-950 border-b-2 border-primary-300 dark:border-primary-700">
       <div class="w-full max-w-(--ui-container) mx-auto px-4 sm:px-6 lg:px-8 py-1.5">
         <div class="flex items-center gap-3 flex-wrap">
+
+      <!-- Editing indicator -->
+      <div class="flex items-center gap-1.5 text-primary-600 dark:text-primary-400">
+        <UIcon name="i-heroicons-pencil-square" class="size-4" />
+        <span class="text-xs font-semibold">Editing</span>
+      </div>
+
+      <USeparator orientation="vertical" class="h-5" />
 
       <!-- Workspace badge (always visible when workspace is selected) -->
       <UButton
@@ -102,105 +102,9 @@ function truncateCommitMsg(msg: string, max = 50): string {
       </UButton>
 
       <!-- ============================================================ -->
-      <!-- AUTHENTICATED, NOT EDITING -->
+      <!-- ALWAYS-ON EDITING TOOLBAR -->
       <!-- ============================================================ -->
-      <template v-if="editView === 'none'">
-        <UDropdownMenu
-          v-if="editorAvailable"
-          :items="[[
-            { label: 'Full edit mode', icon: 'i-heroicons-pencil-square', onSelect: () => emit('enter-edit', 'full') },
-            { label: 'Inline edit mode', icon: 'i-heroicons-cursor-arrow-rays', onSelect: () => emit('enter-edit', 'inline') },
-          ]]"
-          :ui="{ content: 'z-50' }"
-        >
-          <UButton icon="i-heroicons-pencil-square" variant="subtle" size="sm">
-            Edit
-            <UIcon name="i-heroicons-chevron-down" class="size-3 ml-0.5" />
-          </UButton>
-        </UDropdownMenu>
-
-        <USeparator orientation="vertical" class="h-5" />
-
-        <!-- View mode toggle (disabled outside edit mode) -->
-        <UButton
-          :icon="viewMode === 'simple' ? 'i-heroicons-eye-slash' : 'i-heroicons-eye'"
-          variant="ghost"
-          size="xs"
-          disabled
-          title="Available in edit mode"
-        >
-          {{ viewMode === 'simple' ? 'Simple' : 'Expert' }}
-        </UButton>
-
-        <div class="flex-1" />
-
-        <!-- History -->
-        <UPopover v-model:open="historyOpen" :content="{ align: 'end', side: 'bottom' }" :ui="{ content: 'z-50' }">
-          <UButton icon="i-heroicons-clock" variant="ghost" size="xs">
-            History
-          </UButton>
-          <template #content>
-            <div class="w-96 max-h-96 overflow-y-auto p-2">
-              <p class="text-xs font-medium text-muted px-2 mb-2">Edit history</p>
-
-              <div v-if="historyLoading" class="py-6 text-center">
-                <UIcon name="i-heroicons-arrow-path" class="size-4 animate-spin text-muted" />
-              </div>
-
-              <div v-else-if="!historyCommits.length" class="py-6 text-center text-xs text-muted">
-                No history found
-              </div>
-
-              <div v-else class="space-y-0.5">
-                <div
-                  v-for="(commit, index) in historyCommits"
-                  :key="commit.sha"
-                  class="flex items-center gap-2.5 px-2 py-2 rounded-md hover:bg-muted/10 transition-colors group"
-                >
-                  <img
-                    v-if="commit.author.avatar"
-                    :src="commit.author.avatar"
-                    :alt="commit.author.login"
-                    class="size-6 rounded-full shrink-0"
-                  />
-                  <UIcon v-else name="i-heroicons-user-circle" class="size-6 text-muted shrink-0" />
-
-                  <div class="flex-1 min-w-0">
-                    <p class="text-xs font-medium truncate">{{ truncateCommitMsg(commit.message) }}</p>
-                    <p class="text-[10px] text-muted">
-                      {{ commit.author.login }} &middot; {{ formatHistoryDate(commit.date) }}
-                      <span v-if="index === 0" class="ml-1 text-primary font-medium">current</span>
-                    </p>
-                  </div>
-
-                  <div class="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <UButton size="xs" variant="soft" @click="emit('open-diff', commit, index)">Diff</UButton>
-                    <UButton size="xs" variant="ghost" @click="emit('browse-version', commit)">Browse</UButton>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </template>
-        </UPopover>
-      </template>
-
-      <!-- ============================================================ -->
-      <!-- EDITING -->
-      <!-- ============================================================ -->
-      <template v-else>
-        <!-- Mode switcher -->
-        <UButton
-          :icon="editView === 'full' ? 'i-heroicons-pencil-square' : 'i-heroicons-cursor-arrow-rays'"
-          variant="subtle"
-          size="sm"
-          @click="emit('toggle-mode')"
-        >
-          {{ editView === 'full' ? 'Full' : 'Inline' }}
-          <UIcon name="i-heroicons-arrows-right-left" class="size-3 ml-0.5" />
-        </UButton>
-
-        <USeparator orientation="vertical" class="h-5" />
-
+      <template v-if="true">
         <!-- Undo/Redo -->
         <UButton
           icon="i-heroicons-arrow-uturn-left"
@@ -352,16 +256,6 @@ function truncateCommitMsg(msg: string, max = 50): string {
         >
           Save
         </UButton>
-
-        <!-- Close edit mode -->
-        <UButton
-          icon="i-heroicons-x-mark"
-          color="neutral"
-          variant="ghost"
-          size="xs"
-          aria-label="Exit edit mode"
-          @click="emit('exit-edit')"
-        />
       </template>
         </div>
       </div>

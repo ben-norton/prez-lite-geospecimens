@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { EditableProperty, EditableValue, ConceptSummary } from '~/composables/useEditMode'
+import type { EditableProperty, EditableValue, ConceptSummary, SubjectChange } from '~/composables/useEditMode'
 
 const props = defineProps<{
   subjectIri: string
@@ -8,7 +8,13 @@ const props = defineProps<{
   isScheme?: boolean
   /** Auto-open editing for this predicate (used by scroll-to-property links) */
   autoEditPredicate?: string | null
+  subjectChanges?: SubjectChange | null
 }>()
+
+const changedPredicates = computed(() => {
+  if (!props.subjectChanges) return new Set<string>()
+  return new Set(props.subjectChanges.propertyChanges.map(c => c.predicateIri))
+})
 
 const emit = defineEmits<{
   'update:value': [predicate: string, oldValue: EditableValue, newValue: string]
@@ -71,9 +77,14 @@ function isEditable(prop: EditableProperty): boolean {
   return prop.fieldType !== 'readonly'
 }
 
-function startEditing(prop: EditableProperty) {
+function handleRowClick(prop: EditableProperty) {
   if (!isEditable(prop)) return
-  editingPredicate.value = prop.predicate
+  // Toggle: clicking the background of an already-editing row exits editing
+  if (editingPredicate.value === prop.predicate) {
+    stopEditing()
+  } else {
+    editingPredicate.value = prop.predicate
+  }
 }
 
 function stopEditing() {
@@ -145,8 +156,8 @@ function confirmDelete() {
 // Close editing when clicking outside this component.
 // Uses click (not pointerdown) so Reka UI's SelectTrigger can process
 // pointerdown first and open the dropdown before we decide to close.
-// The rootRef containment check is the primary guard — @click.stop on
-// the root div is a secondary propagation barrier.
+// The rootRef containment check prevents double-closing (the root div
+// @click handler already handles clicks on empty space within the component).
 const rootRef = useTemplateRef<HTMLElement>('rootRef')
 
 function handleClickOutside(event: MouseEvent) {
@@ -173,9 +184,9 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div ref="rootRef" @click.stop>
+  <div ref="rootRef" @click="stopEditing()">
     <!-- Subject IRI (click-to-edit) -->
-    <div v-if="editingIri" class="flex items-center gap-2 mb-3">
+    <div v-if="editingIri" class="flex items-center gap-2 mb-3" @click.stop>
       <UInput
         v-model="editIriValue"
         class="flex-1 font-mono text-sm"
@@ -190,13 +201,13 @@ onUnmounted(() => {
     <div
       v-else
       class="text-sm text-muted font-mono break-all bg-muted/30 px-3 py-2 rounded mb-3 cursor-pointer group flex items-center gap-2 hover:bg-muted/50 transition-colors"
-      @click="startIriEdit"
+      @click.stop="startIriEdit"
     >
       <span class="flex-1">{{ subjectIri }}</span>
       <UIcon name="i-heroicons-pencil" class="size-3.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
     </div>
 
-    <div class="overflow-x-hidden">
+    <div class="overflow-x-hidden -mx-4">
       <table class="w-full text-sm table-fixed">
         <tbody class="divide-y divide-default">
           <tr
@@ -207,12 +218,15 @@ onUnmounted(() => {
             class="group transition-colors"
             :class="{
               'hover:bg-muted/50 cursor-pointer': isEditable(prop) && editingPredicate !== prop.predicate,
-              'bg-primary/5': editingPredicate === prop.predicate,
+              'border-l-2 border-warning': changedPredicates.has(prop.predicate),
             }"
-            @click="startEditing(prop)"
+            @click.stop="handleRowClick(prop)"
           >
             <!-- Property label -->
-            <th class="py-3 pr-4 text-left align-top font-medium text-muted w-[140px] whitespace-nowrap">
+            <th
+              class="py-3 pl-4 pr-4 text-left align-top font-medium text-muted w-[172px] whitespace-nowrap transition-colors"
+              :class="{ 'bg-primary-50 dark:bg-primary-950/50': editingPredicate === prop.predicate }"
+            >
               <span class="mr-1">{{ prop.label }}</span>
               <a
                 :href="prop.predicate"
@@ -227,7 +241,10 @@ onUnmounted(() => {
             </th>
 
             <!-- Value cell -->
-            <td class="py-3 text-left align-top overflow-hidden">
+            <td
+              class="py-3 pr-4 text-left align-top overflow-hidden transition-colors"
+              :class="{ 'bg-primary-50 dark:bg-primary-950/50': editingPredicate === prop.predicate }"
+            >
               <!-- EDITING MODE for this row -->
               <template v-if="editingPredicate === prop.predicate && isEditable(prop)">
                 <!-- iri-picker (broader / related) -->
@@ -364,7 +381,7 @@ onUnmounted(() => {
     </div>
 
     <!-- Delete concept button -->
-    <div v-if="!isScheme" class="pt-4 border-t border-default mt-4">
+    <div v-if="!isScheme" class="pt-4 border-t border-default mt-4" @click.stop>
       <UButton
         v-if="!showDeleteConfirm"
         icon="i-heroicons-trash"

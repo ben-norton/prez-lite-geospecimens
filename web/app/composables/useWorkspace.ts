@@ -4,7 +4,7 @@
  * Manages structured workspace state for vocabulary editing.
  * Workspaces (staging, dev, sandbox) are loaded from config.
  * Per-vocab branches follow the pattern `<workspace>/<vocab-slug>`.
- * State is stored in sessionStorage (clears on tab close).
+ * State is stored in localStorage (persists across login redirects and page refreshes).
  */
 
 export interface WorkspaceDefinition {
@@ -37,34 +37,39 @@ export function useWorkspace() {
   const definitions = useState<WorkspaceDefinition[]>('workspace_definitions', () => [])
   const definitionsLoaded = useState<boolean>('workspace_definitions_loaded', () => false)
 
-  // Reactive workspace state (sessionStorage-backed)
-  const state = useState<WorkspaceState | null>('workspace_state', () => {
-    if (typeof window !== 'undefined') {
-      const raw = sessionStorage.getItem(WORKSPACE_KEY)
-      if (raw) {
-        try {
-          const parsed = JSON.parse(raw)
-          if (parsed && typeof parsed.workspaceSlug === 'string') {
-            return parsed as WorkspaceState
-          }
-        } catch {
-          // Old format or invalid JSON — start fresh
+  // Reactive workspace state (localStorage-backed).
+  // useState initializer runs on the server (no localStorage), so we hydrate on the client.
+  const state = useState<WorkspaceState | null>('workspace_state', () => null)
+
+  // Hydrate from localStorage on client (runs synchronously during composable setup)
+  if (import.meta.client && !state.value) {
+    const raw = localStorage.getItem(WORKSPACE_KEY)
+    if (raw) {
+      try {
+        const parsed = JSON.parse(raw)
+        if (parsed && typeof parsed.workspaceSlug === 'string') {
+          state.value = parsed as WorkspaceState
         }
+      } catch {
+        // Old format or invalid JSON — start fresh
       }
     }
-    return null
-  })
+  }
 
   const branches = ref<Array<{ name: string; sha: string }>>([])
   const comparisons = ref<Map<string, BranchComparison>>(new Map())
   const branchesLoading = ref(false)
   const branchesError = ref<string | null>(null)
 
+  // Branch prefix — separates work branches from collection branches
+  // so `staging` (collection) and `edit/staging/vocab` (work) can coexist
+  const BRANCH_PREFIX = 'edit'
+
   // Derived state
   const activeBranch = computed(() => {
     if (!state.value) return null
     const { workspaceSlug, vocabSlug } = state.value
-    return vocabSlug ? `${workspaceSlug}/${vocabSlug}` : workspaceSlug
+    return vocabSlug ? `${BRANCH_PREFIX}/${workspaceSlug}/${vocabSlug}` : workspaceSlug
   })
 
   const hasWorkspace = computed(() => !!state.value)
@@ -97,11 +102,11 @@ export function useWorkspace() {
   })
 
   function persistState() {
-    if (typeof window !== 'undefined') {
+    if (import.meta.client) {
       if (state.value) {
-        sessionStorage.setItem(WORKSPACE_KEY, JSON.stringify(state.value))
+        localStorage.setItem(WORKSPACE_KEY, JSON.stringify(state.value))
       } else {
-        sessionStorage.removeItem(WORKSPACE_KEY)
+        localStorage.removeItem(WORKSPACE_KEY)
       }
     }
   }
@@ -126,7 +131,7 @@ export function useWorkspace() {
   async function selectVocab(vocabSlug: string): Promise<boolean> {
     if (!state.value) return false
     const ws = activeWorkspace.value
-    const branchName = `${state.value.workspaceSlug}/${vocabSlug}`
+    const branchName = `${BRANCH_PREFIX}/${state.value.workspaceSlug}/${vocabSlug}`
 
     // Ensure branches are loaded before checking
     if (!branches.value.length && token.value) {
@@ -165,7 +170,10 @@ export function useWorkspace() {
   // ---- GitHub Branch API ----
 
   async function githubFetch<T>(url: string, options?: RequestInit): Promise<T | null> {
-    if (!token.value) return null
+    if (!token.value) {
+      console.warn('[workspace] No token available for GitHub API call')
+      return null
+    }
     try {
       const res = await fetch(url, {
         ...options,
@@ -175,10 +183,15 @@ export function useWorkspace() {
           ...options?.headers,
         },
       })
-      if (!res.ok) return null
+      if (!res.ok) {
+        const body = await res.text().catch(() => '')
+        console.error(`[workspace] GitHub API ${options?.method ?? 'GET'} ${url} → ${res.status}: ${body}`)
+        return null
+      }
       if (res.status === 204) return null
       return await res.json()
-    } catch {
+    } catch (e) {
+      console.error('[workspace] GitHub API fetch error:', e)
       return null
     }
   }

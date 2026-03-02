@@ -6,6 +6,17 @@ on:
   push:
     branches: [main]
 
+# Allow GitHub Pages deployment
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one Pages deployment at a time
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 jobs:
   unit-and-component:
     runs-on: ubuntu-latest
@@ -111,9 +122,15 @@ jobs:
       - name: Build vocabulary data
         run: pnpm build:all-export
 
-      - name: Prepare Nuxt
-        run: npx nuxt prepare
+      - name: Generate static site
+        run: npx nuxt generate
         working-directory: web
+        env:
+          NUXT_PUBLIC_GITHUB_REPO: Kurrawong/prez-lite
+          NUXT_PUBLIC_GITHUB_BRANCH: main
+          NUXT_PUBLIC_GITHUB_VOCAB_PATH: data/vocabs
+          NUXT_PUBLIC_GITHUB_CLIENT_ID: e2e-mock-client-id
+          NUXT_PUBLIC_GITHUB_AUTH_WORKER_URL: http://localhost:9999
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
@@ -122,10 +139,28 @@ jobs:
       - name: Run E2E tests
         run: pnpm --filter @prez-lite/web test:e2e
 
-      - name: Upload Playwright report
+      - name: Upload Playwright report artifact
         uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
           name: playwright-report
           path: web/playwright-report/
           retention-days: 30
+
+      - name: Upload report to Pages
+        uses: actions/upload-pages-artifact@v3
+        if: ${{ !cancelled() }}
+        with:
+          path: web/playwright-report/
+
+  publish-report:
+    needs: e2e
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

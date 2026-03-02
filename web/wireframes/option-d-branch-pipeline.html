@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Option D: Branch Pipeline</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <style>
+    .toolbar { background: #363636; color: white; padding: 0.5rem 1rem; display: flex; align-items: center; gap: 0.75rem; }
+    .toolbar .button { height: 2rem; font-size: 0.8rem; }
+    .separator { width: 1px; height: 20px; background: #666; margin: 0 0.25rem; }
+    .tree-panel { border-right: 1px solid #dbdbdb; min-height: 500px; overflow-y: auto; }
+    .detail-panel { min-height: 500px; overflow-y: auto; }
+    .tree-node { padding: 0.3rem 0.5rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer; font-size: 0.9rem; }
+    .tree-node:hover { background: #f5f5f5; }
+    .tree-indent { padding-left: 1.5rem; }
+
+    /* Pipeline bar */
+    .pipeline-bar {
+      background: #fafafa;
+      border-bottom: 1px solid #dbdbdb;
+      padding: 0.6rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+    .pipeline-stage {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.4rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      position: relative;
+    }
+    .pipeline-stage:hover { background: #eee; }
+    .pipeline-stage.active { background: #e8e8e8; box-shadow: inset 0 -2px 0 #3e8ed0; }
+    .pipeline-arrow {
+      color: #ccc;
+      font-size: 1rem;
+      margin: 0 0.25rem;
+      flex-shrink: 0;
+    }
+    .pipeline-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .pd-main { background: #b5b5b5; }
+    .pd-staging { background: #48c78e; }
+    .pd-branch { background: #3e8ed0; }
+    .pd-local { background: #ffe08a; border: 1px solid #f59e0b; }
+    .pipeline-count { font-weight: 700; }
+    .pipeline-label { color: #666; }
+
+    /* Comparison panel below pipeline */
+    .comparison-panel {
+      background: white;
+      border-bottom: 1px solid #dbdbdb;
+      padding: 0.75rem 1rem;
+      font-size: 0.85rem;
+    }
+    .comp-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0; }
+    .comp-icon { width: 18px; text-align: center; font-weight: bold; font-size: 0.75rem; }
+    .comp-added { color: #48c78e; }
+    .comp-removed { color: #f14668; }
+    .comp-modified { color: #ffe08a; }
+  </style>
+</head>
+<body>
+
+  <!-- DESCRIPTION -->
+  <section class="section pb-3">
+    <div class="container">
+      <h2 class="title is-4">Option D: Branch Pipeline</h2>
+      <p class="subtitle is-6 has-text-grey">
+        A horizontal pipeline visualization shows the promotion flow:
+        you &rarr; branch &rarr; staging &rarr; main. Each stage is clickable
+        to show the diff between that stage and the next.
+      </p>
+      <div class="notification is-info is-light">
+        <strong>Concept:</strong> Think CI/CD pipeline visualization. Each node
+        shows a count of changes at that stage. Clicking a node shows the diff
+        between it and the upstream stage. The pipeline replaces the status bar
+        and integrates naturally with the git-based workflow.
+      </div>
+    </div>
+  </section>
+
+  <div class="container">
+
+    <!-- Simulated toolbar -->
+    <div class="toolbar">
+      <span class="icon is-small"><i>&#9998;</i></span>
+      <strong style="font-size:0.85rem">Full Edit</strong>
+      <div class="separator"></div>
+      <button class="button is-small is-dark">Undo</button>
+      <button class="button is-small is-dark">Redo</button>
+      <div style="flex:1"></div>
+      <button class="button is-small is-dark">History</button>
+      <button class="button is-small is-success">Save</button>
+      <button class="button is-small is-dark">&times;</button>
+    </div>
+
+    <!-- PIPELINE BAR -->
+    <div class="pipeline-bar">
+      <div class="pipeline-stage">
+        <span class="pipeline-dot pd-main"></span>
+        <span class="pipeline-label">main</span>
+      </div>
+
+      <span class="pipeline-arrow">&larr;</span>
+
+      <div class="pipeline-stage">
+        <span class="pipeline-dot pd-staging"></span>
+        <span class="pipeline-label">staging</span>
+        <span class="pipeline-count has-text-success">+12</span>
+      </div>
+
+      <span class="pipeline-arrow">&larr;</span>
+
+      <div class="pipeline-stage active">
+        <span class="pipeline-dot pd-branch"></span>
+        <span class="pipeline-label">branch</span>
+        <span class="pipeline-count has-text-info">+5</span>
+      </div>
+
+      <span class="pipeline-arrow">&larr;</span>
+
+      <div class="pipeline-stage">
+        <span class="pipeline-dot pd-local"></span>
+        <span class="pipeline-label">local</span>
+        <span class="pipeline-count" style="color:#b45309">+2</span>
+      </div>
+
+      <div style="flex:1"></div>
+      <span style="font-size:0.75rem; color:#888">
+        edit/staging/industry-vocab
+      </span>
+    </div>
+
+    <!-- COMPARISON PANEL (for selected stage: branch) -->
+    <div class="comparison-panel">
+      <div class="is-flex is-align-items-center is-justify-content-space-between mb-2">
+        <span>
+          <strong>branch</strong>
+          <span class="has-text-grey">&rarr; staging</span>
+          <span class="has-text-grey ml-2">(3 commits)</span>
+        </span>
+        <div class="buttons are-small">
+          <button class="button is-small is-text">Collapse</button>
+        </div>
+      </div>
+      <div class="comp-item">
+        <span class="comp-icon comp-modified">~</span>
+        <span>Livestock</span>
+        <span class="has-text-grey ml-auto" style="font-size:0.75rem">definition</span>
+      </div>
+      <div class="comp-item">
+        <span class="comp-icon comp-modified">~</span>
+        <span>Heavy Industry</span>
+        <span class="has-text-grey ml-auto" style="font-size:0.75rem">altLabel, notation</span>
+      </div>
+      <div class="comp-item">
+        <span class="comp-icon comp-added">+</span>
+        <span>Light Manufacturing</span>
+        <span class="has-text-grey ml-auto" style="font-size:0.75rem">new concept</span>
+      </div>
+      <div class="comp-item">
+        <span class="comp-icon comp-modified">~</span>
+        <span>Agriculture</span>
+        <span class="has-text-grey ml-auto" style="font-size:0.75rem">broader</span>
+      </div>
+      <div class="comp-item">
+        <span class="comp-icon comp-removed">&minus;</span>
+        <span style="text-decoration:line-through">Old Mining</span>
+        <span class="has-text-grey ml-auto" style="font-size:0.75rem">removed</span>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="columns is-gapless" style="margin-top:0">
+      <div class="column is-5 tree-panel p-3">
+        <div class="field">
+          <div class="control has-icons-left">
+            <input class="input is-small" type="text" placeholder="Search concepts...">
+            <span class="icon is-small is-left"><i>&#128269;</i></span>
+          </div>
+        </div>
+        <div class="tree-node"><span>&#9660;</span> Agriculture</div>
+        <div class="tree-indent">
+          <div class="tree-node"><span>&#9654;</span> Crops</div>
+          <div class="tree-node"><span>&#9654;</span> Livestock</div>
+        </div>
+        <div class="tree-node"><span>&#9660;</span> Manufacturing</div>
+        <div class="tree-indent">
+          <div class="tree-node"><span>&#9654;</span> Heavy Industry</div>
+          <div class="tree-node"><span>&#9654;</span> Industry Classification</div>
+        </div>
+        <div class="tree-node"><span>&#9654;</span> Financial Services</div>
+        <div class="tree-node"><span>&#9654;</span> Health Care</div>
+      </div>
+      <div class="column is-7 detail-panel p-4">
+        <p class="has-text-grey is-size-7">(Detail panel)</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Collapsed variant -->
+  <section class="section">
+    <div class="container">
+      <h5 class="title is-5">Collapsed state (pipeline only)</h5>
+      <p class="subtitle is-6 has-text-grey mb-4">When no stage is selected, just the pipeline is visible</p>
+
+      <div class="pipeline-bar" style="border: 1px solid #dbdbdb; border-radius: 6px;">
+        <div class="pipeline-stage">
+          <span class="pipeline-dot pd-main"></span>
+          <span class="pipeline-label">main</span>
+        </div>
+        <span class="pipeline-arrow">&larr;</span>
+        <div class="pipeline-stage">
+          <span class="pipeline-dot pd-staging"></span>
+          <span class="pipeline-label">staging</span>
+          <span class="pipeline-count has-text-success">+12</span>
+        </div>
+        <span class="pipeline-arrow">&larr;</span>
+        <div class="pipeline-stage">
+          <span class="pipeline-dot pd-branch"></span>
+          <span class="pipeline-label">branch</span>
+          <span class="pipeline-count has-text-info">+5</span>
+        </div>
+        <span class="pipeline-arrow">&larr;</span>
+        <div class="pipeline-stage">
+          <span class="pipeline-dot pd-local"></span>
+          <span class="pipeline-label">local</span>
+          <span class="pipeline-count" style="color:#b45309">+2</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pros/cons -->
+  <section class="section pt-3">
+    <div class="container">
+      <div class="columns">
+        <div class="column">
+          <div class="notification is-success is-light">
+            <strong>Pros</strong>
+            <ul>
+              <li>Makes the promotion flow visually obvious</li>
+              <li>At-a-glance counts for every stage</li>
+              <li>Clicking a stage gives focused comparison</li>
+              <li>Maps directly to git workflow mental model</li>
+              <li>Comparison panel is optional — collapses away</li>
+              <li>Natural place for "promote" / "merge" buttons later</li>
+            </ul>
+          </div>
+        </div>
+        <div class="column">
+          <div class="notification is-danger is-light">
+            <strong>Cons</strong>
+            <ul>
+              <li>Pipeline + comparison takes ~120px vertical space</li>
+              <li>Users unfamiliar with CI/CD may not recognise the metaphor</li>
+              <li>Requires fetching comparison data for each stage on-click</li>
+              <li>More complex state management (which stage is selected)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>

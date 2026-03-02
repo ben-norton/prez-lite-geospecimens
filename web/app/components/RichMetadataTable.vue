@@ -61,7 +61,7 @@ defineProps<{
 
             <!-- Block rendering for nested values (e.g., qualifiedAttribution) -->
             <template v-else>
-              <div v-for="(val, idx) in prop.values" :key="idx" class="mb-2 last:mb-0">
+              <div v-for="(val, idx) in prop.values" :key="idx" class="mb-2 last:mb-0 mr-0.5">
                 <template v-if="val.type === 'nested' && val.nestedProperties">
                   <UCard class="bg-elevated">
                     <table class="w-full text-sm">

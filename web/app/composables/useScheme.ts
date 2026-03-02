@@ -1,13 +1,8 @@
 import { fetchSchemes, fetchConcepts, fetchLabels, fetchVocabMetadata, fetchListCollections, getLabel, buildConceptMap, resolveLabel, type Scheme, type Concept, type LabelsIndex, type CollectionListItem } from '~/composables/useVocabData'
 import { useAnnotatedProperties, type RenderedProperty, type PropertyValue } from '~/utils/annotated-properties'
+import { buildConceptTree, type TreeItem } from '~/data/enrichment/build-tree'
 
-export interface TreeItem {
-  id: string
-  label: string
-  icon?: string
-  children?: TreeItem[]
-  defaultExpanded?: boolean
-}
+export type { TreeItem }
 
 /**
  * Format property values as a simple string for table display
@@ -63,42 +58,22 @@ export function useScheme(uri: Ref<string>) {
   const treeItems = computed(() => {
     if (!concepts.value || !scheme.value) return []
 
-    // Build narrower map (parent -> children)
-    const narrowerMap = new Map<string, Concept[]>()
-    concepts.value.forEach(c => {
-      c.broader?.forEach(parent => {
-        if (!narrowerMap.has(parent)) narrowerMap.set(parent, [])
-        narrowerMap.get(parent)!.push(c)
-      })
-    })
+    // Collect explicit top concept IRIs
+    const topConceptIris = new Set<string>([
+      ...(scheme.value.topConcepts ?? []),
+      ...concepts.value
+        .filter(c => c.topConceptOf?.includes(scheme.value!.iri))
+        .map(c => c.iri),
+    ])
 
-    // Find top concepts (explicitly declared or no broader)
-    const topIris = new Set(scheme.value.topConcepts ?? [])
-    const hasParent = new Set<string>()
-    concepts.value.forEach(c => {
-      c.broader?.forEach(() => hasParent.add(c.iri))
-    })
+    // Map Concept objects to the TreeConcept shape expected by buildConceptTree
+    const treeConcepts = concepts.value.map(c => ({
+      iri: c.iri,
+      prefLabel: getLabel(c.prefLabel),
+      broader: c.broader ?? [],
+    }))
 
-    const topConcepts = concepts.value.filter(c =>
-      topIris.has(c.iri) || (c.topConceptOf?.includes(scheme.value!.iri) && !hasParent.has(c.iri)) || (!c.broader?.length && !hasParent.has(c.iri))
-    )
-
-    // Build tree recursively
-    function buildNode(concept: Concept, depth = 0): TreeItem {
-      const children = narrowerMap.get(concept.iri) || []
-      return {
-        id: concept.iri,
-        label: getLabel(concept.prefLabel),
-        icon: children.length > 0 ? 'i-heroicons-folder' : 'i-heroicons-document',
-        defaultExpanded: depth === 0 && children.length < 10,
-        children: children.length > 0 ? children.map(c => buildNode(c, depth + 1)) : undefined
-      }
-    }
-
-    // Sort top concepts alphabetically
-    return topConcepts
-      .sort((a, b) => getLabel(a.prefLabel).localeCompare(getLabel(b.prefLabel)))
-      .map(c => buildNode(c))
+    return buildConceptTree(treeConcepts, { topConceptIris })
   })
 
   // Metadata table - use annotated properties if available, fallback to basic

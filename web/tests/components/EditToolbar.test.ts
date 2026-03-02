@@ -1,9 +1,9 @@
 /**
  * EditToolbar Component Tests
  *
- * Tests the 2-state toolbar (only rendered for authenticated users):
- * 1. Authenticated, not editing — edit button + history
- * 2. Editing — mode switch, changes, save, exit
+ * Tests the always-on edit toolbar (only rendered for authenticated users).
+ * No enter/exit toggle — toolbar always shows editing state with mode switch,
+ * undo/redo, changes, history, and save.
  *
  * The component uses <Teleport to="header"> so we create a <header>
  * element and query from there.
@@ -15,10 +15,6 @@ import EditToolbar from '~/components/EditToolbar.vue'
 let header: HTMLElement
 
 const baseProps = {
-  editView: 'none' as const,
-  editorAvailable: true,
-  isAuthenticated: true,
-  authEnabled: true,
   isEditMode: false,
   isDirty: false,
   loading: false,
@@ -50,30 +46,24 @@ function headerButtons(): HTMLButtonElement[] {
 }
 
 describe('EditToolbar', () => {
-  describe('authenticated, not editing state', () => {
-    it('renders edit button', async () => {
-      await mountSuspended(EditToolbar, { props: baseProps })
-      expect(headerText()).toContain('Edit')
-    })
-
+  describe('always-on toolbar', () => {
     it('renders history button', async () => {
       await mountSuspended(EditToolbar, { props: baseProps })
       expect(headerText()).toContain('History')
     })
 
-    it('does not show save button', async () => {
+    it('renders save button (disabled by default)', async () => {
       await mountSuspended(EditToolbar, { props: baseProps })
-      const saveBtn = headerButtons().find(b => b.textContent?.includes('Save'))
-      expect(saveBtn).toBeUndefined()
+      const saveBtn = headerButtons().find(b => b.textContent?.trim() === 'Save')
+      expect(saveBtn).toBeDefined()
+      expect(saveBtn?.disabled).toBe(true)
     })
   })
 
   describe('editing state', () => {
     const editProps = {
       ...baseProps,
-      isAuthenticated: true,
       isEditMode: true,
-      editView: 'full' as const,
     }
 
     it('renders save button', async () => {
@@ -129,14 +119,6 @@ describe('EditToolbar', () => {
     it('shows "No changes yet" when no changes', async () => {
       await mountSuspended(EditToolbar, { props: editProps })
       expect(headerText()).toContain('No changes yet')
-    })
-
-    it('shows exit button with aria-label', async () => {
-      await mountSuspended(EditToolbar, { props: editProps })
-      const closeBtn = headerButtons().find(b =>
-        b.getAttribute('aria-label') === 'Exit edit mode',
-      )
-      expect(closeBtn).toBeDefined()
     })
   })
 })

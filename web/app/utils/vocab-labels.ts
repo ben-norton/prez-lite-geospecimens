@@ -72,6 +72,8 @@ prov:qualifiedAttribution rdfs:label "qualified attribution"@en .
 
 dcterms:identifier rdfs:label "identifier"@en .
 dcterms:provenance rdfs:label "provenance"@en .
+dcterms:replaces rdfs:label "replaces"@en .
+dcterms:isReplacedBy rdfs:label "is replaced by"@en .
 
 schema:creator rdfs:label "creator"@en .
 schema:publisher rdfs:label "publisher"@en .
@@ -81,6 +83,12 @@ schema:version rdfs:label "version"@en .
 schema:keywords rdfs:label "keywords"@en .
 schema:name rdfs:label "name"@en .
 schema:description rdfs:label "description"@en .
+schema:temporalCoverage rdfs:label "temporal coverage"@en .
+schema:startTime rdfs:label "start time"@en .
+schema:endTime rdfs:label "end time"@en .
+
+prov:wasDerivedFrom rdfs:label "was derived from"@en .
+prov:revisionOf rdfs:label "revision of"@en .
 `
 
 let _labelStore: Store | null = null
