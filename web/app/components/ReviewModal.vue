@@ -30,8 +30,6 @@ const emit = defineEmits<{
 
 const title = ref(props.defaultTitle)
 const commentText = ref('')
-const rejectComment = ref('')
-const showRejectForm = ref(false)
 
 watch(() => props.defaultTitle, (v) => { title.value = v })
 
@@ -49,10 +47,9 @@ function handleComment() {
 }
 
 function handleReject() {
-  if (!rejectComment.value.trim()) return
-  emit('reject', rejectComment.value.trim())
-  rejectComment.value = ''
-  showRejectForm.value = false
+  if (!commentText.value.trim()) return
+  emit('reject', commentText.value.trim())
+  commentText.value = ''
 }
 
 function formatDate(dateStr: string): string {
@@ -286,67 +283,46 @@ function errorDescription(msg: string): string | null {
             </div>
           </div>
 
-          <!-- Reject form (shown when reject is clicked) -->
-          <div v-if="showRejectForm" class="border border-error/30 rounded-lg p-3 space-y-2">
-            <p class="text-sm font-medium text-error">Reject this review</p>
-            <UTextarea
-              v-model="rejectComment"
-              placeholder="Reason for rejection..."
-              :rows="2"
-              class="w-full"
-            />
-            <div class="flex justify-end gap-2">
-              <UButton variant="ghost" size="xs" @click="showRejectForm = false">Cancel</UButton>
-              <UButton
-                color="error"
-                size="xs"
-                icon="i-heroicons-x-circle"
-                :disabled="!rejectComment.trim()"
-                :loading="rejecting"
-                @click="handleReject"
-              >
-                Confirm Reject
-              </UButton>
-            </div>
-          </div>
-
           <!-- Reply + actions -->
           <div class="space-y-2 pt-2">
             <UTextarea
-              v-if="!showRejectForm"
               v-model="commentText"
               placeholder="Write a comment..."
               :rows="2"
               class="w-full"
             />
 
-            <div class="flex justify-end gap-2">
+            <div class="flex items-center gap-2">
               <UButton variant="ghost" @click="emit('close')">Close</UButton>
               <UButton
-                v-if="commentText.trim() && !showRejectForm"
-                :disabled="!commentText.trim()"
+                v-if="commentText.trim()"
+                variant="soft"
                 @click="handleComment"
               >
                 Comment
               </UButton>
-              <UButton
-                v-if="existingPR.state === 'open' && !showRejectForm"
-                color="error"
-                variant="outline"
-                icon="i-heroicons-x-circle"
-                @click="showRejectForm = true"
-              >
-                Reject
-              </UButton>
-              <UButton
-                v-if="existingPR.state === 'open' && !showRejectForm"
-                color="success"
-                icon="i-heroicons-check-circle"
-                :loading="merging"
-                @click="emit('merge')"
-              >
-                {{ mergeLabel }}
-              </UButton>
+
+              <div class="flex-1" />
+
+              <template v-if="existingPR.state === 'open'">
+                <UButton
+                  variant="soft"
+                  color="neutral"
+                  :disabled="!commentText.trim()"
+                  :loading="rejecting"
+                  :title="commentText.trim() ? '' : 'Write a reason to reject'"
+                  @click="handleReject"
+                >
+                  Reject
+                </UButton>
+                <UButton
+                  color="primary"
+                  :loading="merging"
+                  @click="emit('merge')"
+                >
+                  {{ mergeLabel }}
+                </UButton>
+              </template>
             </div>
           </div>
         </div>

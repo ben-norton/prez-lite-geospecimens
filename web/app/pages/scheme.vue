@@ -306,6 +306,8 @@ async function handleRejectPR(comment: string) {
   const pr = promotionLayer.value === 'pending' ? promotion.branchPR.value : promotion.stagingPR.value
   if (!pr) return
 
+  const branches = promotion.getBranches(promotionLayer.value)
+
   prRejecting.value = true
   promotionError.value = null
   const ok = await promotion.closePR(pr.number, comment)
@@ -313,6 +315,16 @@ async function handleRejectPR(comment: string) {
 
   if (ok) {
     showReviewModal.value = false
+
+    // Delete the edit branch on Layer 2 reject — changes are discarded
+    if (promotionLayer.value === 'pending' && branches) {
+      await workspace.deleteBranch(branches.head)
+      if (editMode?.isEditMode.value) {
+        editMode.exitEditMode(true)
+        await editMode.enterEditMode()
+      }
+    }
+
     // Refresh PRs and layer diffs
     promotion.findExistingPRs(true)
     layerStatus?.refresh()
