@@ -212,6 +212,8 @@ async function handleRejectPR(comment: string) {
   const pr = promotion.stagingPR.value
   if (!pr) return
 
+  const branches = promotion.getBranches('approved')
+
   prRejecting.value = true
   promotionError.value = null
   const ok = await promotion.closePR(pr.number, comment)
@@ -219,6 +221,14 @@ async function handleRejectPR(comment: string) {
 
   if (ok) {
     showReviewModal.value = false
+
+    // Delete the staging branch to discard conflicting/rejected changes
+    // A fresh staging branch will be created on next save
+    if (branches) {
+      await workspace.deleteBranch(branches.head)
+    }
+
+    await workspace.fetchBranches()
     promotion.findExistingPRs(true)
     changedVocabs.value = await promotion.fetchChangedVocabs()
   } else {

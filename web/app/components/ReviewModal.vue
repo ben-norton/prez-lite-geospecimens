@@ -89,7 +89,8 @@ function handleComment() {
 }
 
 function handleReject() {
-  if (!commentText.value.trim()) return
+  // Layer 3 (staging→main) can reject without a comment — it's a discard action
+  if (isPending.value && !commentText.value.trim()) return
   emit('reject', commentText.value.trim())
   commentText.value = ''
 }
@@ -329,12 +330,12 @@ function errorDescription(msg: string): string | null {
                 <UButton
                   variant="soft"
                   color="neutral"
-                  :disabled="!commentText.trim() || (busy && !rejecting)"
+                  :disabled="(isPending && !commentText.trim()) || (busy && !rejecting)"
                   :loading="rejecting"
-                  :title="commentText.trim() ? '' : 'Write a reason to reject'"
+                  :title="isPending && !commentText.trim() ? 'Write a reason to reject' : ''"
                   @click="handleReject"
                 >
-                  Reject
+                  {{ isPending ? 'Reject' : 'Reject & Discard' }}
                 </UButton>
                 <UButton
                   color="primary"
