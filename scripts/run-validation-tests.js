@@ -190,6 +190,7 @@ async function generateVocabReport(vocabFile, shapesStore) {
 // ---------------------------------------------------------------------------
 
 async function runTestFixtures(vocabPrefix, shapesStore) {
+  if (!existsSync(TESTS_DIR)) return null;
   const allFiles = readdirSync(TESTS_DIR).filter(f => f.endsWith('.ttl') && f.startsWith(vocabPrefix)).sort();
   if (allFiles.length === 0) return null;
 
