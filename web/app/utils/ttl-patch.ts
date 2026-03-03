@@ -33,13 +33,13 @@ export interface ParsedTTL {
 export function extractPrefixes(ttl: string): Record<string, string> {
   const prefixes: Record<string, string> = {}
   // @prefix foo: <iri> .
-  const turtleRe = /@prefix\s+(\w*)\s*:\s*<([^>]+)>\s*\./g
+  const turtleRe = /@prefix\s+([^\s:]*)\s*:\s*<([^>]+)>\s*\./g
   let m: RegExpExecArray | null
   while ((m = turtleRe.exec(ttl)) !== null) {
     prefixes[m[1]!] = m[2]!
   }
   // PREFIX foo: <iri>
-  const sparqlRe = /PREFIX\s+(\w*)\s*:\s*<([^>]+)>/gi
+  const sparqlRe = /PREFIX\s+([^\s:]*)\s*:\s*<([^>]+)>/gi
   while ((m = sparqlRe.exec(ttl)) !== null) {
     prefixes[m[1]!] = m[2]!
   }
@@ -103,12 +103,14 @@ export function parseSubjectBlocks(
     }
 
     // Prefixed name: foo:bar, :bar, or cs: (empty local name)
-    const pfxMatch = line.match(/^(\w*):(\S*)/)
+    // Local part can contain dots (e.g. concept.v1); only strip trailing separators, not internal dots.
+    const pfxMatch = line.match(/^([A-Za-z][\w-]*|):(\S*)/)
     if (pfxMatch) {
       const ns = pfx[pfxMatch[1]!]
       if (ns) {
-        // Strip trailing predicate-separator chars that might be on the same token
-        const localName = (pfxMatch[2] ?? '').replace(/[;.,\s].*$/, '')
+        // Strip only trailing predicate-separator chars (; or , at end), not internal dots/dashes
+        const rawLocal = (pfxMatch[2] ?? '').trim()
+        const localName = rawLocal.replace(/[;,]+\s*$/, '')
         const fullIri = ns + localName
         if (subjectIris.has(fullIri)) return fullIri
       }
@@ -203,8 +205,8 @@ export function serializeSubjectBlock(
   writer.end((_err: Error | null, r: string) => { result = r })
 
   // Strip prefix declarations — they're already in the parsed prefix block
-  result = result.replace(/@prefix\s+\w*\s*:\s*<[^>]+>\s*\.\n?/g, '')
-  result = result.replace(/PREFIX\s+\w*\s*:\s*<[^>]+>\s*\n?/gi, '')
+  result = result.replace(/@prefix\s+[^\s:]*\s*:\s*<[^>]+>\s*\.\n?/g, '')
+  result = result.replace(/PREFIX\s+[^\s:]*\s*:\s*<[^>]+>\s*\n?/gi, '')
 
   // N3 Writer can't produce prefixed names with empty local parts (e.g. cs:)
   // when the namespace doesn't end with / or #. Post-process to restore them.
@@ -472,7 +474,7 @@ function findPredicateEnd(text: string): number {
   }
 
   // Prefixed name: prefix:localName
-  const match = trimmed.match(/^[\w]*:[\w-]*/)
+  const match = trimmed.match(/^([A-Za-z][\w-]*|):[^\s;,.]*/)
   if (match) {
     return offset + match[0].length
   }

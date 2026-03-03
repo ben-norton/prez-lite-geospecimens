@@ -158,6 +158,9 @@ function isVocabActive(vocabSlug: string): boolean {
       <div v-else class="space-y-1">
         <!-- Error selecting vocab -->
         <UAlert v-if="selectError" color="error" icon="i-heroicons-exclamation-triangle" :description="selectError" class="mb-4" />
+        <p class="text-xs text-muted mb-3">
+          Click a vocabulary to open it in the editor. The page will load with your selected workspace branch.
+        </p>
         <button
           v-for="vocab in vocabs"
           :key="vocab.slug"
@@ -178,14 +181,16 @@ function isVocabActive(vocabSlug: string): boolean {
             color="primary"
             variant="subtle"
             size="xs"
+            title="Current vocabulary — open in editor"
           >
-            active
+            current
           </UBadge>
           <UBadge
             v-else-if="isVocabActive(vocab.slug)"
             color="success"
             variant="subtle"
             size="xs"
+            title="Edit branch exists for this vocabulary"
           >
             has branch
           </UBadge>
@@ -194,11 +199,13 @@ function isVocabActive(vocabSlug: string): boolean {
             v-if="selectingVocab === vocab.slug"
             name="i-heroicons-arrow-path"
             class="size-4 animate-spin text-muted shrink-0"
+            aria-hidden="true"
           />
           <UIcon
             v-else
             name="i-heroicons-chevron-right"
             class="size-4 text-muted shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+            aria-hidden="true"
           />
         </button>
       </div>

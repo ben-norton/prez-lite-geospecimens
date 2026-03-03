@@ -3,16 +3,15 @@
  *
  * Load and save files via the GitHub REST API.
  * Uses the token from useGitHubAuth().
+ * Path and branch are reactive so the same instance stays in sync when they change.
  */
 
 export function useGitHubFile(
   owner: string,
   repo: string,
-  rawPath: string,
-  branch: string,
+  rawPath: Ref<string>,
+  branch: Ref<string>,
 ) {
-  // GitHub API rejects paths starting with /
-  const path = rawPath.replace(/^\/+/, '')
   const { token } = useGitHubAuth()
 
   const content = ref('')
@@ -20,18 +19,25 @@ export function useGitHubFile(
   const loading = ref(false)
   const error = ref<string | null>(null)
 
+  function getPath(): string {
+    return rawPath.value.replace(/^\/+/, '')
+  }
+
   async function load() {
     if (!token.value) {
       error.value = 'Not authenticated'
       return
     }
 
+    const path = getPath()
+    const ref = branch.value
+
     loading.value = true
     error.value = null
 
     try {
       const res = await fetch(
-        `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`,
+        `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${encodeURIComponent(ref)}`,
         { headers: { Authorization: `Bearer ${token.value}` } },
       )
 
@@ -56,6 +62,9 @@ export function useGitHubFile(
       return false
     }
 
+    const path = getPath()
+    const ref = branch.value
+
     loading.value = true
     error.value = null
 
@@ -72,7 +81,7 @@ export function useGitHubFile(
             message: message || `Update ${path}`,
             content: encodeBase64(newContent),
             sha: sha.value,
-            branch,
+            branch: ref,
           }),
         },
       )

@@ -20,11 +20,12 @@ const githubEditUrl = computed(() => {
 const { isAuthenticated } = useGitHubAuth()
 
 const [editorOwner, editorRepoName] = (githubRepo as string).split('/')
-const editorPath = `${githubVocabPath}/${route.params.vocab}.ttl`
+const editorPath = computed(() => `${githubVocabPath}/${route.params.vocab}.ttl`)
+const editorBranch = computed(() => githubBranch as string)
 const editorEnabled = !!(editorOwner && editorRepoName && githubRepo)
 
 const githubFile = editorEnabled
-  ? useGitHubFile(editorOwner, editorRepoName, editorPath, githubBranch as string)
+  ? useGitHubFile(editorOwner, editorRepoName, editorPath, editorBranch)
   : null
 
 const colorMode = useColorMode()

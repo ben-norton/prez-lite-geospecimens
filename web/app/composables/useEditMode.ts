@@ -192,7 +192,7 @@ export function useEditMode(
   owner: string,
   repo: string,
   vocabPath: Ref<string>,
-  branch: string,
+  branch: Ref<string>,
   schemeIri: Ref<string>,
 ) {
   // Core state
@@ -218,12 +218,12 @@ export function useEditMode(
   const selectedConceptIri = ref<string | null>(null)
   const saveStatus = ref<'idle' | 'saving' | 'success' | 'error'>('idle')
 
-  // GitHub file (created lazily based on vocabPath)
+  // GitHub file (reactive path and branch — same instance, reads .value on each load/save)
   let githubFile: ReturnType<typeof useGitHubFile> | null = null
 
   function getGitHubFile() {
     if (!githubFile) {
-      githubFile = useGitHubFile(owner, repo, vocabPath.value, branch)
+      githubFile = useGitHubFile(owner, repo, vocabPath, branch)
     }
     return githubFile
   }
@@ -990,6 +990,15 @@ export function useEditMode(
       originalParsedTTL.value.subjectBlocks.map(b => b.subjectIri),
     )
 
+    // Subject IRIs that exist in the original store (from data, not from parse)
+    const originalStoreSubjectIris = new Set<string>()
+    if (originalStore.value) {
+      for (const q of originalStore.value.getQuads(null, null, null, null) as Quad[]) {
+        if (q.subject.termType !== 'BlankNode') originalStoreSubjectIris.add(q.subject.value)
+      }
+    }
+
+    let parserMissedModifiedSubject = false
     for (const sIri of modifiedSubjects) {
       const hasQuads = store.value.getQuads(sIri, null, null, null).length > 0
 
@@ -1002,12 +1011,19 @@ export function useEditMode(
         // Subject was modified — re-serialize its block
         patches.set(sIri, serializeSubjectBlock(store.value, sIri, originalPrefixes.value))
       } else {
-        // New subject — append
+        // Would append as new block — but if it exists in original store, parser missed its block; avoid duplicate
+        if (originalStoreSubjectIris.has(sIri)) {
+          parserMissedModifiedSubject = true
+          break
+        }
         const block = serializeSubjectBlock(store.value, sIri, originalPrefixes.value)
         if (block) newBlocks.push(block)
       }
     }
 
+    if (parserMissedModifiedSubject) {
+      throw new Error('Cannot safely patch this file because subject boundaries could not be resolved. Please reload and try again.')
+    }
     return patchTTL(originalParsedTTL.value, patches, newBlocks.length ? newBlocks : undefined)
   }
 

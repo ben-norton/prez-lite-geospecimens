@@ -16,6 +16,7 @@ const props = defineProps<{
   expandToId?: string
   changeCountMap?: Map<string, number>
   errorCountMap?: Map<string, number>
+  layerMap?: Map<string, Set<string>>
 }>()
 
 const emit = defineEmits<{
@@ -38,6 +39,7 @@ const level = props.level ?? 0
         :expand-to-id="expandToId"
         :change-count-map="changeCountMap"
         :error-count-map="errorCountMap"
+        :layer-map="layerMap"
         @select="emit('select', $event)"
         @edit="emit('edit', $event)"
       />

@@ -4,7 +4,8 @@
  * Tests useGitHubFile composable with mocked fetch.
  * Verifies the API contract: base64 decode on load, encode + SHA on save.
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi, afterEach } from 'vitest'
+import { ref } from 'vue'
 
 // Mock useGitHubAuth before importing the composable
 const mockToken = ref('mock-gh-token')
@@ -59,7 +60,7 @@ describe('useGitHubFile', () => {
         body: { sha: 'abc123', content: encoded },
       }]) as any
 
-      const file = useGitHubFile('owner', 'repo', 'data/vocabs/test.ttl', 'main')
+      const file = useGitHubFile('owner', 'repo', ref('data/vocabs/test.ttl'), ref('main'))
       await file.load()
 
       expect(file.content.value).toBe(ttlContent)
@@ -74,7 +75,7 @@ describe('useGitHubFile', () => {
       }])
       globalThis.fetch = mockFetch as any
 
-      const file = useGitHubFile('myowner', 'myrepo', 'path/to/file.ttl', 'dev')
+      const file = useGitHubFile('myowner', 'myrepo', ref('path/to/file.ttl'), ref('dev'))
       await file.load()
 
       expect(mockFetch).toHaveBeenCalledOnce()
@@ -89,7 +90,7 @@ describe('useGitHubFile', () => {
       }])
       globalThis.fetch = mockFetch as any
 
-      const file = useGitHubFile('o', 'r', 'f.ttl', 'main')
+      const file = useGitHubFile('o', 'r', ref('f.ttl'), ref('main'))
       await file.load()
 
       const headers = mockFetch.mock.calls[0]![1]?.headers as Record<string, string>
@@ -103,7 +104,7 @@ describe('useGitHubFile', () => {
       }])
       globalThis.fetch = mockFetch as any
 
-      const file = useGitHubFile('o', 'r', '/leading/slash.ttl', 'main')
+      const file = useGitHubFile('o', 'r', ref('/leading/slash.ttl'), ref('main'))
       await file.load()
 
       const url = mockFetch.mock.calls[0]![0] as string
@@ -117,7 +118,7 @@ describe('useGitHubFile', () => {
         body: { message: 'Not Found' },
       }]) as any
 
-      const file = useGitHubFile('o', 'r', 'missing.ttl', 'main')
+      const file = useGitHubFile('o', 'r', ref('missing.ttl'), ref('main'))
       await file.load()
 
       expect(file.error.value).toContain('not found')
@@ -125,7 +126,7 @@ describe('useGitHubFile', () => {
 
     it('sets error when not authenticated', async () => {
       mockToken.value = ''
-      const file = useGitHubFile('o', 'r', 'f.ttl', 'main')
+      const file = useGitHubFile('o', 'r', ref('f.ttl'), ref('main'))
       await file.load()
 
       expect(file.error.value).toContain('Not authenticated')
@@ -142,7 +143,7 @@ describe('useGitHubFile', () => {
       ])
       globalThis.fetch = mockFetch as any
 
-      const file = useGitHubFile('o', 'r', 'f.ttl', 'main')
+      const file = useGitHubFile('o', 'r', ref('f.ttl'), ref('main'))
       await file.load()
       const ok = await file.save('new content', 'Update vocab')
 
@@ -169,7 +170,7 @@ describe('useGitHubFile', () => {
       ])
       globalThis.fetch = mockFetch as any
 
-      const file = useGitHubFile('o', 'r', 'path/to/file.ttl', 'main')
+      const file = useGitHubFile('o', 'r', ref('path/to/file.ttl'), ref('main'))
       await file.load()
       await file.save('new content')
 
@@ -184,7 +185,7 @@ describe('useGitHubFile', () => {
       ])
       globalThis.fetch = mockFetch as any
 
-      const file = useGitHubFile('o', 'r', 'f.ttl', 'main')
+      const file = useGitHubFile('o', 'r', ref('f.ttl'), ref('main'))
       await file.load()
       const ok = await file.save('new')
 
@@ -194,7 +195,7 @@ describe('useGitHubFile', () => {
 
     it('returns false when not authenticated', async () => {
       mockToken.value = ''
-      const file = useGitHubFile('o', 'r', 'f.ttl', 'main')
+      const file = useGitHubFile('o', 'r', ref('f.ttl'), ref('main'))
       const ok = await file.save('content')
 
       expect(ok).toBe(false)

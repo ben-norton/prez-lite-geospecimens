@@ -3,6 +3,7 @@ import type { SubjectChange } from '~/composables/useEditMode'
 
 defineProps<{
   change: SubjectChange
+  revertable?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -94,6 +95,7 @@ function changeTypePrefix(type: 'added' | 'removed' | 'modified'): string {
     <div class="flex justify-end gap-2 pt-2">
       <UButton variant="ghost" @click="emit('close')">Close</UButton>
       <UButton
+        v-if="revertable"
         icon="i-heroicons-arrow-uturn-left"
         color="error"
         variant="soft"

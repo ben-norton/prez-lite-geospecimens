@@ -35,7 +35,7 @@ export function useVocabHistory(
   owner: string,
   repo: string,
   path: Ref<string>,
-  branch: string,
+  branch: Ref<string>,
 ) {
   const { token } = useGitHubAuth()
 
@@ -56,7 +56,7 @@ export function useVocabHistory(
     try {
       const cleanPath = path.value.replace(/^\/+/, '')
       const res = await fetch(
-        `https://api.github.com/repos/${owner}/${repo}/commits?path=${encodeURIComponent(cleanPath)}&sha=${branch}&per_page=${perPage}`,
+        `https://api.github.com/repos/${owner}/${repo}/commits?path=${encodeURIComponent(cleanPath)}&sha=${encodeURIComponent(branch.value)}&per_page=${perPage}`,
         { headers: { Authorization: `Bearer ${token.value}` } },
       )
 

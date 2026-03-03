@@ -40,7 +40,8 @@ function cloneStore(src: Store): Store {
 
 /**
  * Standalone serializeWithPatch — mirrors useEditMode.serializeWithPatch
- * (lines 812-863 of useEditMode.ts).
+ * including the duplicate-prevention guard: if a modified subject exists in
+ * original store but parse found no block, fall back to full serialize.
  */
 function serializeWithPatch(
   store: Store,
@@ -49,10 +50,6 @@ function serializeWithPatch(
   prefixes: Record<string, string>,
   subjectIri?: string,
 ): string {
-  if (originalParsedTTL.subjectBlocks.length === 0) {
-    // Mimic the composable's fallback-like behaviour for empty parsed TTL
-  }
-
   const { added, removed } = computeQuadDiff(originalStore, store)
   const modifiedSubjects = subjectIri
     ? new Set([subjectIri])
@@ -65,6 +62,12 @@ function serializeWithPatch(
     originalParsedTTL.subjectBlocks.map(b => b.subjectIri),
   )
 
+  const originalStoreSubjectIris = new Set<string>()
+  for (const q of originalStore.getQuads(null, null, null, null) as Quad[]) {
+    if (q.subject.termType !== 'BlankNode') originalStoreSubjectIris.add(q.subject.value)
+  }
+
+  let fallbackToFullSerialize = false
   for (const sIri of modifiedSubjects) {
     const hasQuads = store.getQuads(sIri, null, null, null).length > 0
 
@@ -75,12 +78,33 @@ function serializeWithPatch(
     } else if (originalSubjectIris.has(sIri)) {
       patches.set(sIri, serializeSubjectBlock(store, sIri, prefixes))
     } else {
+      if (originalStoreSubjectIris.has(sIri)) {
+        fallbackToFullSerialize = true
+        break
+      }
       const block = serializeSubjectBlock(store, sIri, prefixes)
       if (block) newBlocks.push(block)
     }
   }
 
+  if (fallbackToFullSerialize) {
+    return fullSerializeTTL(store, originalParsedTTL.prefixBlock, prefixes)
+  }
   return patchTTL(originalParsedTTL, patches, newBlocks.length ? newBlocks : undefined)
+}
+
+/** Full serialize of store to TTL (used when patch would duplicate a subject). */
+function fullSerializeTTL(store: Store, prefixBlock: string, prefixes: Record<string, string>): string {
+  const subjectIris = new Set<string>()
+  for (const q of store.getQuads(null, null, null, null) as Quad[]) {
+    if (q.subject.termType !== 'BlankNode') subjectIris.add(q.subject.value)
+  }
+  const blocks: string[] = []
+  for (const iri of subjectIris) {
+    const block = serializeSubjectBlock(store, iri, prefixes)
+    if (block) blocks.push(block)
+  }
+  return prefixBlock + blocks.join('\n') + '\n'
 }
 
 // ============================================================================
@@ -343,6 +367,29 @@ describe('serializeWithPatch', () => {
       // Should contain the prefix block and the new subject
       expect(result).toContain('@prefix skos:')
       expect(result).toContain('New')
+    })
+
+    it('does not duplicate subject when parser missed block (fallback to full serialize)', () => {
+      const { store, originalStore, parsedTTL } = makeContext()
+
+      // Simulate parser missing CONCEPT_A: parsed TTL has only scheme and B
+      const parsedWithoutA: ParsedTTL = {
+        ...parsedTTL,
+        subjectBlocks: parsedTTL.subjectBlocks.filter(b => b.subjectIri !== CONCEPT_A),
+      }
+      expect(parsedWithoutA.subjectBlocks.some(b => b.subjectIri === CONCEPT_A)).toBe(false)
+      expect(originalStore.getQuads(CONCEPT_A, null, null, null).length).toBeGreaterThan(0)
+
+      // Modify concept A in store
+      store.removeQuad(namedNode(CONCEPT_A), namedNode(`${SKOS}prefLabel`), literal('Concept A', 'en'), defaultGraph())
+      store.addQuad(namedNode(CONCEPT_A), namedNode(`${SKOS}prefLabel`), literal('Modified A', 'en'), defaultGraph())
+
+      const result = serializeWithPatch(store, originalStore, parsedWithoutA, PREFIXES)
+
+      // Must contain Modified A exactly once (no duplicate from append)
+      const count = (result.match(/Modified A/g) || []).length
+      expect(count).toBe(1)
+      expect(result).toContain('Modified A')
     })
   })
 })

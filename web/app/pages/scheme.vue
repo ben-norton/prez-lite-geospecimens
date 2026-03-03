@@ -2,8 +2,9 @@
 import { Store, Parser, type Quad } from 'n3'
 import { getLabel, clearCaches } from '~/composables/useVocabData'
 import { getPredicateLabel } from '~/utils/vocab-labels'
-import type { ChangeSummary } from '~/composables/useEditMode'
+import type { ChangeSummary, SubjectChange } from '~/composables/useEditMode'
 import type { HistoryCommit, HistoryDiff } from '~/composables/useVocabHistory'
+import type { LayerName } from '~/composables/useLayerStatus'
 
 const route = useRoute()
 const router = useRouter()
@@ -122,6 +123,8 @@ const { githubRepo, githubBranch: defaultBranch, githubVocabPath } = useRuntimeC
 
 // Workspace-aware branch selection
 const workspace = useWorkspace()
+// Ensure definitions are loaded (needed for activeWorkspace, layer status, workspace label)
+workspace.loadDefinitions()
 const effectiveBranch = computed(() => workspace.activeBranch.value ?? defaultBranch as string)
 
 const githubEditUrl = computed(() => {
@@ -140,6 +143,7 @@ const editorAvailable = computed(() => !!(editorOwner && editorRepoName && isAut
 const editorFilePath = computed(() => {
   const base = (githubVocabPath as string).replace(/^\/+|\/+$/g, '')
   const slug = vocabSlugForEditor.value
+  if (!slug) return ''
   return base ? `${base}/${slug}.ttl` : `${slug}.ttl`
 })
 
@@ -158,7 +162,7 @@ const monacoTheme = computed(() => colorMode.value === 'dark' ? 'prez-dark' : 'p
 
 // --- Structured Form Editor ---
 const editMode = (editorOwner && editorRepoName)
-  ? useEditMode(editorOwner, editorRepoName, editorFilePath as Ref<string>, effectiveBranch.value, uri)
+  ? useEditMode(editorOwner, editorRepoName, editorFilePath as Ref<string>, effectiveBranch, uri)
   : null
 
 // Build status polling
@@ -175,7 +179,7 @@ const diffModalCommitMsg = ref('')
 
 // History composable (created lazily)
 const vocabHistory = (editorOwner && editorRepoName)
-  ? useVocabHistory(editorOwner, editorRepoName, editorFilePath as Ref<string>, effectiveBranch.value)
+  ? useVocabHistory(editorOwner, editorRepoName, editorFilePath as Ref<string>, effectiveBranch)
   : null
 
 // Load commits when popover opens or when page loads with a sha param
@@ -189,6 +193,17 @@ watch([historySha, authToken, vocabSlugForEditor], ([sha, token, slug]) => {
     vocabHistory.fetchCommits()
   }
 }, { immediate: true })
+
+// --- Layer Status (branch/staging diffs) ---
+const layerStatus = (editorOwner && editorRepoName)
+  ? useLayerStatus(editMode, workspace, editorFilePath as Ref<string>, editorOwner, editorRepoName)
+  : null
+
+const flowChain = computed<string[]>(() => {
+  const ws = workspace.activeWorkspace.value
+  if (!ws) return []
+  return [ws.refreshFrom, ws.slug, 'branch', 'you']
+})
 
 // Version label from scheme metadata
 const versionLabel = computed(() => displayScheme.value?.version ?? null)
@@ -432,6 +447,8 @@ const saveModalSubjectIri = ref<string | null>(null)
 // Change detail modal state
 const showChangeDetail = ref(false)
 const changeDetailIri = ref<string | null>(null)
+// Direct change data for branch/staging layers (bypass editMode lookup)
+const changeDetailDirect = ref<SubjectChange | null>(null)
 
 // Draggable modals
 const { handleRef: saveDragHandle } = useDraggableModal(showSaveModal)
@@ -439,6 +456,7 @@ const { handleRef: diffDragHandle } = useDraggableModal(showDiffModal)
 const { handleRef: changeDetailDragHandle } = useDraggableModal(showChangeDetail)
 
 const changeDetailData = computed(() => {
+  if (changeDetailDirect.value) return changeDetailDirect.value
   if (!editMode || !changeDetailIri.value) return null
   return editMode.getChangesForSubject(changeDetailIri.value)
 })
@@ -540,9 +558,16 @@ watch([editView, authToken, vocabSlugForEditor], async ([view]) => {
   }
 })
 
-// Unsaved changes guard: route navigation
-onBeforeRouteLeave(() => {
-  if (editMode?.isDirty.value) {
+// When URI or workspace branch changes, reinitialize edit state so we load fresh data (no stale store).
+watch([uri, effectiveBranch], ([newUri, newBranch], [oldUri, oldBranch]) => {
+  if (oldUri === undefined) return // first run
+  if (newUri === oldUri && newBranch === oldBranch) return
+  if (editMode?.isEditMode.value) editMode.exitEditMode(true)
+})
+
+// Unsaved changes guard: route navigation (only when leaving the page, not for same-page query changes)
+onBeforeRouteLeave((to) => {
+  if (editMode?.isDirty.value && to.path !== '/scheme') {
     return confirm('You have unsaved changes. Leave this page?')
   }
 })
@@ -698,7 +723,15 @@ function openTTLViewer(type: 'original' | 'patched', iri?: string) {
 // --- Change detail modal ---
 
 function handleShowChangeDetail(subjectIri: string) {
+  changeDetailDirect.value = null
   changeDetailIri.value = subjectIri
+  showChangeDetail.value = true
+}
+
+/** Show change detail for a layer change (branch/staging/unsaved) with data already available */
+function handleShowLayerChange(change: SubjectChange) {
+  changeDetailDirect.value = change
+  changeDetailIri.value = null
   showChangeDetail.value = true
 }
 
@@ -770,6 +803,34 @@ const errorCountMap = computed<Map<string, number>>(() => {
   }
   walk(activeTreeItems.value)
   return counts
+})
+
+// --- Layer status indicators for tree nodes (branch/staging dots) ---
+
+const layerMapAggregated = computed<Map<string, Set<LayerName>>>(() => {
+  const raw = layerStatus?.conceptLayers.value ?? new Map<string, Set<LayerName>>()
+  if (!raw.size) return new Map()
+  // Walk tree to bubble up: union child layers into parent
+  const result = new Map<string, Set<LayerName>>()
+  function walk(items: TreeItem[]): Set<LayerName> {
+    const subtotal = new Set<LayerName>()
+    for (const item of items) {
+      const own = raw.get(item.id)
+      const merged = own ? new Set(own) : new Set<LayerName>()
+      if (item.children?.length) {
+        for (const childLayer of walk(item.children)) {
+          merged.add(childLayer)
+        }
+      }
+      if (merged.size > 0) {
+        result.set(item.id, merged)
+        for (const l of merged) subtotal.add(l)
+      }
+    }
+    return subtotal
+  }
+  walk(activeTreeItems.value)
+  return result
 })
 
 // --- Change indicators for form fields ---
@@ -1151,6 +1212,15 @@ function copyIriToClipboard(iri: string) {
       @select-concept="handleSelectFromToolbar"
     />
 
+    <!-- Layer Status Bar (branch/staging change indicators) -->
+    <LayerStatusBar
+      v-if="layerStatus && displayScheme && !historySha && isAuthenticated && status !== 'error'"
+      :layers="layerStatus.layers.value"
+      :flow-chain="flowChain"
+      @select-concept="handleSelectFromToolbar"
+      @show-layer-change="handleShowLayerChange"
+    />
+
     <UBreadcrumb v-if="!immersiveMode && !site.siteHeaderBreadcrumbs" ref="breadcrumbRef" :items="breadcrumbs" class="mb-6" />
 
     <div v-if="!uri" class="text-center py-12">
@@ -1528,6 +1598,7 @@ function copyIriToClipboard(iri: string) {
                   :expand-to-id="expandToId"
                   :change-count-map="changeCountMap"
                   :error-count-map="errorCountMap"
+                  :layer-map="layerMapAggregated"
                   @select="selectConcept"
                   @edit="selectConcept"
                 />
@@ -1890,8 +1961,9 @@ function copyIriToClipboard(iri: string) {
           <ChangeDetailModal
             v-if="changeDetailData"
             :change="changeDetailData"
+            :revertable="!changeDetailDirect"
             @revert="handleRevertSubject"
-            @close="showChangeDetail = false"
+            @close="showChangeDetail = false; changeDetailDirect = null"
           />
         </template>
       </UModal>

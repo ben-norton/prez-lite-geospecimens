@@ -73,6 +73,16 @@ PREFIX cs: <http://example.com/vocab/>
     const ttl = `<http://example.com/s> <http://example.com/p> <http://example.com/o> .`
     expect(extractPrefixes(ttl)).toEqual({})
   })
+
+  it('extracts prefixes with hyphenated names', () => {
+    const ttl = `
+@prefix brands-test: <https://linked.data.gov.au/def/brands-test/> .
+@prefix cs: <https://linked.data.gov.au/def/brands-test> .
+`
+    const prefixes = extractPrefixes(ttl)
+    expect(prefixes['brands-test']).toBe('https://linked.data.gov.au/def/brands-test/')
+    expect(prefixes.cs).toBe('https://linked.data.gov.au/def/brands-test')
+  })
 })
 
 // ============================================================================
@@ -116,6 +126,26 @@ cs:alpha a skos:Concept ;
     expect(parsed.subjectBlocks[1]!.subjectIri).toBe('http://example.com/vocab/alpha')
   })
 
+  it('parses subjects with hyphenated prefix names', () => {
+    const ttl = `@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix brands-test: <https://linked.data.gov.au/def/brands-test/> .
+@prefix cs: <https://linked.data.gov.au/def/brands-test> .
+
+cs: a skos:ConceptScheme ;
+    skos:prefLabel "Brands Test"@en .
+
+brands-test:brand-01 a skos:Concept ;
+    skos:prefLabel "Brand 01"@en ;
+    skos:inScheme cs: .
+`
+    const store = parseTTL(ttl)
+    const parsed = parseSubjectBlocks(ttl, store)
+
+    expect(parsed.subjectBlocks).toHaveLength(2)
+    expect(parsed.subjectBlocks[0]!.subjectIri).toBe('https://linked.data.gov.au/def/brands-test')
+    expect(parsed.subjectBlocks[1]!.subjectIri).toBe('https://linked.data.gov.au/def/brands-test/brand-01')
+  })
+
   it('returns entire file as prefixBlock when no subjects found', () => {
     const ttl = `@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 `
@@ -157,6 +187,25 @@ cs:b a skos:Concept ;
     expect(parsed.subjectBlocks[0]!.originalText).toContain('cs:a a skos:Concept')
     expect(parsed.subjectBlocks[0]!.originalText).toContain('"A"@en')
     expect(parsed.subjectBlocks[1]!.originalText).toContain('cs:b a skos:Concept')
+  })
+
+  it('parses prefixed subject with dot in local name (no truncation)', () => {
+    const ttl = `@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix ex: <http://example.org/> .
+
+ex:concept.v1 a skos:Concept ;
+    skos:prefLabel "Version 1"@en .
+
+ex:concept.v2 a skos:Concept ;
+    skos:prefLabel "Version 2"@en .
+`
+    const store = parseTTL(ttl)
+    const parsed = parseSubjectBlocks(ttl, store)
+
+    expect(parsed.subjectBlocks).toHaveLength(2)
+    expect(parsed.subjectBlocks[0]!.subjectIri).toBe('http://example.org/concept.v1')
+    expect(parsed.subjectBlocks[1]!.subjectIri).toBe('http://example.org/concept.v2')
+    expect(parsed.subjectBlocks[0]!.originalText).toContain('ex:concept.v1')
   })
 })
 

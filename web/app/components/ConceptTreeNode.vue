@@ -16,6 +16,7 @@ const props = defineProps<{
   expandToId?: string
   changeCountMap?: Map<string, number>
   errorCountMap?: Map<string, number>
+  layerMap?: Map<string, Set<string>>
 }>()
 
 const emit = defineEmits<{
@@ -28,6 +29,7 @@ const hasChildren = computed(() => props.item.children && props.item.children.le
 const isSelected = computed(() => props.selectedId === props.item.id)
 const changeCount = computed(() => props.changeCountMap?.get(props.item.id) ?? 0)
 const errorCount = computed(() => props.errorCountMap?.get(props.item.id) ?? 0)
+const nodeLayers = computed(() => props.layerMap?.get(props.item.id) ?? new Set<string>())
 
 // Track expanded state - default based on item.defaultExpanded or expandAll prop
 const isExpanded = ref(props.item.defaultExpanded ?? false)
@@ -118,6 +120,13 @@ function handleEdit() {
         {{ item.label }}
       </span>
 
+      <!-- Layer status dots -->
+      <span v-if="nodeLayers.size" class="flex items-center gap-0.5 ml-1">
+        <span v-if="nodeLayers.has('unsaved')" class="w-1.5 h-1.5 rounded-full bg-amber-500" title="Unsaved" />
+        <span v-if="nodeLayers.has('branch')" class="w-1.5 h-1.5 rounded-full bg-blue-500" title="On branch" />
+        <span v-if="nodeLayers.has('staging')" class="w-1.5 h-1.5 rounded-full bg-emerald-500" title="In staging" />
+      </span>
+
       <!-- Error count badge -->
       <UBadge
         v-if="errorCount"
@@ -173,6 +182,7 @@ function handleEdit() {
         :expand-to-id="expandToId"
         :change-count-map="changeCountMap"
         :error-count-map="errorCountMap"
+        :layer-map="layerMap"
         @select="emit('select', $event)"
         @edit="emit('edit', $event)"
       />
