@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { fetchVocabMetadata, type VocabMetadata } from '~/composables/useVocabData'
+import type { SubjectChange } from '~/composables/useEditMode'
 import type { PRComment } from '~/composables/usePromotion'
 
 const router = useRouter()
@@ -263,6 +264,16 @@ const wsLabel = computed(() =>
   workspace.activeWorkspace.value?.label ?? 'Staging',
 )
 
+/** Map changedVocabs to SubjectChange[] so ReviewModal can display them */
+const promotionChanges = computed<SubjectChange[]>(() =>
+  changedVocabs.value.map(v => ({
+    subjectIri: vocabIriMap.value.get(v.slug) ?? v.slug,
+    subjectLabel: v.label,
+    type: v.status === 'added' ? 'added' as const : 'modified' as const,
+    propertyChanges: [],
+  })),
+)
+
 const reviewModalTitle = computed(() => {
   if (promotionMode.value === 'create') return `Publish ${wsLabel.value} to Production`
   if (promotionMode.value === 'submitted') return 'Publishing Submitted'
@@ -512,7 +523,7 @@ const workspaceBreadcrumbs = computed(() => {
           <ReviewModal
             :mode="promotionMode"
             layer-name="approved"
-            :changes="[]"
+            :changes="promotionChanges"
             :existing-p-r="stagingPR"
             :comments="prComments"
             :comments-loading="prCommentsLoading"
