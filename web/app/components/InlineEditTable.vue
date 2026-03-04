@@ -12,12 +12,19 @@ const props = defineProps<{
   /** Temporarily highlight this predicate row (flash dot) */
   highlightPredicate?: string | null
   subjectChanges?: SubjectChange | null
+  /** Staging (approved) layer changes for this subject — shown as green indicators */
+  stagingChanges?: SubjectChange | null
   validationErrors?: ValidationError[]
 }>()
 
 const changedPredicates = computed(() => {
   if (!props.subjectChanges) return new Set<string>()
   return new Set(props.subjectChanges.propertyChanges.map(c => c.predicateIri))
+})
+
+const stagingChangedPredicates = computed(() => {
+  if (!props.stagingChanges) return new Set<string>()
+  return new Set(props.stagingChanges.propertyChanges.map(c => c.predicateIri))
 })
 
 // Scroll highlighted row into view
@@ -342,6 +349,7 @@ onUnmounted(() => {
               'hover:bg-muted/50 cursor-pointer': (isEditable(prop) || prop.fieldType === 'nested') && editingPredicate !== prop.predicate,
               'border-l-2 border-l-error bg-error/5': editingPredicate !== prop.predicate && errorsByPredicate.has(prop.predicate),
               'border-l-2 border-l-warning': !errorsByPredicate.has(prop.predicate) && changedPredicates.has(prop.predicate),
+              'border-l-2 border-l-emerald-500': !errorsByPredicate.has(prop.predicate) && !changedPredicates.has(prop.predicate) && stagingChangedPredicates.has(prop.predicate),
               'bg-emerald-100 dark:bg-emerald-900/40 ring-1 ring-inset ring-emerald-300 dark:ring-emerald-700': highlightPredicate === prop.predicate,
             }"
             @click.stop="handleRowClick(prop)"
@@ -353,8 +361,14 @@ onUnmounted(() => {
             >
               <span
                 v-if="changedPredicates.has(prop.predicate)"
+                class="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block align-middle mr-1 shrink-0"
+                title="Unsaved change"
+              />
+              <span
+                v-else-if="stagingChangedPredicates.has(prop.predicate)"
                 class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block align-middle mr-1 shrink-0"
                 :class="{ 'animate-pulse': highlightPredicate === prop.predicate }"
+                title="Changed in staging"
               />
               <UTooltip v-if="constraintDescription(prop)" :text="constraintDescription(prop)!">
                 <span class="mr-1 cursor-help" :class="{ 'text-error': editingPredicate !== prop.predicate && errorsByPredicate.has(prop.predicate) }">{{ prop.label }}</span>

@@ -4,7 +4,7 @@ import type { SubjectChange } from '~/composables/useEditMode'
 import type { PRComment } from '~/composables/usePromotion'
 
 const router = useRouter()
-const { isAuthenticated } = useGitHubAuth()
+const { isAuthenticated, loading: authLoading } = useGitHubAuth()
 const workspace = useWorkspace()
 
 const vocabs = ref<VocabMetadata[]>([])
@@ -12,10 +12,10 @@ const vocabsLoading = ref(false)
 const selectingVocab = ref<string | null>(null)
 const selectError = ref<string | null>(null)
 
-// Redirect to home if not authenticated
-watch(isAuthenticated, (authenticated) => {
-  if (!authenticated) navigateTo('/')
-}, { immediate: true })
+// Redirect to home if not authenticated (wait for auth to finish initializing)
+watch([isAuthenticated, authLoading], ([authenticated, isLoading]) => {
+  if (!isLoading && !authenticated) navigateTo('/')
+})
 
 // Load definitions on mount
 onMounted(() => {
@@ -116,6 +116,7 @@ const vocabIriMap = computed(() => {
 function navigateToVocab(slug: string) {
   const iri = vocabIriMap.value.get(slug)
   if (iri) {
+    workspace.selectVocab(slug)
     navigateTo({ path: '/scheme', query: { uri: iri } })
   }
 }
@@ -196,13 +197,20 @@ async function handleMergePR() {
   const pr = promotion.stagingPR.value
   if (!pr) return
 
+  const branches = promotion.getBranches('approved')
+
   prMerging.value = true
   promotionError.value = null
   const ok = await promotion.mergePR(pr.number)
   prMerging.value = false
 
   if (ok) {
-    // Refresh changed vocabs after merge
+    // Delete staging branch after merge — it's now merged into main.
+    // A fresh branch will be created lazily on next save.
+    if (branches) {
+      await workspace.deleteBranch(branches.head)
+    }
+    await workspace.fetchBranches()
     changedVocabs.value = await promotion.fetchChangedVocabs()
   } else {
     promotionError.value = promotion.error.value ?? 'Failed to complete review'

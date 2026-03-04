@@ -1158,6 +1158,18 @@ const schemeChanges = computed(() => {
   return editMode.getChangesForSubject(uri.value)
 })
 
+// Staging (approved layer) changes for the selected concept + scheme — green indicators
+const approvedLayerChanges = computed(() =>
+  layerStatus?.layers.value.find(l => l.name === 'approved')?.changes ?? [],
+)
+const selectedConceptStagingChanges = computed(() => {
+  if (!selectedConceptUri.value) return null
+  return approvedLayerChanges.value.find(c => c.subjectIri === selectedConceptUri.value) ?? null
+})
+const schemeStagingChanges = computed(() =>
+  approvedLayerChanges.value.find(c => c.subjectIri === uri.value) ?? null,
+)
+
 // Validation errors filtered per subject (for InlineEditTable highlighting)
 const selectedConceptErrors = computed(() => {
   if (!editMode || !selectedConceptUri.value) return []
@@ -1993,6 +2005,7 @@ function copyIriToClipboard(iri: string) {
                   :properties="selectedConceptProperties"
                   :concepts="editMode.concepts.value"
                   :subject-changes="selectedConceptChanges"
+                  :staging-changes="selectedConceptStagingChanges"
                   @update:value="(pred, oldVal, newVal) => editMode!.updateValue(selectedConceptUri!, pred, oldVal, newVal)"
                   @update:language="(pred, oldVal, newLang) => editMode!.updateValueLanguage(selectedConceptUri!, pred, oldVal, newLang)"
                   @add:value="(pred, type, defaultIri) => editMode!.addValue(selectedConceptUri!, pred, type, defaultIri)"
@@ -2050,6 +2063,7 @@ function copyIriToClipboard(iri: string) {
                   :agents="editMode.agents.value"
                   :highlight-predicate="highlightPredicate"
                   :subject-changes="selectedConceptChanges"
+                  :staging-changes="selectedConceptStagingChanges"
                   :validation-errors="selectedConceptErrors"
                   @update:value="(pred, oldVal, newVal) => editMode!.updateValue(selectedConceptUri!, pred, oldVal, newVal)"
                   @update:language="(pred, oldVal, newLang) => editMode!.updateValueLanguage(selectedConceptUri!, pred, oldVal, newLang)"
@@ -2204,6 +2218,7 @@ function copyIriToClipboard(iri: string) {
             :auto-edit-predicate="autoEditPredicate"
             :highlight-predicate="highlightPredicate"
             :subject-changes="schemeChanges"
+            :staging-changes="schemeStagingChanges"
             :validation-errors="schemeErrors"
             @update:value="(pred, oldVal, newVal) => editMode!.updateValue(uri, pred, oldVal, newVal)"
             @update:language="(pred, oldVal, newLang) => editMode!.updateValueLanguage(uri, pred, oldVal, newLang)"
