@@ -11,6 +11,18 @@ on:
         description: 'Node.js version'
         type: string
         default: '22'
+      vocab-source-dir:
+        description: 'Directory containing vocabulary TTL files'
+        type: string
+        default: 'data/vocabs'
+      background-dir:
+        description: 'Directory containing background label TTL files'
+        type: string
+        default: 'data/background'
+      config-dir:
+        description: 'Directory containing profiles.ttl and other config'
+        type: string
+        default: 'data/config'
 permissions:
   contents: read
   pages: write
@@ -41,14 +53,14 @@ jobs:
         run: |
           DP="${{ steps.tools.outputs.data-processing-dir }}"
 
-          ARGS="--sourceDir data/vocabs --outputBase public/export/vocabs --systemDir public/export/system --pattern *.ttl"
+          ARGS="--sourceDir ${{ inputs.vocab-source-dir }} --outputBase public/export/vocabs --systemDir public/export/system --pattern *.ttl"
 
-          if [ -f "data/config/profiles.ttl" ]; then
-            ARGS="$ARGS --profiles data/config/profiles.ttl"
+          if [ -f "${{ inputs.config-dir }}/profiles.ttl" ]; then
+            ARGS="$ARGS --profiles ${{ inputs.config-dir }}/profiles.ttl"
           fi
 
-          if [ -d "data/background" ]; then
-            ARGS="$ARGS --backgroundDir data/background"
+          if [ -d "${{ inputs.background-dir }}" ]; then
+            ARGS="$ARGS --backgroundDir ${{ inputs.background-dir }}"
           fi
 
           node "$DP/scripts/process-vocab.js" $ARGS
@@ -59,16 +71,16 @@ jobs:
           mkdir -p public/export/system/vocabularies public/export/system/search
 
           # Vocabulary metadata index
-          ARGS="--sourceDir data/vocabs --output public/export/system/vocabularies/index.json"
-          if [ -d "data/background" ]; then
-            ARGS="$ARGS --backgroundDir data/background"
+          ARGS="--sourceDir ${{ inputs.vocab-source-dir }} --output public/export/system/vocabularies/index.json"
+          if [ -d "${{ inputs.background-dir }}" ]; then
+            ARGS="$ARGS --backgroundDir ${{ inputs.background-dir }}"
           fi
           node "$DP/scripts/generate-vocab-metadata.js" $ARGS || echo "Vocab metadata skipped"
 
           # Labels (only if background dir has TTL files)
-          if ls data/background/*.ttl >/dev/null 2>&1; then
+          if ls ${{ inputs.background-dir }}/*.ttl >/dev/null 2>&1; then
             node "$DP/scripts/generate-labels.js" \
-              --backgroundDir data/background \
+              --backgroundDir ${{ inputs.background-dir }} \
               --output public/export/system/labels.json || echo "Labels skipped"
           fi
 

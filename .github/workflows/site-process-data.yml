@@ -11,6 +11,22 @@ on:
         description: 'Node.js version'
         type: string
         default: '22'
+      vocab-source-dir:
+        description: 'Directory containing vocabulary TTL files'
+        type: string
+        default: 'data/vocabs'
+      background-dir:
+        description: 'Directory containing background label TTL files'
+        type: string
+        default: 'data/background'
+      config-dir:
+        description: 'Directory containing profiles.ttl and other config'
+        type: string
+        default: 'data/config'
+      validators-dir:
+        description: 'Directory containing SHACL validation shapes'
+        type: string
+        default: 'data/validators'
 permissions:
   contents: write
 
@@ -37,7 +53,7 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "mode=full" >> "$GITHUB_OUTPUT"
           else
-            CHANGED=$(git diff --name-only HEAD~1 -- 'data/vocabs/*.ttl' || true)
+            CHANGED=$(git diff --name-only HEAD~1 -- '${{ inputs.vocab-source-dir }}/*.ttl' || true)
             if [ -z "$CHANGED" ]; then
               echo "mode=none" >> "$GITHUB_OUTPUT"
             else
@@ -53,10 +69,10 @@ jobs:
         run: |
           DP="${{ steps.tools.outputs.data-processing-dir }}"
 
-          ARGS="--sourceDir data/vocabs --outputBase public/export/vocabs --systemDir public/export/system --pattern *.ttl"
-          [ -f "data/config/profiles.ttl" ] && ARGS="$ARGS --profiles data/config/profiles.ttl"
-          [ -d "data/background" ] && ARGS="$ARGS --backgroundDir data/background"
-          [ -d "data/validators" ] && ARGS="$ARGS --validators data/validators"
+          ARGS="--sourceDir ${{ inputs.vocab-source-dir }} --outputBase public/export/vocabs --systemDir public/export/system --pattern *.ttl"
+          [ -f "${{ inputs.config-dir }}/profiles.ttl" ] && ARGS="$ARGS --profiles ${{ inputs.config-dir }}/profiles.ttl"
+          [ -d "${{ inputs.background-dir }}" ] && ARGS="$ARGS --backgroundDir ${{ inputs.background-dir }}"
+          [ -d "${{ inputs.validators-dir }}" ] && ARGS="$ARGS --validators ${{ inputs.validators-dir }}"
 
           node "$DP/scripts/process-vocab.js" $ARGS
 
@@ -70,8 +86,8 @@ jobs:
             echo "Processing: $file"
 
             ARGS="--source $file --type vocab --outDir public/export/vocabs/$(basename "$file" .ttl)"
-            [ -f "data/config/profiles.ttl" ] && ARGS="$ARGS --profiles data/config/profiles.ttl"
-            [ -d "data/background" ] && ARGS="$ARGS --backgroundDir data/background"
+            [ -f "${{ inputs.config-dir }}/profiles.ttl" ] && ARGS="$ARGS --profiles ${{ inputs.config-dir }}/profiles.ttl"
+            [ -d "${{ inputs.background-dir }}" ] && ARGS="$ARGS --backgroundDir ${{ inputs.background-dir }}"
 
             node "$DP/scripts/process-vocab.js" $ARGS
           done
@@ -83,15 +99,15 @@ jobs:
           mkdir -p public/export/system/vocabularies public/export/system/search
 
           # Vocabulary metadata
-          ARGS="--sourceDir data/vocabs --output public/export/system/vocabularies/index.json"
-          [ -d "data/background" ] && ARGS="$ARGS --backgroundDir data/background"
-          [ -d "data/validators" ] && ARGS="$ARGS --validators data/validators"
+          ARGS="--sourceDir ${{ inputs.vocab-source-dir }} --output public/export/system/vocabularies/index.json"
+          [ -d "${{ inputs.background-dir }}" ] && ARGS="$ARGS --backgroundDir ${{ inputs.background-dir }}"
+          [ -d "${{ inputs.validators-dir }}" ] && ARGS="$ARGS --validators ${{ inputs.validators-dir }}"
           node "$DP/scripts/generate-vocab-metadata.js" $ARGS || echo "Vocab metadata skipped"
 
           # Labels
-          if ls data/background/*.ttl >/dev/null 2>&1; then
+          if ls ${{ inputs.background-dir }}/*.ttl >/dev/null 2>&1; then
             node "$DP/scripts/generate-labels.js" \
-              --backgroundDir data/background \
+              --backgroundDir ${{ inputs.background-dir }} \
               --output public/export/system/labels.json || echo "Labels skipped"
           fi
 
@@ -102,9 +118,9 @@ jobs:
             --vocabMetadata public/export/system/vocabularies/index.json || echo "Search index skipped"
 
           # Workspaces
-          if [ -f "data/config/workspaces.ttl" ] && [ -f "$DP/scripts/generate-workspaces.js" ]; then
+          if [ -f "${{ inputs.config-dir }}/workspaces.ttl" ] && [ -f "$DP/scripts/generate-workspaces.js" ]; then
             node "$DP/scripts/generate-workspaces.js" \
-              --source data/config/workspaces.ttl \
+              --source ${{ inputs.config-dir }}/workspaces.ttl \
               --output public/export/system/workspaces.json || echo "Workspaces skipped"
           fi
 

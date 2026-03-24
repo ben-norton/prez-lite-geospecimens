@@ -6,6 +6,11 @@
  *
  * Usage:
  *   node scripts/process-vocabs.js
+ *
+ * Environment variables (optional, for non-standard layouts):
+ *   VOCAB_SOURCE_DIR     - Vocabulary source directory (default: data/vocabs)
+ *   VOCAB_CONFIG_DIR     - Config directory containing profiles.ttl (default: data/config)
+ *   VOCAB_BACKGROUND_DIR - Background labels directory (default: data/background)
  */
 
 import { execSync, spawn } from 'node:child_process'
@@ -54,12 +59,13 @@ const PREZ_LITE_REPO = process.env.PREZ_LITE_REPO || 'Kurrawong/prez-lite'
 const PREZ_LITE_BRANCH = process.env.PREZ_LITE_BRANCH || 'main'
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN
 
-// Paths in the template project
-const SOURCE_DIR = join(ROOT_DIR, 'data', 'vocabs')
-const PROFILES_FILE = join(ROOT_DIR, 'data', 'config', 'profiles.ttl')
+// Paths — override via environment variables for non-standard layouts
+const SOURCE_DIR = process.env.VOCAB_SOURCE_DIR ? resolve(ROOT_DIR, process.env.VOCAB_SOURCE_DIR) : join(ROOT_DIR, 'data', 'vocabs')
+const CONFIG_DIR = process.env.VOCAB_CONFIG_DIR ? resolve(ROOT_DIR, process.env.VOCAB_CONFIG_DIR) : join(ROOT_DIR, 'data', 'config')
+const PROFILES_FILE = join(CONFIG_DIR, 'profiles.ttl')
 const EXPORT_DIR = join(ROOT_DIR, 'public', 'export')
 const OUTPUT_DIR = join(EXPORT_DIR, 'vocabs')
-const BACKGROUND_DIR = join(ROOT_DIR, 'data', 'background')
+const BACKGROUND_DIR = process.env.VOCAB_BACKGROUND_DIR ? resolve(ROOT_DIR, process.env.VOCAB_BACKGROUND_DIR) : join(ROOT_DIR, 'data', 'background')
 
 async function main() {
   console.log('🔧 prez-lite Vocabulary Processor')
