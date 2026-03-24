@@ -109,9 +109,13 @@ const editModeInitializing = computed(() =>
   editView.value !== 'none' && editMode != null && !editMode.isEditMode.value,
 )
 // Only show tree skeleton when NOT in spreadsheet mode (spreadsheet has its own skeleton)
+// Also show when concepts are loading but tree hasn't been built yet (avoids blank flash)
 const showTreeSkeleton = computed(() => {
   if (conceptViewModeParam.value === 'spreadsheet') return false
-  return (isLoading.value && !lastValidTreeItems.value.length) || editModeInitializing.value
+  if (editModeInitializing.value) return true
+  const hasTreeData = lastValidTreeItems.value.length > 0 || treeItems.value.length > 0
+  if (!hasTreeData && (isLoading.value || (concepts.value === null && status.value !== 'error'))) return true
+  return false
 })
 // Show loading indicator when refreshing existing data
 const isTreeLoading = computed(() => isLoading.value && lastValidTreeItems.value.length > 0)
@@ -930,7 +934,11 @@ async function handleSaveConfirm(commitMessage: string) {
     showSaveModal.value = false
     saveModalSubjectIri.value = null
     clearCaches()
-    buildStatus?.startPolling()
+    // Only poll for build status when saving directly to main (no workspace)
+    // Workspace edit branches don't trigger the process-data workflow
+    if (!workspace.state.value?.workspaceSlug) {
+      buildStatus?.startPolling()
+    }
     // Refresh layer status after a brief delay to let GitHub API propagate the commit
     setTimeout(() => layerStatus?.refresh(), 1500)
   }
@@ -1849,8 +1857,11 @@ function copyIriToClipboard(iri: string) {
           </UButton>
         </div>
 
-        <div v-if="showTreeSkeleton" class="space-y-2">
-          <USkeleton class="h-8 w-full" v-for="i in 5" :key="i" />
+        <div v-if="showTreeSkeleton" class="space-y-1.5 p-2">
+          <div v-for="i in 8" :key="i" class="flex items-center gap-2" :style="{ paddingLeft: [0,0,0,16,16,32,16,16][i-1] + 'px' }">
+            <USkeleton class="h-4 w-4 shrink-0 rounded" />
+            <USkeleton class="h-5 rounded" :style="{ width: [75,60,85,50,70,45,65,55][i-1] + '%' }" />
+          </div>
         </div>
 
         <!-- Spreadsheet view: loading skeleton while data or edit mode initialises -->

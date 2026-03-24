@@ -24,11 +24,11 @@ function formatPropertyValues(values: PropertyValue[]): string {
 }
 
 export function useScheme(uri: Ref<string>) {
-  const { data: schemes } = useAsyncData('schemes', fetchSchemes, { server: false })
+  const { data: schemes } = useAsyncData('schemes', fetchSchemes, { server: false, lazy: true })
   const scheme = computed(() => schemes.value?.find(s => s.iri === uri.value))
 
   // Get slug for annotated properties lookup
-  const { data: vocabMetadata } = useAsyncData('vocabMetadata', fetchVocabMetadata, { server: false })
+  const { data: vocabMetadata } = useAsyncData('vocabMetadata', fetchVocabMetadata, { server: false, lazy: true })
   const currentVocabMeta = computed(() => vocabMetadata.value?.find(v => v.iri === uri.value))
   const slug = computed(() => currentVocabMeta.value?.slug)
   const validation = computed(() => currentVocabMeta.value?.validation)
@@ -36,17 +36,17 @@ export function useScheme(uri: Ref<string>) {
   const { data: concepts, status } = useAsyncData(
     () => `concepts-${uri.value}`,
     () => uri.value ? fetchConcepts(uri.value) : Promise.resolve([]),
-    { server: false, watch: [uri] }
+    { server: false, lazy: true, watch: [uri] }
   )
 
-  const { data: labelsIndex } = useAsyncData('labels', fetchLabels, { server: false })
+  const { data: labelsIndex } = useAsyncData('labels', fetchLabels, { server: false, lazy: true })
 
   // Fetch collections for this vocab (only when slug is available and collections exist)
   const hasCollections = computed(() => (currentVocabMeta.value?.collectionCount ?? 0) > 0)
   const { data: collections } = useAsyncData(
     () => `collections-${slug.value}`,
     () => slug.value && hasCollections.value ? fetchListCollections(slug.value) : Promise.resolve([]),
-    { server: false, watch: [slug, hasCollections] }
+    { server: false, lazy: true, watch: [slug, hasCollections] }
   )
 
   // Get annotated properties from the anot-ld-json file

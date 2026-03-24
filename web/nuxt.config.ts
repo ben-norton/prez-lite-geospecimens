@@ -1,5 +1,7 @@
 import { fileURLToPath } from 'url'
 import { dirname, resolve } from 'path'
+import { existsSync, watchFile, type Stats } from 'fs'
+import { execFileSync } from 'child_process'
 
 // Get absolute path for layer CSS
 const currentDir = dirname(fileURLToPath(import.meta.url))
@@ -120,5 +122,30 @@ export default defineNuxtConfig({
     optimizeDeps: {
       include: ['mermaid']
     }
-  }
+  },
+
+  hooks: {
+    // Auto-regenerate workspaces.json when workspaces.ttl changes in dev mode
+    'listen': (_server, { listener: _listener }) => {
+      const rootDir = process.cwd()
+      const ttlPath = resolve(rootDir, 'data/config/workspaces.ttl')
+      const jsonPath = resolve(rootDir, 'public/export/system/workspaces.json')
+      const scriptPath = resolve(currentDir, '../packages/data-processing/scripts/generate-workspaces.js')
+
+      if (!existsSync(ttlPath) || !existsSync(scriptPath)) return
+
+      watchFile(ttlPath, { interval: 1000 }, (_curr: Stats, _prev: Stats) => {
+        try {
+          execFileSync('node', [scriptPath, '--source', ttlPath, '--output', jsonPath], {
+            cwd: rootDir,
+            stdio: 'pipe',
+          })
+          console.log('[prez-lite] Regenerated workspaces.json')
+        } catch (e: unknown) {
+          const msg = e instanceof Error ? e.message : String(e)
+          console.error('[prez-lite] Failed to regenerate workspaces.json:', msg)
+        }
+      })
+    },
+  },
 })

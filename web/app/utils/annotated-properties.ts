@@ -365,7 +365,7 @@ export function useAnnotatedProperties(
   const { data, status } = useAsyncData(
     () => `annotated-${slug.value}`,
     () => slug.value ? fetchAnnotatedProperties(slug.value, type) : Promise.resolve({ properties: [], focusIri: null }),
-    { server: false, watch: [slug] }
+    { server: false, lazy: true, watch: [slug] }
   )
 
   const properties = computed(() => data.value?.properties ?? [])
@@ -443,7 +443,7 @@ export function useConceptAnnotatedProperties(
     () => (slug.value && conceptIri.value)
       ? fetchConceptAnnotatedProperties(slug.value, conceptIri.value)
       : Promise.resolve({ properties: [], conceptIri: null }),
-    { server: false, watch: [slug, conceptIri] }
+    { server: false, lazy: true, watch: [slug, conceptIri] }
   )
 
   const properties = computed(() => data.value?.properties ?? [])
