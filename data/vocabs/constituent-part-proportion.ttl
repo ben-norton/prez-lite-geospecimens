@@ -1,0 +1,153 @@
+PREFIX : <https://vocab.geospecimens.org/def/constituent-part-proportion/>
+PREFIX cs: <https://vocab.geospecimens.org/def/constituent-part-proportion>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX isoroles: <https://linked.data.gov.au/def/data-roles/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX reg: <http://purl.org/linked-data/registry#>
+PREFIX schema: <https://schema.org/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX vann: <http://purl.org/vocab/vann/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+cs:
+    a
+        owl:Ontology ,
+        skos:ConceptScheme ;
+    dcterms:title "Constituent Part Proportion"@en ;
+    skos:prefLabel "Constituent Part Proportion"@en ;
+    skos:definition "The Constituent Part Proportion vocabulary is a SKOS-based terminology for describing the presence of a constituent part within the context of a parent compound specimen. The scheme provides comprehensive coverage for describing qualitative abundance."@en ;
+    skos:scopeNote "Values are valid within the scope of a material entity comprised of physically discrenable parts unified through physical attachment or some unifying criteria"@en ;
+    vann:usageNote "Used together with Constituent Part Role to describe the nature of a Constituent Part within the context of its parent Compound Specimen."@en ;
+    skos:historyNote "Terms and definitions are largely derived from the CGI Vocabulary, Proportion Term (http://resource.geosciml.org/classifier/cgi/proportionterm), with modifications to suit the context of a curated collection of specimens at the hand-specimen level"@en ;
+    dcterms:provenance "Compiled by the TDWG Mineralogy Extension Task Group for community use and to support the extension release by providing standardized values for Constituent Part proportions, which is key attribute of Constituent Parts of a Component Specimen"@en ;
+    schema:keywords
+        "Collections"@en ,
+        "Geologic Collections"@en ,
+        "Specimens"@en ,
+        "Compound Specimen"@en ,
+        "Constituent Part"@en ;
+    schema:citation "Norton B, Walcott R, Burri T, Puschnig A, Dombrowski A, Greber N, Hints O, Mansur A, Ralph J, Richard S, Tacker C. Constituent Part Proportion Vocabulary (pending)."@en ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/experimental> ;
+    schema:license <https://creativecommons.org/licenses/by/4.0/> ;
+    schema:creator <https://tdwg.org> ;
+    schema:publisher <https://tdwg.org> ;
+    schema:dateCreated "2026-04-17"^^xsd:date ;
+    schema:dateModified "2026-04-17"^^xsd:date ;
+    schema:version "2026-04-17" ;
+    skos:hasTopConcept
+        :all ,
+        :major ,
+        :minor ,
+        :rare ,
+        :trace ,
+        :present ,
+        :variable ,
+        :absent ;
+.
+
+<https://orcid.org/0000-0002-5819-9134>
+    a schema:Person ;
+    schema:name "Ben Norton" ;
+    schema:email "ben.norton@yale.edu" ;
+    schema:affiliation <https://scientific-collections.gbif.org/institution/75f50140-830d-4630-a290-3d6e951a7c29> ;
+.
+
+:all
+    a skos:Concept ;
+    rdfs:isDefinedBy cs: ;
+    skos:inScheme cs: ;
+    skos:prefLabel "All"@en ;
+    skos:notation "all" ;
+    skos:definition "A material component comprises the entire material entity by volume, excluding negligible impurities"@en ;
+    vann:usageNote "Used for monomineralic specimens or materials composed of a single constituent"@en ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/submitted> ;
+    skos:topConceptOf cs: ;
+.
+
+:major
+    a skos:Concept ;
+    rdfs:isDefinedBy cs: ;
+    skos:inScheme cs: ;
+    skos:prefLabel "Major"@en ;
+    skos:notation "major" ;
+    skos:altLabel "Dominant"@en ;
+    skos:definition "A material component comprises more than 50% of the material entity by volume"@en ;
+    vann:usageNote "Used when a single constituent clearly forms the majority of the specimen"@en ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/submitted> ;
+    skos:topConceptOf cs: ;
+.
+
+:minor
+    a skos:Concept ;
+    rdfs:isDefinedBy cs: ;
+    skos:inScheme cs: ;
+    skos:prefLabel "Minor"@en ;
+    skos:notation "minor" ;
+    skos:altLabel "Subordinate"@en ;
+    skos:definition "A material component comprises between 5% and 50% of the material entity by volume"@en ;
+    vann:usageNote "Component material is readily observable but not abundant"@en ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/submitted> ;
+    skos:topConceptOf cs: ;
+.
+
+:rare
+    a skos:Concept ;
+    rdfs:isDefinedBy cs: ;
+    skos:inScheme cs: ;
+    skos:prefLabel "Rare"@en ;
+    skos:notation "rare" ;
+    skos:definition "A material component comprises between 0.1% and 5% of the material entity by volume"@en ;
+    vann:usageNote "Component material is present in very small quantities, may require careful examination to identify"@en ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/submitted> ;
+    skos:topConceptOf cs: ;
+.
+
+:trace
+    a skos:Concept ;
+    rdfs:isDefinedBy cs: ;
+    skos:inScheme cs: ;
+    skos:prefLabel "Trace"@en ;
+    skos:notation "trace" ;
+    skos:definition "A material component comprises less than 0.1% of the material entity by volume"@en ;
+    vann:usageNote "Component material occurs in minute quantities, typically requires magnification or analytical methods to detect"@en ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/submitted> ;
+    skos:topConceptOf cs: ;
+.
+
+:present
+    a skos:Concept ;
+    rdfs:isDefinedBy cs: ;
+    skos:inScheme cs: ;
+    skos:prefLabel "Present"@en ;
+    skos:notation "present" ;
+    skos:definition "A material component is confirmed to exist in the material entity but proportion has not been quantified"@en ;
+    vann:usageNote "Applicable the presence of component material is documented but volumetric proportion cannot be determined"@en ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/submitted> ;
+    skos:topConceptOf cs: ;
+.
+
+:variable
+    a skos:Concept ;
+    rdfs:isDefinedBy cs: ;
+    skos:inScheme cs: ;
+    skos:prefLabel "Variable"@en ;
+    skos:notation "variable" ;
+    skos:definition "The proportion of a material component varies significantly within the material entity or across specimens"@en ;
+    vann:usageNote "Applicable when the occurrence of a component material is heterogeneous or inconsistent, preventing assignment of a single proportion value"@en ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/submitted> ;
+    skos:topConceptOf cs: ;
+.
+
+:absent
+    a skos:Concept ;
+    rdfs:isDefinedBy cs: ;
+    skos:inScheme cs: ;
+    skos:prefLabel "Absent"@en ;
+    skos:notation "absent" ;
+    skos:definition "A material component is not present in the material entity"@en ;
+    vann:usageNote "Value should only be used to document the absence of a component material that might be expected or was previously reported"@en ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/submitted> ;
+    skos:topConceptOf cs: ;
+.

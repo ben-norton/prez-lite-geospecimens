@@ -1,0 +1,132 @@
+PREFIX : <https://vocab.geospecimens.org/def/hazard-type/>
+PREFIX cs: <https://vocab.geospecimens.org/def/hazard-type>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX isoroles: <https://linked.data.gov.au/def/data-roles/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX reg: <http://purl.org/linked-data/registry#>
+PREFIX schema: <https://schema.org/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX vann: <http://purl.org/vocab/vann/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+cs:
+    a
+        owl:Ontology ,
+        skos:ConceptScheme ;
+    dcterms:title "Hazard Types"@en ;
+    skos:prefLabel "Hazard Types"@en ;
+    skos:definition "The Hazard Type vocabulary is a SKOS concept scheme for describing the nature of hazards associated with specific materials, with coverage spanning the biological and geological collections domains."@en ;
+    skos:scopeNote "Despite being published by the Mineralogy Extension Task Group, the hazard type concept scheme is intended to support specimens across that belong to biological and geological collections."@en ;
+    vann:usageNote "Intended to be used in conjuncture with the proposed darwin core term, hazardType"@en ;
+    dcterms:provenance "Compiled by the TDWG Mineralogy Extension Task Group to support community use and the new term hazardType, released as part of a broader set of terms extending Darwin Core coverage to mineralogical and geological collections."@en ;
+    schema:keywords
+        "Collections"@en ,
+        "Geologic Collections"@en ,
+        "Specimens"@en ,
+        "Hazards"@en ,
+        "Biological Collections"@en ;
+    schema:citation "Norton B, Walcott R, Burri T, Puschnig A, Dombrowski A, Greber N, Hints O, Mansur A, Ralph J, Richard S, Tacker C. Hazard Type Vocabulary (pending)."@en ;
+    prov:wasDerivedFrom <http://purl.obolibrary.org/obo/CHEBI_> ;
+    prov:wasDerivedFrom <http://purl.obolibrary.org/obo/XCO_> ;
+    prov:wasDerivedFrom <https://linked.data.gov.au/def/sample-condition> ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/experimental> ;
+    schema:license <https://creativecommons.org/licenses/by/4.0/> ;
+    schema:creator "TDWG Mineralogy Extension Task Group" ;
+    schema:publisher "TDWG Mineralogy Extension Task Group" ;
+    schema:dateCreated "2026-04-09"^^xsd:date ;
+    schema:dateModified "2026-04-09"^^xsd:date ;
+    schema:version "2026-04-09" ;
+    skos:hasTopConcept
+        :radioactive ,
+        :toxic ,
+        :carcinogen ,
+        :asbestos-bearing ,
+        :flammable ,
+        :explosive ,
+        :corrosive ;
+.
+
+:radioactive
+    a skos:Concept ;
+    rdfs:isDefinedBy cs: ;
+    skos:inScheme cs: ;
+    skos:prefLabel "Radioactive"@en ;
+    skos:notation "radioactive" ;
+    skos:definition "Any material containing unstable atoms that emit ionizing radiation as it decays."@en ;
+    dcterms:provenance "Term is exact match with the concept defined by the NCIT Thesaurus. Therefore, the conceptIRI, prefLabel, and definition are maintained."@en ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/experimental> ;
+    skos:topConceptOf cs: ;
+.
+
+:toxic
+    a skos:Concept ;
+    rdfs:isDefinedBy cs: ;
+    skos:inScheme cs: ;
+    skos:prefLabel "Toxic"@en ;
+    skos:notation "toxic" ;
+    skos:definition "A chemical or biological substance which is capable of causing illness, debilitation or death, to living organisms, tissues or cells."@en ;
+    dcterms:provenance "Term is exact match with the concept defined by the Experimental Condition Ontology. Therefore, the conceptIRI, prefLabel, and definition are maintained."@en ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/experimental> ;
+    skos:topConceptOf cs: ;
+.
+
+:carcinogen
+    a skos:Concept ;
+    rdfs:isDefinedBy cs: ;
+    skos:inScheme cs: ;
+    skos:prefLabel "Carcinogen"@en ;
+    skos:notation "carcinogen" ;
+    skos:definition "A role played by a chemical compound which is known to induce a process of carcinogenesis by corrupting normal cellular pathways, leading to the acquistion of tumoral capabilities."@en ;
+    dcterms:provenance "Term is exact match with the concept defined by he Chemical Entities of Biological Interest concept scheme. Therefore, the conceptIRI, prefLabel, and definition are maintained."@en ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/experimental> ;
+    skos:topConceptOf cs: ;
+.
+
+:asbestos-bearing
+    a skos:Concept ;
+    rdfs:isDefinedBy cs: ;
+    skos:inScheme cs: ;
+    skos:prefLabel "Asbestos-bearing"@en ;
+    skos:notation "asbestosBearing" ;
+    skos:definition "A sample or specimen containing acicular or fibrous asbestos (serpentine or amphibole) minerals, either naturally or as part of storage materials, which can cause internal damage if breathed or ingested."@en ;
+    dcterms:provenance "Term is exact match with a concept defined by the Sample Condition concept scheme. Therefore, the conceptIRI, prefLabel, and definition are maintained."@en ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/experimental> ;
+    skos:topConceptOf cs: ;
+.
+
+:flammable
+    a skos:Concept ;
+    rdfs:isDefinedBy cs: ;
+    skos:inScheme cs: ;
+    skos:prefLabel "Flammable"@en ;
+    skos:notation "flammable" ;
+    skos:definition "A sample or preparation containing inflammable, flammable or flame-sustaining materials, whether naturally, or as part of treatment or storage materials."@en ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/experimental> ;
+    skos:topConceptOf cs: ;
+.
+
+:explosive
+    a skos:Concept ;
+    rdfs:isDefinedBy cs: ;
+    skos:inScheme cs: ;
+    skos:prefLabel "Explosive"@en ;
+    skos:notation "explosive" ;
+    skos:definition "A solid or liquid chemical which is in itself capable by chemical reaction of producing gas at such a temperature and pressure and at such a speed as to cause damage to the surroundings."@en ;
+    dcterms:provenance "Definition based on the US Code of Federal Regulations. Occupational Health and Safety Standards. Section 1910."@en ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/experimental> ;
+    skos:topConceptOf cs: ;
+.
+
+:corrosive
+    a skos:Concept ;
+    rdfs:isDefinedBy cs: ;
+    skos:inScheme cs: ;
+    skos:prefLabel "Corrosive"@en ;
+    skos:notation "corrosive" ;
+    skos:definition "A material that causes visible destruction of, or irreversible alterations in living tissue by chemical action at the site of contact."@en ;
+    dcterms:provenance "Definition is based on the US Code of Federal Regulations. Occupational Health and Safety Standards."@en ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/experimental> ;
+    skos:topConceptOf cs: ;
+.

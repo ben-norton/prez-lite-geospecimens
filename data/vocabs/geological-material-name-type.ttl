@@ -1,0 +1,178 @@
+PREFIX : <https://vocab.geospecimens.org/def/geological-material-name-type/>
+PREFIX cs: <https://vocab.geospecimens.org/def/geological-material-name-type>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX isoroles: <https://linked.data.gov.au/def/data-roles/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX reg: <http://purl.org/linked-data/registry#>
+PREFIX schema: <https://schema.org/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX vann: <http://purl.org/vocab/vann/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+cs:
+    a
+        owl:Ontology ,
+        skos:ConceptScheme ;
+    dcterms:title "Geological Material Name Type"@en ;
+    skos:prefLabel "Geological Material Name Type"@en ;
+    skos:definition "A vocabulary of terms describing the types of names that may be applied to geological materials, including minerals and rocks, and their constituent parts. The vocabulary distinguishes between names that carry formal standing — those assigned or approved by an authoritative nomenclatural body such as the International Mineralogical Association (IMA) — and names used outside formal systems, including alternate, historical, and deprecated designations. Formally sanctioned name types include IMA Approved Name, Classification, Group Name, Structural Group, and Series. Names reflecting historical usage, discontinued classifications, or pending approval are represented by the Historical, Synonym, Obsolete, and Unapproved types. The Alternate Name type captures commonly used names that are not sanctioned by any authoritative body, while Material Name provides a general designation for use with non-geological materials."@en ;
+    skos:scopeNote "Values are valid within the scope of a geological material and intended to categorize names of Simple Specimens or Constituent Parts"@en ;
+    vann:usageNote "Intended to be used to categorize names assigned to Constituent Parts of Compound Specimens in order to atomize multiple individual names assigned to a single Constituent Part"@en ;
+    dcterms:provenance "Compiled by the TDWG Mineralogy Extension Task Group for community use and to support the extension release by providing standardized categories for Constituent Part Names, especially those associated with Minerals"@en ;
+    schema:keywords
+        "Compound Specimen"@en ,
+        "Constituent Part"@en ,
+        "Names"@en ,
+        "Mineral Name Types"@en ,
+        "Geological Specimens"@en ;
+    schema:citation "Norton B, Walcott R, Burri T, Puschnig A, Dombrowski A, Greber N, Hints O, Mansur A, Ralph J, Richard S, Tacker C. Geological Material Name Type Vocabulary (pending)."@en ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/experimental> ;
+    schema:license <https://creativecommons.org/licenses/by/4.0/> ;
+    schema:creator <https://www.tdwg.org/community/esp/mineralogy/> ;
+    schema:publisher <https://www.tdwg.org/community/esp/mineralogy/> ;
+    schema:dateCreated "2026-04-17"^^xsd:date ;
+    schema:dateModified "2026-04-17"^^xsd:date ;
+    schema:version "2026-04-17" ;
+    skos:hasTopConcept
+        :formal-name ,
+        :alternate-name ,
+        :material-name ;
+.
+
+<https://orcid.org/0000-0002-5819-9134>
+    a schema:Person ;
+    schema:name "Ben Norton" ;
+    schema:email "ben.norton@yale.edu" ;
+    schema:affiliation <https://scientific-collections.gbif.org/institution/75f50140-830d-4630-a290-3d6e951a7c29> ;
+.
+
+:formal-name
+    a skos:Concept ;
+    rdfs:isDefinedBy cs: ;
+    skos:inScheme cs: ;
+    skos:prefLabel "Formal Name"@en ;
+    skos:altLabel "Official Name"@en ;
+    skos:definition "A name assigned by an authoritative body based on a defined set of unambiguous criteria and belonging to a formal nomenclature"@en ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/submitted> ;
+    skos:topConceptOf cs: ;
+.
+
+:classification
+    a skos:Concept ;
+    rdfs:isDefinedBy cs: ;
+    skos:inScheme cs: ;
+    skos:prefLabel "Classification"@en ;
+    skos:altLabel "Species"@en ;
+    skos:definition "A name derived from an authoritative classification system at any rank"@en ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/submitted> ;
+.
+
+:structural-group
+    a skos:Concept ;
+    rdfs:isDefinedBy cs: ;
+    skos:inScheme cs: ;
+    skos:prefLabel "Structural Group"@en ;
+    skos:definition "A group name based on a shared crystal structure and composition of chemically similar elements"@en ;
+    vann:usageNote "Recommended is the use of Fleischer's Glossary."@en ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/submitted> ;
+.
+
+:series
+    a skos:Concept ;
+    rdfs:isDefinedBy cs: ;
+    skos:inScheme cs: ;
+    skos:prefLabel "Series"@en ;
+    skos:altLabel "Solid Solution Series"@en ;
+    skos:definition "Name of the solid solution series to which a specimen belongs."@en ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/submitted> ;
+.
+
+:ima-approved-name
+    a skos:Concept ;
+    rdfs:isDefinedBy cs: ;
+    skos:inScheme cs: ;
+    skos:prefLabel "IMA Approved Name"@en ;
+    skos:definition "A mineral name that has received formal approval by the International Mineralogical Association (IMA)"@en ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/submitted> ;
+.
+
+:group
+    a skos:Concept ;
+    rdfs:isDefinedBy cs: ;
+    skos:inScheme cs: ;
+    skos:prefLabel "Group"@en ;
+    skos:definition "The name of a mineralogical group a specimen belongs to. Groups are defined as a set of mineral species with essentially the same crystal structure and composed of chemically similar elements."@en ;
+    dcterms:provenance "Mills, S. J., Hatert, F., Nickel, E. H., & Ferraris, G. (2009). The standardisation of mineral group hierarchies: application to recent nomenclature proposals. European Journal of Mineralogy, 21(5), 1073-1080."@en ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/submitted> ;
+.
+
+:historical
+    a skos:Concept ;
+    rdfs:isDefinedBy cs: ;
+    skos:inScheme cs: ;
+    skos:prefLabel "Historical"@en ;
+    skos:definition "An alias of a mineral name used within a historical context or derived from a historical source"@en ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/submitted> ;
+.
+
+:synonym
+    a skos:Concept ;
+    rdfs:isDefinedBy cs: ;
+    skos:inScheme cs: ;
+    skos:prefLabel "Synonym"@en ;
+    skos:definition "An alias of a mineral species no longer recognized as the official classification"@en ;
+    vann:usageNote "It is recommended to use synonyms only as additional information to the officially accepted IMA name."@en ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/submitted> ;
+.
+
+:obsolete
+    a skos:Concept ;
+    rdfs:isDefinedBy cs: ;
+    skos:inScheme cs: ;
+    skos:prefLabel "Obsolete"@en ;
+    skos:definition "A name defined in prior standards or classification systems but has since been removed from those authoritative sources. Includes names designated by the International Mineralogical Association as discredited or obsolete."@en ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/submitted> ;
+.
+
+:variety
+    a skos:Concept ;
+    rdfs:isDefinedBy cs: ;
+    skos:inScheme cs: ;
+    skos:prefLabel "Variety"@en ;
+    skos:definition "A mineral that is a type of the mineral species, distinguished by color or other optical phenomenon or characteristic"@en ;
+    dcterms:provenance "Neuendorf, K. K. (2005). Glossary of geology. Springer Science & Business Media."@en ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/submitted> ;
+.
+
+:alternate-name
+    a skos:Concept ;
+    rdfs:isDefinedBy cs: ;
+    skos:inScheme cs: ;
+    skos:prefLabel "Alternate Name"@en ;
+    skos:definition "A name by which a geologic material is frequently referred, without reference to any formal usage or structure nor sanctioned by an authoritative body"@en ;
+    dcterms:provenance "Adopted from https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/hasCommonName"@en ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/submitted> ;
+    skos:topConceptOf cs: ;
+.
+
+:unapproved
+    a skos:Concept ;
+    rdfs:isDefinedBy cs: ;
+    skos:inScheme cs: ;
+    skos:prefLabel "Unapproved"@en ;
+    skos:definition "The name of a mineralogical specimen that is pending approval as an offical name by the International Mineralogical Association (IMA)"@en ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/submitted> ;
+.
+
+:material-name
+    a skos:Concept ;
+    rdfs:isDefinedBy cs: ;
+    skos:inScheme cs: ;
+    skos:prefLabel "Material Name"@en ;
+    skos:definition "General name for a unspecified material"@en ;
+    vann:usageNote "Used primarily for non-geological materials"@en ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/submitted> ;
+    skos:topConceptOf cs: ;
+.

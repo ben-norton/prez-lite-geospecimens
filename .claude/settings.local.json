@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /g/repos/lux/prez-lite-fork/web -name \"*annotated*\" -o -name \"*enrichment*\" | grep -E \"\\\\.\\(vue|ts\\)$\")",
+      "Bash(find /g/repos/lux/prez-lite-fork/web -name \"*Rich*\" -o -name \"*Metadata*\" | grep -E \"\\\\.\\(vue|ts\\)$\")",
+      "Bash(python -m pip install openpyxl)",
+      "Bash(python *)",
+      "WebFetch(domain:localhost)",
+      "Bash(curl *)"
+    ]
+  }
+}
