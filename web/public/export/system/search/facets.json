@@ -1,31 +1,25 @@
 {
   "schemes": [
     {
-      "iri": "https://linked.data.gov.au/def/alteration-form",
-      "label": "Alteration form",
-      "count": 24
+      "iri": "https://vocab.geospecimens.org/def/geological-material-name-type",
+      "label": "Geological Material Name Type",
+      "count": 13
     },
     {
-      "iri": "https://example.com/def/colours",
-      "label": "Colour",
-      "count": 15
+      "iri": "http://vocab.geospecimens.org/def/geological-specimen-type",
+      "label": "Geological Specimen Material Type",
+      "count": 13
     },
     {
-      "iri": "https://example.com/def/australian-states",
-      "label": "Australian States and Territories",
-      "count": 10
+      "iri": "https://vocab.geospecimens.org/def/constituent-part-proportion",
+      "label": "Constituent Part Proportion",
+      "count": 8
     },
     {
-      "iri": "https://example.com/def/project-status",
-      "label": "Project Status",
-      "count": 9
+      "iri": "http://vocab.geospecimens.org/def/hazard-type",
+      "label": "Hazard Types",
+      "count": 7
     }
   ],
-  "publishers": [
-    {
-      "iri": "https://linked.data.gov.au/org/gswa",
-      "label": "gswa",
-      "count": 24
-    }
-  ]
+  "publishers": []
 }

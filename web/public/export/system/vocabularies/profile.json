@@ -87,6 +87,31 @@
         "path": "http://purl.org/dc/terms/provenance",
         "order": 13,
         "simpleView": true
+      },
+      {
+        "path": "http://purl.org/dc/terms/title",
+        "order": 14,
+        "simpleView": true
+      },
+      {
+        "path": "http://www.w3.org/2004/02/skos/core#scopeNote",
+        "order": 15,
+        "simpleView": true
+      },
+      {
+        "path": "http://purl.org/vocab/vann/usageNote",
+        "order": 16,
+        "simpleView": true
+      },
+      {
+        "path": "https://schema.org/citation",
+        "order": 17,
+        "simpleView": true
+      },
+      {
+        "path": "https://schema.org/license",
+        "order": 18,
+        "simpleView": true
       }
     ]
   },
@@ -155,6 +180,21 @@
       {
         "path": "http://www.w3.org/2004/02/skos/core#example",
         "order": 13,
+        "simpleView": true
+      },
+      {
+        "path": "http://purl.org/vocab/vann/usageNote",
+        "order": 14,
+        "simpleView": true
+      },
+      {
+        "path": "http://purl.org/dc/terms/provenance",
+        "order": 15,
+        "simpleView": true
+      },
+      {
+        "path": "http://purl.org/linked-data/registry#status",
+        "order": 16,
         "simpleView": true
       }
     ]

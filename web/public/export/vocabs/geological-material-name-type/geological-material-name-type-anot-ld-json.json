@@ -1,0 +1,238 @@
+[
+  {
+    "@id": "_:n3-56",
+    "@type": [
+      "http://www.w3.org/ns/prov#Attribution"
+    ],
+    "http://www.w3.org/ns/prov#agent": [
+      {
+        "@id": "https://orcid.org/0000-0002-5819-9134"
+      }
+    ],
+    "http://www.w3.org/ns/dcat#hadRole": [
+      {
+        "@id": "http://def.isotc211.org/iso19115-1/2014/CitationAndResponsiblePartyInformation/code/CI_RoleCode/editor"
+      }
+    ]
+  },
+  {
+    "@id": "_:n3-57",
+    "@type": [
+      "http://www.w3.org/ns/prov#Attribution"
+    ],
+    "http://www.w3.org/ns/prov#agent": [
+      {
+        "@id": "https://www.tdwg.org/community/esp/mineralogy/"
+      }
+    ],
+    "http://www.w3.org/ns/dcat#hadRole": [
+      {
+        "@id": "http://def.isotc211.org/iso19115-1/2014/CitationAndResponsiblePartyInformation/code/CI_RoleCode/publisher"
+      },
+      {
+        "@id": "http://def.isotc211.org/iso19115-1/2014/CitationAndResponsiblePartyInformation/code/CI_RoleCode/creator"
+      }
+    ]
+  },
+  {
+    "@id": "_:n3-59",
+    "https://prez.dev/currentProfile": [
+      {
+        "@id": "https://prez.dev/OGCSchemesObjectProfile"
+      }
+    ]
+  },
+  {
+    "@id": "https://linked.data.gov.au/catalogue/gswa-vocabs",
+    "https://prez.dev/identifier": [
+      {
+        "@value": "catalogue:gswa-vocabs"
+      }
+    ]
+  },
+  {
+    "@id": "https://prez.dev/link",
+    "https://prez.dev/label": [
+      {
+        "@value": "link"
+      }
+    ]
+  },
+  {
+    "@id": "https://prez.dev/members",
+    "https://prez.dev/label": [
+      {
+        "@value": "members"
+      }
+    ]
+  },
+  {
+    "@id": "https://vocab.geospecimens.org/def/geological-material-name-type",
+    "@type": [
+      "http://www.w3.org/2004/02/skos/core#ConceptScheme"
+    ],
+    "http://www.w3.org/2004/02/skos/core#prefLabel": [
+      {
+        "@value": "Geological Material Name Type",
+        "@language": "en"
+      }
+    ],
+    "http://purl.org/dc/terms/title": [
+      {
+        "@value": "Geological Material Name Type",
+        "@language": "en"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#definition": [
+      {
+        "@value": "A vocabulary of terms describing the types of names that may be applied to geological materials, including minerals and rocks, and their constituent parts. The vocabulary distinguishes between names that carry formal standing — those assigned or approved by an authoritative nomenclatural body such as the International Mineralogical Association (IMA) — and names used outside formal systems, including alternate, historical, and deprecated designations. Formally sanctioned name types include IMA Approved Name, Classification, Group Name, Structural Group, and Series. Names reflecting historical usage, discontinued classifications, or pending approval are represented by the Historical, Synonym, Obsolete, and Unapproved types. The Alternate Name type captures commonly used names that are not sanctioned by any authoritative body, while Material Name provides a general designation for use with non-geological materials.",
+        "@language": "en"
+      }
+    ],
+    "http://purl.org/dc/terms/description": [
+      {
+        "@value": "A vocabulary of terms describing the types of names that may be applied to geological materials, including minerals and rocks, and their constituent parts. The vocabulary distinguishes between names that carry formal standing — those assigned or approved by an authoritative nomenclatural body such as the International Mineralogical Association (IMA) — and names used outside formal systems, including alternate, historical, and deprecated designations. Formally sanctioned name types include IMA Approved Name, Classification, Group Name, Structural Group, and Series. Names reflecting historical usage, discontinued classifications, or pending approval are represented by the Historical, Synonym, Obsolete, and Unapproved types. The Alternate Name type captures commonly used names that are not sanctioned by any authoritative body, while Material Name provides a general designation for use with non-geological materials.",
+        "@language": "en"
+      }
+    ],
+    "http://purl.org/dc/terms/publisher": [
+      {
+        "@id": "https://www.tdwg.org/community/esp/mineralogy/"
+      }
+    ],
+    "http://purl.org/dc/terms/creator": [
+      {
+        "@id": "https://www.tdwg.org/community/esp/mineralogy/"
+      }
+    ],
+    "http://purl.org/dc/terms/contributor": [
+      {
+        "@id": "https://www.tdwg.org/community/esp/mineralogy/"
+      }
+    ],
+    "http://purl.org/dc/terms/provenance": [
+      {
+        "@value": "Compiled by the TDWG Mineralogy Extension Task Group for community use and to support the extension release by providing standardized categories for Constituent Part Names, especially those associated with Minerals",
+        "@language": "en"
+      }
+    ],
+    "http://purl.org/dc/terms/created": [
+      {
+        "@value": "2026-04-17",
+        "@type": "http://www.w3.org/2001/XMLSchema#date"
+      }
+    ],
+    "http://purl.org/dc/terms/modified": [
+      {
+        "@value": "2026-04-17",
+        "@type": "http://www.w3.org/2001/XMLSchema#date"
+      }
+    ],
+    "http://www.w3.org/ns/dcat#version": [
+      {
+        "@value": "2026-04-17"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#scopeNote": [
+      {
+        "@value": "Values are valid within the scope of a geological material and intended to categorize names of Simple Specimens or Constituent Parts",
+        "@language": "en"
+      }
+    ],
+    "http://purl.org/vocab/vann/usageNote": [
+      {
+        "@value": "Intended to be used to categorize names assigned to Constituent Parts of Compound Specimens in order to atomize multiple individual names assigned to a single Constituent Part",
+        "@language": "en"
+      }
+    ],
+    "http://www.w3.org/ns/dcat#keyword": [
+      {
+        "@value": "Compound Specimen",
+        "@language": "en"
+      },
+      {
+        "@value": "Constituent Part",
+        "@language": "en"
+      },
+      {
+        "@value": "Names",
+        "@language": "en"
+      },
+      {
+        "@value": "Mineral Name Types",
+        "@language": "en"
+      },
+      {
+        "@value": "Geological Specimens",
+        "@language": "en"
+      }
+    ],
+    "https://schema.org/citation": [
+      {
+        "@value": "Norton B, Walcott R, Burri T, Puschnig A, Dombrowski A, Greber N, Hints O, Mansur A, Ralph J, Richard S, Tacker C. Geological Material Name Type Vocabulary (pending).",
+        "@language": "en"
+      }
+    ],
+    "https://schema.org/license": [
+      {
+        "@id": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    ],
+    "http://purl.org/linked-data/registry#derivationMode": [
+      {
+        "@id": "https://linked.data.gov.au/def/vocdermods/subsetting-and-extension"
+      }
+    ],
+    "http://purl.org/linked-data/registry#status": [
+      {
+        "@id": "https://linked.data.gov.au/def/reg-statuses/experimental"
+      }
+    ],
+    "http://www.w3.org/ns/prov#qualifiedAttribution": [
+      {
+        "@id": "_:n3-56"
+      },
+      {
+        "@id": "_:n3-57"
+      }
+    ],
+    "https://prez.dev/identifier": [
+      {
+        "@value": "ns4:geological-material-name-type"
+      }
+    ],
+    "https://prez.dev/link": [
+      {
+        "@value": "/catalogs/catalogue:gswa-vocabs/collections/ns4:geological-material-name-type"
+      }
+    ],
+    "https://prez.dev/members": [
+      {
+        "@value": "/catalogs/catalogue:gswa-vocabs/collections/ns4:geological-material-name-type/items"
+      }
+    ],
+    "https://prez.dev/type": [
+      {
+        "@id": "https://prez.dev/FocusNode"
+      }
+    ],
+    "https://prez.dev/label": [
+      {
+        "@value": "Geological Material Name Type",
+        "@language": "en"
+      }
+    ],
+    "https://prez.dev/description": [
+      {
+        "@value": "A vocabulary of terms describing the types of names that may be applied to geological materials, including minerals and rocks, and their constituent parts. The vocabulary distinguishes between names that carry formal standing — those assigned or approved by an authoritative nomenclatural body such as the International Mineralogical Association (IMA) — and names used outside formal systems, including alternate, historical, and deprecated designations. Formally sanctioned name types include IMA Approved Name, Classification, Group Name, Structural Group, and Series. Names reflecting historical usage, discontinued classifications, or pending approval are represented by the Historical, Synonym, Obsolete, and Unapproved types. The Alternate Name type captures commonly used names that are not sanctioned by any authoritative body, while Material Name provides a general designation for use with non-geological materials.",
+        "@language": "en"
+      }
+    ],
+    "https://prez.dev/provenance": [
+      {
+        "@value": "Compiled by the TDWG Mineralogy Extension Task Group for community use and to support the extension release by providing standardized categories for Constituent Part Names, especially those associated with Minerals",
+        "@language": "en"
+      }
+    ]
+  }
+]

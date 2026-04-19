@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+   xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+   xmlns:owl="http://www.w3.org/2002/07/owl#"
+   xmlns:dcterms="http://purl.org/dc/terms/"
+   xmlns:sdo="https://schema.org/"
+   xmlns:prov="http://www.w3.org/ns/prov#"
+   xmlns:reg="http://purl.org/linked-data/registry#"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+   xmlns:prez="https://prez.dev/"
+   xmlns:dcat="http://www.w3.org/ns/dcat#"
+>
+  <rdf:Description rdf:about="http://vocab.geospecimens.org/def/hazard-type">
+    <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
+    <skos:prefLabel xml:lang="en">Hazard Types</skos:prefLabel>
+    <dcterms:title xml:lang="en">Hazard Types</dcterms:title>
+    <skos:definition xml:lang="en">The Hazard Type vocabulary is a SKOS concept scheme for describing the nature of hazards associated with specific materials, with coverage spanning the biological and geological collections domains.</skos:definition>
+    <dcterms:description xml:lang="en">The Hazard Type vocabulary is a SKOS concept scheme for describing the nature of hazards associated with specific materials, with coverage spanning the biological and geological collections domains.</dcterms:description>
+    <dcterms:publisher xml:lang="en">TDWG Mineralogy Extension Task Group</dcterms:publisher>
+    <dcterms:creator xml:lang="en">TDWG Mineralogy Extension Task Group</dcterms:creator>
+    <dcterms:contributor xml:lang="en">TDWG Mineralogy Extension Task Group</dcterms:contributor>
+    <dcterms:provenance xml:lang="en">Compiled by the TDWG Mineralogy Extension Task Group to support community use and the new term hazardType, released as part of a broader set of terms extending Darwin Core coverage to mineralogical and geological collections.</dcterms:provenance>
+    <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2026-04-09</dcterms:created>
+    <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2026-04-09</dcterms:modified>
+    <dcat:version>2026-04-09</dcat:version>
+    <skos:scopeNote xml:lang="en">Despite being published by the Mineralogy Extension Task Group, the hazard type concept scheme is intended to support specimens across that belong to biological and geological collections.</skos:scopeNote>
+    <http://purl.org/vocab/vann/usageNote xml:lang="en">Intended to be used in conjuncture with the proposed darwin core term, hazardType</http://purl.org/vocab/vann/usageNote>
+    <dcat:keyword xml:lang="en">Collections</dcat:keyword>
+    <dcat:keyword xml:lang="en">Geologic Collections</dcat:keyword>
+    <dcat:keyword xml:lang="en">Specimens</dcat:keyword>
+    <dcat:keyword xml:lang="en">Hazards</dcat:keyword>
+    <dcat:keyword xml:lang="en">Biological Collections</dcat:keyword>
+    <sdo:citation xml:lang="en">Norton B, Walcott R, Burri T, Puschnig A, Dombrowski A, Greber N, Hints O, Mansur A, Ralph J, Richard S, Tacker C. Hazard Type Vocabulary (pending).</sdo:citation>
+    <prov:wasDerivedFrom rdf:resource="http://purl.obolibrary.org/obo/CHEBI_"/>
+    <prov:wasDerivedFrom rdf:resource="http://purl.obolibrary.org/obo/XCO_"/>
+    <prov:wasDerivedFrom rdf:resource="https://linked.data.gov.au/def/sample-condition"/>
+    <sdo:license rdf:resource="https://creativecommons.org/licenses/by/4.0/"/>
+    <reg:derivationMode rdf:resource="https://linked.data.gov.au/def/vocdermods/subsetting-and-extension"/>
+    <reg:status rdf:resource="https://linked.data.gov.au/def/reg-statuses/experimental"/>
+    <skos:hasTopConcept rdf:resource="https://vocab.geospecimens.org/def/hazard-type/radioactive"/>
+    <skos:hasTopConcept rdf:resource="https://vocab.geospecimens.org/def/hazard-type/toxic"/>
+    <skos:hasTopConcept rdf:resource="https://vocab.geospecimens.org/def/hazard-type/carcinogen"/>
+    <skos:hasTopConcept rdf:resource="https://vocab.geospecimens.org/def/hazard-type/asbestos-bearing"/>
+    <skos:hasTopConcept rdf:resource="https://vocab.geospecimens.org/def/hazard-type/flammable"/>
+    <skos:hasTopConcept rdf:resource="https://vocab.geospecimens.org/def/hazard-type/explosive"/>
+    <skos:hasTopConcept rdf:resource="https://vocab.geospecimens.org/def/hazard-type/corrosive"/>
+  </rdf:Description>
+</rdf:RDF>

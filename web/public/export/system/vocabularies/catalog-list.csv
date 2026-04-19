@@ -1,5 +1,5 @@
 iri,label,link
-https://linked.data.gov.au/def/alteration-form,Alteration form,/catalogs/catalogue:gswa-vocabs/collections/alteration-form
-https://example.com/def/australian-states,Australian States and Territories,/catalogs/catalogue:gswa-vocabs/collections/australian-states
-https://example.com/def/colours,Colour,/catalogs/catalogue:gswa-vocabs/collections/colours
-https://example.com/def/project-status,Project Status,/catalogs/catalogue:gswa-vocabs/collections/project-status
+https://vocab.geospecimens.org/def/constituent-part-proportion,Constituent Part Proportion,/catalogs/catalogue:gswa-vocabs/collections/constituent-part-proportion
+https://vocab.geospecimens.org/def/geological-material-name-type,Geological Material Name Type,/catalogs/catalogue:gswa-vocabs/collections/geological-material-name-type
+http://vocab.geospecimens.org/def/geological-specimen-type,Geological Specimen Material Type,/catalogs/catalogue:gswa-vocabs/collections/geological-specimen-type
+http://vocab.geospecimens.org/def/hazard-type,Hazard Types,/catalogs/catalogue:gswa-vocabs/collections/hazard-type

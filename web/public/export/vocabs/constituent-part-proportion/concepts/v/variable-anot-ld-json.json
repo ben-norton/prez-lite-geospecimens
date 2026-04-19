@@ -1,0 +1,141 @@
+[
+  {
+    "@id": "_:n3-55",
+    "https://prez.dev/currentProfile": [
+      {
+        "@id": "https://prez.dev/OGCSchemesObjectProfile"
+      }
+    ]
+  },
+  {
+    "@id": "https://linked.data.gov.au/catalogue/gswa-vocabs",
+    "https://prez.dev/identifier": [
+      {
+        "@value": "catalogue:gswa-vocabs"
+      }
+    ]
+  },
+  {
+    "@id": "https://prez.dev/link",
+    "https://prez.dev/label": [
+      {
+        "@value": "link"
+      }
+    ]
+  },
+  {
+    "@id": "https://prez.dev/members",
+    "https://prez.dev/label": [
+      {
+        "@value": "members"
+      }
+    ]
+  },
+  {
+    "@id": "https://vocab.geospecimens.org/def/constituent-part-proportion",
+    "https://prez.dev/identifier": [
+      {
+        "@value": "ns1:constituent-part-proportion"
+      }
+    ],
+    "https://prez.dev/link": [
+      {
+        "@value": "/catalogs/catalogue:gswa-vocabs/collections/ns1:constituent-part-proportion"
+      }
+    ],
+    "https://prez.dev/label": [
+      {
+        "@value": "Constituent Part Proportion",
+        "@language": "en"
+      }
+    ],
+    "https://prez.dev/description": [
+      {
+        "@value": "The Constituent Part Proportion vocabulary is a SKOS-based terminology for describing the presence of a constituent part within the context of a parent compound specimen. The scheme provides comprehensive coverage for describing qualitative abundance.",
+        "@language": "en"
+      }
+    ],
+    "https://prez.dev/members": [
+      {
+        "@value": "/catalogs/catalogue:gswa-vocabs/collections/ns1:constituent-part-proportion/items"
+      }
+    ],
+    "https://prez.dev/provenance": [
+      {
+        "@value": "Compiled by the TDWG Mineralogy Extension Task Group for community use and to support the extension release by providing standardized values for Constituent Part proportions, which is key attribute of Constituent Parts of a Component Specimen",
+        "@language": "en"
+      }
+    ]
+  },
+  {
+    "@id": "https://vocab.geospecimens.org/def/constituent-part-proportions/variable",
+    "@type": [
+      "http://www.w3.org/2004/02/skos/core#Concept"
+    ],
+    "http://www.w3.org/2004/02/skos/core#prefLabel": [
+      {
+        "@value": "Variable",
+        "@language": "en"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#definition": [
+      {
+        "@value": "The proportion of a material component varies significantly within the material entity or across specimens",
+        "@language": "en"
+      }
+    ],
+    "http://purl.org/vocab/vann/usageNote": [
+      {
+        "@value": "Applicable when the occurrence of a component material is heterogeneous or inconsistent, preventing assignment of a single proportion value",
+        "@language": "en"
+      }
+    ],
+    "http://purl.org/linked-data/registry#status": [
+      {
+        "@id": "https://linked.data.gov.au/def/reg-statuses/submitted"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://vocab.geospecimens.org/def/constituent-part-proportion"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#topConceptOf": [
+      {
+        "@id": "https://vocab.geospecimens.org/def/constituent-part-proportion"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#notation": [
+      {
+        "@value": "variable"
+      }
+    ],
+    "https://prez.dev/identifier": [
+      {
+        "@value": "ns1:variable"
+      }
+    ],
+    "https://prez.dev/link": [
+      {
+        "@value": "/catalogs/catalogue:gswa-vocabs/collections/ns1:constituent-part-proportion/items/ns1:variable"
+      }
+    ],
+    "https://prez.dev/type": [
+      {
+        "@id": "https://prez.dev/FocusNode"
+      }
+    ],
+    "https://prez.dev/label": [
+      {
+        "@value": "Variable",
+        "@language": "en"
+      }
+    ],
+    "https://prez.dev/description": [
+      {
+        "@value": "The proportion of a material component varies significantly within the material entity or across specimens",
+        "@language": "en"
+      }
+    ]
+  }
+]

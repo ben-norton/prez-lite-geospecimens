@@ -1,0 +1,147 @@
+[
+  {
+    "@id": "_:n3-79",
+    "https://prez.dev/currentProfile": [
+      {
+        "@id": "https://prez.dev/OGCSchemesObjectProfile"
+      }
+    ]
+  },
+  {
+    "@id": "http://vocab.geospecimens.org/def/geological-specimen-type",
+    "https://prez.dev/identifier": [
+      {
+        "@value": "ns1:geological-specimen-type"
+      }
+    ],
+    "https://prez.dev/link": [
+      {
+        "@value": "/catalogs/catalogue:gswa-vocabs/collections/ns1:geological-specimen-type"
+      }
+    ],
+    "https://prez.dev/label": [
+      {
+        "@value": "Geological Specimen Material Type",
+        "@language": "en"
+      }
+    ],
+    "https://prez.dev/description": [
+      {
+        "@value": "The Geological Sample Material Type vocabulary is a SKOS-based hierarchical classification system for geological specimens. The scheme provides comprehensive coverage of the earth sciences domain by accommodating both natural and processed materials, terrestrial and extraterrestrial sources, and the practical needs of collection management across diverse geological institutions.",
+        "@language": "en"
+      }
+    ],
+    "https://prez.dev/members": [
+      {
+        "@value": "/catalogs/catalogue:gswa-vocabs/collections/ns1:geological-specimen-type/items"
+      }
+    ],
+    "https://prez.dev/provenance": [
+      {
+        "@value": "Compiled by the TDWG Mineralogy Extension Task Group for community use and to support the extension release by providing standardized values for Material Entity Type, which is central to the Extension and Compound Specimen Model.",
+        "@language": "en"
+      }
+    ]
+  },
+  {
+    "@id": "https://linked.data.gov.au/catalogue/gswa-vocabs",
+    "https://prez.dev/identifier": [
+      {
+        "@value": "catalogue:gswa-vocabs"
+      }
+    ]
+  },
+  {
+    "@id": "https://prez.dev/link",
+    "https://prez.dev/label": [
+      {
+        "@value": "link"
+      }
+    ]
+  },
+  {
+    "@id": "https://prez.dev/members",
+    "https://prez.dev/label": [
+      {
+        "@value": "members"
+      }
+    ]
+  },
+  {
+    "@id": "https://vocab.geospecimens.org/def/geological-specimen-material-type/gemstone",
+    "@type": [
+      "http://www.w3.org/2004/02/skos/core#Concept"
+    ],
+    "http://www.w3.org/2004/02/skos/core#prefLabel": [
+      {
+        "@value": "Gemstone",
+        "@language": "en"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#definition": [
+      {
+        "@value": "Any mineral or naturally occurring substance that, when cut and polished, has sufficient beauty, rarity, and durability for use as a personal adornment or other ornament.",
+        "@language": "en"
+      }
+    ],
+    "http://purl.org/dc/terms/provenance": [
+      {
+        "@value": "Term defined by the Geologic sample type vocabulary (https://linked.data.gov.au/def/geological-sample-type)",
+        "@language": "en"
+      }
+    ],
+    "http://purl.org/linked-data/registry#status": [
+      {
+        "@id": "https://linked.data.gov.au/def/reg-statuses/submitted"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#broader": [
+      {
+        "@id": "https://vocab.geospecimens.org/def/geological-specimen-material-type/mineral"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://vocab.geospecimens.org/def/geological-material-type"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#notation": [
+      {
+        "@value": "gemstone"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#altLabel": [
+      {
+        "@value": "Gem",
+        "@language": "en"
+      }
+    ],
+    "https://prez.dev/identifier": [
+      {
+        "@value": "ns1:gemstone"
+      }
+    ],
+    "https://prez.dev/link": [
+      {
+        "@value": "/catalogs/catalogue:gswa-vocabs/collections/ns1:geological-specimen-type/items/ns1:gemstone"
+      }
+    ],
+    "https://prez.dev/type": [
+      {
+        "@id": "https://prez.dev/FocusNode"
+      }
+    ],
+    "https://prez.dev/label": [
+      {
+        "@value": "Gemstone",
+        "@language": "en"
+      }
+    ],
+    "https://prez.dev/description": [
+      {
+        "@value": "Any mineral or naturally occurring substance that, when cut and polished, has sufficient beauty, rarity, and durability for use as a personal adornment or other ornament.",
+        "@language": "en"
+      }
+    ]
+  }
+]

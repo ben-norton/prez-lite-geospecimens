@@ -1,0 +1,14 @@
+iri,broader,prefLabel
+https://vocab.geospecimens.org/def/geological-specimen-material-type/astromaterial,https://vocab.geospecimens.org/def/geological-specimen-material-type/geological-material,Astromaterial
+https://vocab.geospecimens.org/def/geological-specimen-material-type/fossil,https://vocab.geospecimens.org/def/geological-specimen-material-type/geological-material,Fossil
+https://vocab.geospecimens.org/def/geological-specimen-material-type/gemstone,https://vocab.geospecimens.org/def/geological-specimen-material-type/mineral,Gemstone
+https://vocab.geospecimens.org/def/geological-specimen-material-type/geological-material,,Geological Material
+https://vocab.geospecimens.org/def/geological-specimen-material-type/meteorite,https://vocab.geospecimens.org/def/geological-specimen-material-type/astromaterial,Meteorite
+https://vocab.geospecimens.org/def/geological-specimen-material-type/mineral,https://vocab.geospecimens.org/def/geological-specimen-material-type/geological-material,Mineral
+https://vocab.geospecimens.org/def/geological-specimen-material-type/ore,https://vocab.geospecimens.org/def/geological-specimen-material-type/geological-material,Ore
+https://vocab.geospecimens.org/def/geological-material-type/rock,https://vocab.geospecimens.org/def/geological-specimen-material-type/geological-material,Rock
+https://vocab.geospecimens.org/def/geological-specimen-material-type/rock-core,https://vocab.geospecimens.org/def/geological-specimen-material-type/rock,Rock Core
+https://vocab.geospecimens.org/def/geological-specimen-material-type/sample-return,https://vocab.geospecimens.org/def/geological-specimen-material-type/astromaterial,Sample Return
+https://vocab.geospecimens.org/def/geological-specimen-material-type/synthetic-mineral,https://vocab.geospecimens.org/def/geological-specimen-material-type/mineral,Synthetic Mineral
+https://vocab.geospecimens.org/def/geological-specimen-material-type/trace-fossil,https://vocab.geospecimens.org/def/geological-specimen-material-type/fossil,Trace Fossil
+https://vocab.geospecimens.org/def/geological-specimen-material-type/unconsolidated-material,https://vocab.geospecimens.org/def/geological-specimen-material-type/geological-material,Unconsolidated Material

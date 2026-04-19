@@ -1,27 +1,18 @@
 [
     {
-        "@id": "https://example.com/def/australian-states",
+        "@id": "http://vocab.geospecimens.org/def/geological-specimen-type",
         "http://www.w3.org/2004/02/skos/core#prefLabel": [
             {
-                "@value": "Australian States and Territories",
+                "@value": "Geological Specimen Material Type",
                 "@language": "en"
             }
         ]
     },
     {
-        "@id": "https://example.com/def/colours",
+        "@id": "http://vocab.geospecimens.org/def/hazard-type",
         "http://www.w3.org/2004/02/skos/core#prefLabel": [
             {
-                "@value": "Colour",
-                "@language": "en"
-            }
-        ]
-    },
-    {
-        "@id": "https://example.com/def/project-status",
-        "http://www.w3.org/2004/02/skos/core#prefLabel": [
-            {
-                "@value": "Project Status",
+                "@value": "Hazard Types",
                 "@language": "en"
             }
         ]
@@ -45,30 +36,39 @@
         ],
         "https://schema.org/dateModified": [
             {
-                "@value": "2026-03-04",
+                "@value": "2026-04-19",
                 "@type": "http://www.w3.org/2001/XMLSchema#date"
             }
         ],
         "https://schema.org/hasPart": [
             {
-                "@id": "https://linked.data.gov.au/def/alteration-form"
+                "@id": "https://vocab.geospecimens.org/def/constituent-part-proportion"
             },
             {
-                "@id": "https://example.com/def/australian-states"
+                "@id": "https://vocab.geospecimens.org/def/geological-material-name-type"
             },
             {
-                "@id": "https://example.com/def/colours"
+                "@id": "http://vocab.geospecimens.org/def/geological-specimen-type"
             },
             {
-                "@id": "https://example.com/def/project-status"
+                "@id": "http://vocab.geospecimens.org/def/hazard-type"
             }
         ]
     },
     {
-        "@id": "https://linked.data.gov.au/def/alteration-form",
+        "@id": "https://vocab.geospecimens.org/def/constituent-part-proportion",
         "http://www.w3.org/2004/02/skos/core#prefLabel": [
             {
-                "@value": "Alteration form",
+                "@value": "Constituent Part Proportion",
+                "@language": "en"
+            }
+        ]
+    },
+    {
+        "@id": "https://vocab.geospecimens.org/def/geological-material-name-type",
+        "http://www.w3.org/2004/02/skos/core#prefLabel": [
+            {
+                "@value": "Geological Material Name Type",
                 "@language": "en"
             }
         ]

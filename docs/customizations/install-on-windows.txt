@@ -1,0 +1,13 @@
+Notes
+1. If using windows, run install and deployment from a bash command line (e.g. Git Bash). 
+2. Use node version 22.22.0 or higher. If running windows, install nvm (node version manager), then see below
+
+
+1. $ nvm ls-remote
+2. Install version 22.22.0 or higher (preferrably a LTS release - 22.22.0, 24.15.0)
+2. $ nvm install 22.22.0 
+	$ nvm use 22.22.0
+4. If new node installation, then install pnpm globally using new version
+	$ npm install -g pnpm
+	
+	
