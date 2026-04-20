@@ -219,12 +219,12 @@ prez:OGCDataCatalogProfile a prof:Profile, sh:NodeShape, prez:ObjectProfile ;
 # =============================================================================
 
 prez:GSWAVocabsProfile a prof:Profile ;
-    dcterms:identifier "gswa-vocabs"^^xsd:token ;
-    dcterms:title "GSWA Vocabularies Profile" ;
-    dcterms:description "Profile configuration for Geological Survey of Western Australia vocabularies" ;
+    dcterms:identifier "geosps-vocabs"^^xsd:token ;
+    dcterms:title "GeoSpecimens Vocabularies Profile" ;
+    dcterms:description "Profile configuration for GeoSpecimens vocabularies" ;
 
     # Associated catalog
-    prez:catalog <https://linked.data.gov.au/catalogue/gswa-vocabs> ;
+    prez:catalog <https://vocabs.geospecimens.org/catalogue/geosps-vocabs> ;
 
     altr-ext:hasDefaultResourceFormat "text/anot-turtle" ;
 
