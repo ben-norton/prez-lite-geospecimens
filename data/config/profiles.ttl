@@ -1,6 +1,7 @@
 @prefix prof: <http://www.w3.org/ns/dx/prof/> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix prez: <https://prez.dev/> .
@@ -9,21 +10,20 @@
 @prefix schema: <https://schema.org/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix sdo: <https://schema.org/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix reg: <http://purl.org/linked-data/registry#> .
 @prefix vann: <http://purl.org/vocab/vann/> .
 
 # =============================================================================
-# GSWA Vocabularies Catalog Configuration
+# GeoSpecimens Vocabularies Catalog Configuration
 # =============================================================================
 
-<https://linked.data.gov.au/catalogue/gswa-vocabs> a prez:Catalog ;
-    dcterms:identifier "catalogue:gswa-vocabs"^^xsd:token ;
-    dcterms:title "GSWA Vocabularies" ;
-    dcterms:description """Geological Survey of Western Australia's vocabularies of controlled terms.
-
-GSWA uses domain standards that are openly available, to provide a common language for communicating ideas and provide consistency of meaning of the data collected, research undertaken and products created.""" .
+<https://vocabs.geospecimens.org/catalogue/geosps-vocabs> a prez:Catalog ;
+    dcterms:identifier "catalogue:geosps-vocabs"^^xsd:token ;
+    dcterms:title "GeoSpecimens Vocabularies" ;
+    dcterms:description """Controlled vocabularies supporting the TDWG Mineralogy Extension and the broader GeoSpecimens data model.
+sr
+These vocabularies provide standardised terms for describing geological specimens, their constituent parts, material types, name types, and associated hazards, to promote consistency across collections, research, and data exchange.""" .
 
 # =============================================================================
 # OGC Concept Scheme Object Profile
@@ -34,11 +34,11 @@ prez:OGCSchemesObjectProfile a prof:Profile, sh:NodeShape, prez:ObjectProfile ;
     dcterms:identifier "ogc-schemes-object"^^xsd:token ;
     dcterms:title "OGC Concept Scheme Object Profile" ;
     dcterms:description "A profile for SKOS Concept Schemes" ;
-    
+
     # Target class this profile applies to
     sh:targetClass skos:ConceptScheme ;
     altr-ext:constrainsClass skos:ConceptScheme ;
-    
+
     # Supported output formats
     altr-ext:hasDefaultResourceFormat "text/anot-turtle" ;
     altr-ext:hasResourceFormat "text/anot-turtle" ;
@@ -49,13 +49,12 @@ prez:OGCSchemesObjectProfile a prof:Profile, sh:NodeShape, prez:ObjectProfile ;
     altr-ext:hasResourceFormat "text/csv" ;
     altr-ext:hasResourceFormat "application/json" ;
     altr-ext:hasResourceFormat "text/html" ;
-    
+
     # Property shapes defining source predicates for prez annotations
-    # Using prez:sourcePredicate for clarity (alternative to complex SHACL paths)
     prez:labelSource skos:prefLabel, dcterms:title, rdfs:label ;
     prez:descriptionSource skos:definition, dcterms:description ;
     prez:provenanceSource dcterms:provenance ;
-    
+
     # Prez-specific annotations to generate
     prez:generateIdentifier true ;
     prez:generateLink true ;
@@ -64,25 +63,31 @@ prez:OGCSchemesObjectProfile a prof:Profile, sh:NodeShape, prez:ObjectProfile ;
     prez:generateDescription true ;
     prez:generateProvenance true ;
     prez:generateFocusNode true ;
-    
+
     # Property shapes defining expected properties on a ConceptScheme export
     # prez:simpleView true = visible in both simple and expert modes
     # no prez:simpleView = expert mode only
     sh:property [ sh:path rdf:type ; sh:order 0 ] ;
     sh:property [ sh:path skos:prefLabel ; sh:order 1 ; prez:simpleView true ] ;
-    sh:property [ sh:path skos:definition ; sh:order 2 ; prez:simpleView true ] ;
-    sh:property [ sh:path skos:historyNote ; sh:order 3 ; prez:simpleView true ] ;
-    sh:property [ sh:path reg:status ; sh:order 4 ; prez:simpleView true ] ;
-    sh:property [ sh:path owl:versionIRI ; sh:order 5 ; prez:simpleView true ] ;
-    sh:property [ sh:path sdo:creator ; sh:order 6 ; prez:simpleView true ] ;
-    sh:property [ sh:path sdo:publisher ; sh:order 7 ; prez:simpleView true ] ;
-    sh:property [ sh:path sdo:dateCreated ; sh:order 8 ; prez:simpleView true ] ;
-    sh:property [ sh:path sdo:dateModified ; sh:order 9 ; prez:simpleView true ] ;
-    sh:property [ sh:path sdo:keywords ; sh:order 10 ; prez:simpleView true ] ;
-    sh:property [ sh:path sdo:version ; sh:order 11 ; prez:simpleView true ] ;
+    sh:property [ sh:path dcterms:title ; sh:order 2 ; prez:simpleView true ] ;
+    sh:property [ sh:path skos:definition ; sh:order 3 ; prez:simpleView true ] ;
+    sh:property [ sh:path dcterms:description ; sh:order 4 ] ;
+    sh:property [ sh:path skos:scopeNote ; sh:order 5 ; prez:simpleView true ] ;
+    sh:property [ sh:path vann:usageNote ; sh:order 6 ; prez:simpleView true ] ;
+    sh:property [ sh:path skos:historyNote ; sh:order 7 ; prez:simpleView true ] ;
+    sh:property [ sh:path reg:status ; sh:order 8 ; prez:simpleView true ] ;
+    sh:property [ sh:path reg:derivationMode ; sh:order 9 ; prez:simpleView true ] ;
+    sh:property [ sh:path owl:versionIRI ; sh:order 10 ] ;
+    sh:property [ sh:path dcat:version ; sh:order 11 ; prez:simpleView true ] ;
+    sh:property [ sh:path dcterms:creator ; sh:order 12 ; prez:simpleView true ] ;
+    sh:property [ sh:path dcterms:publisher ; sh:order 13 ; prez:simpleView true ] ;
+    sh:property [ sh:path dcterms:contributor ; sh:order 14 ; prez:simpleView true ] ;
+    sh:property [ sh:path dcterms:created ; sh:order 15 ; prez:simpleView true ] ;
+    sh:property [ sh:path dcterms:modified ; sh:order 16 ; prez:simpleView true ] ;
+    sh:property [ sh:path dcat:keyword ; sh:order 17 ; prez:simpleView true ] ;
     sh:property [
         sh:path prov:qualifiedAttribution ;
-        sh:order 12 ;
+        sh:order 18 ;
         sh:node [
             sh:property [
                 sh:path prov:agent ;
@@ -92,24 +97,17 @@ prez:OGCSchemesObjectProfile a prof:Profile, sh:NodeShape, prez:ObjectProfile ;
                 sh:minCount 1 ;
                 sh:maxCount 1
             ] , [
-                sh:path prov:hadRole ;
+                sh:path dcat:hadRole ;
                 sh:name "Role" ;
                 sh:order 1 ;
-                sh:minCount 1 ;
-                sh:maxCount 1 ;
-                sh:in (
-                    <https://linked.data.gov.au/def/data-roles/custodian>
-                    <https://linked.data.gov.au/def/data-roles/pointOfContact>
-                )
+                sh:minCount 1
             ]
         ]
     ] ;
-    sh:property [ sh:path dcterms:provenance ; sh:order 13 ; prez:simpleView true ] ;
-	sh:property [ sh:path dcterms:title ; sh:order 14 ; prez:simpleView true ] ;
-    sh:property [ sh:path skos:scopeNote ; sh:order 15 ; prez:simpleView true ] ;
-    sh:property [ sh:path vann:usageNote ; sh:order 16 ; prez:simpleView true ] ;
-    sh:property [ sh:path sdo:citation ; sh:order 17 ; prez:simpleView true ] ;
-    sh:property [ sh:path sdo:license ; sh:order 18 ; prez:simpleView true ] ;
+    sh:property [ sh:path dcterms:provenance ; sh:order 19 ; prez:simpleView true ] ;
+    sh:property [ sh:path schema:citation ; sh:order 20 ; prez:simpleView true ] ;
+    sh:property [ sh:path schema:license ; sh:order 21 ; prez:simpleView true ] ;
+    sh:property [ sh:path skos:hasTopConcept ; sh:order 22 ] ;
 
     # Link templates
     prez:linkTemplate "/catalogs/{catalogId}/collections/{schemeId}" ;
@@ -124,11 +122,11 @@ prez:OGCItemProfile a prof:Profile, sh:NodeShape, prez:ObjectProfile ;
     dcterms:identifier "ogc-item"^^xsd:token ;
     dcterms:title "OGC Object Profile" ;
     dcterms:description "A profile for individual OGC Records API items" ;
-    
+
     # Target class this profile applies to
     sh:targetClass skos:Concept ;
     altr-ext:constrainsClass skos:Concept ;
-    
+
     # Supported output formats
     altr-ext:hasDefaultResourceFormat "text/anot-turtle" ;
     altr-ext:hasResourceFormat "text/anot-turtle" ;
@@ -137,40 +135,44 @@ prez:OGCItemProfile a prof:Profile, sh:NodeShape, prez:ObjectProfile ;
     altr-ext:hasResourceFormat "application/rdf+xml" ;
     altr-ext:hasResourceFormat "text/turtle" ;
     altr-ext:hasResourceFormat "text/html" ;
-    
+
     # Property shapes defining source predicates for prez annotations
     prez:labelSource skos:prefLabel, dcterms:title, rdfs:label ;
     prez:descriptionSource skos:definition, dcterms:description ;
-    
+    prez:provenanceSource dcterms:provenance ;
+
     # Prez-specific annotations to generate
     prez:generateIdentifier true ;
     prez:generateLink true ;
     prez:generateMembers false ;
     prez:generateLabel true ;
     prez:generateDescription true ;
-    prez:generateProvenance false ;
+    prez:generateProvenance true ;
     prez:generateFocusNode true ;
 
     # Property shapes defining expected properties on a Concept export
     # prez:simpleView true = visible in both simple and expert modes
     # no prez:simpleView = expert mode only
     sh:property [ sh:path rdf:type ; sh:order 0 ] ;
-    sh:property [ sh:path skos:definition ; sh:order 1 ; prez:simpleView true ] ;
-    sh:property [ sh:path skos:narrower ; sh:order 2 ] ;
-    sh:property [ sh:path skos:broader ; sh:order 3 ] ;
-    sh:property [ sh:path skos:related ; sh:order 4 ; prez:simpleView true ] ;
-    sh:property [ sh:path skos:inScheme ; sh:order 5 ] ;
-    sh:property [ sh:path dcterms:identifier ; sh:order 6 ; prez:simpleView true ] ;
-    sh:property [ sh:path skos:topConceptOf ; sh:order 7 ] ;
-    sh:property [ sh:path skos:prefLabel ; sh:order 8 ; prez:simpleView true ] ;
-    sh:property [ sh:path skos:altLabel ; sh:order 9 ; prez:simpleView true ] ;
-    sh:property [ sh:path skos:notation ; sh:order 10 ; prez:simpleView true ] ;
-    sh:property [ sh:path skos:scopeNote ; sh:order 11 ; prez:simpleView true ] ;
-    sh:property [ sh:path skos:historyNote ; sh:order 12 ; prez:simpleView true ] ;
-    sh:property [ sh:path skos:example ; sh:order 13 ; prez:simpleView true ] ;
-    sh:property [ sh:path vann:usageNote ; sh:order 14 ; prez:simpleView true ] ;
-    sh:property [ sh:path dcterms:provenance ; sh:order 15 ; prez:simpleView true ] ;
-    sh:property [ sh:path reg:status ; sh:order 16 ; prez:simpleView true ] ;
+    sh:property [ sh:path skos:prefLabel ; sh:order 1 ; prez:simpleView true ] ;
+    sh:property [ sh:path skos:altLabel ; sh:order 2 ; prez:simpleView true ] ;
+    sh:property [ sh:path skos:definition ; sh:order 3 ; prez:simpleView true ] ;
+    sh:property [ sh:path skos:notation ; sh:order 4 ; prez:simpleView true ] ;
+    sh:property [ sh:path skos:broader ; sh:order 5 ; prez:simpleView true ] ;
+    sh:property [ sh:path skos:narrower ; sh:order 6 ; prez:simpleView true ] ;
+    sh:property [ sh:path skos:related ; sh:order 7 ; prez:simpleView true ] ;
+    sh:property [ sh:path skos:topConceptOf ; sh:order 8 ] ;
+    sh:property [ sh:path skos:inScheme ; sh:order 9 ] ;
+    sh:property [ sh:path skos:scopeNote ; sh:order 10 ; prez:simpleView true ] ;
+    sh:property [ sh:path skos:historyNote ; sh:order 11 ; prez:simpleView true ] ;
+    sh:property [ sh:path skos:editorialNote ; sh:order 12 ] ;
+    sh:property [ sh:path skos:note ; sh:order 13 ; prez:simpleView true ] ;
+    sh:property [ sh:path skos:example ; sh:order 14 ; prez:simpleView true ] ;
+    sh:property [ sh:path vann:usageNote ; sh:order 15 ; prez:simpleView true ] ;
+    sh:property [ sh:path dcterms:provenance ; sh:order 16 ; prez:simpleView true ] ;
+    sh:property [ sh:path prov:wasDerivedFrom ; sh:order 17 ; prez:simpleView true ] ;
+    sh:property [ sh:path reg:status ; sh:order 18 ; prez:simpleView true ] ;
+    sh:property [ sh:path dcterms:identifier ; sh:order 19 ] ;
 
     # Link template
     prez:linkTemplate "/catalogs/{catalogId}/collections/{schemeId}/items/{conceptId}" .
@@ -218,7 +220,7 @@ prez:OGCDataCatalogProfile a prof:Profile, sh:NodeShape, prez:ObjectProfile ;
 # Defines default profiles for different resource types
 # =============================================================================
 
-prez:GSWAVocabsProfile a prof:Profile ;
+prez:GeoSpecimensVocabsProfile a prof:Profile ;
     dcterms:identifier "geosps-vocabs"^^xsd:token ;
     dcterms:title "GeoSpecimens Vocabularies Profile" ;
     dcterms:description "Profile configuration for GeoSpecimens vocabularies" ;

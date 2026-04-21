@@ -6,7 +6,10 @@
       "Bash(python -m pip install openpyxl)",
       "Bash(python *)",
       "WebFetch(domain:localhost)",
-      "Bash(curl *)"
+      "Bash(curl *)",
+      "Bash(cd /g/repos/vocabularies/prez-lite-geospecimens && pnpm build:all-export 2>&1)",
+      "Bash(ls /g/repos/vocabularies/prez-lite-geospecimens/data/vocabs/*.ttl 2>/dev/null | head -5)",
+      "Bash(pnpm build:all-export *)"
     ]
   }
 }
