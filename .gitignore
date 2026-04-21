@@ -83,7 +83,6 @@ temp/
 
 # Test outputs
 web/test-results/
-web/playwright-report/
 
 # Test layer (local testing only)
 webtest/
