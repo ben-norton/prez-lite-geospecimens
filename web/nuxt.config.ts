@@ -75,7 +75,6 @@ export default defineNuxtConfig({
       failOnError: false,
     },
     routeRules: {
-      '/': { redirect: '/vocabs' },
       // CORS headers for dev server only
       // For production static deployments, use public/_headers file
       // (supported by Netlify, Cloudflare Pages, etc.)
