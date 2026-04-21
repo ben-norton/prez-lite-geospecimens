@@ -36,7 +36,11 @@
         ],
         "https://schema.org/dateModified": [
             {
+<<<<<<< Updated upstream
                 "@value": "2026-04-20",
+=======
+                "@value": "2026-04-21",
+>>>>>>> Stashed changes
                 "@type": "http://www.w3.org/2001/XMLSchema#date"
             }
         ],

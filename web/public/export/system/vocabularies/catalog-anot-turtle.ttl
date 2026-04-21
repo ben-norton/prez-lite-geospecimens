@@ -13,12 +13,16 @@
 <https://example.org/catalogue/vocabularies> a sdo:DataCatalog;
     sdo:name "Vocabularies"@en;
     sdo:description "Published vocabularies."@en;
+<<<<<<< Updated upstream
     sdo:dateModified "2026-04-20"^^xsd:date;
+=======
+    sdo:dateModified "2026-04-21"^^xsd:date;
+>>>>>>> Stashed changes
     sdo:hasPart <https://vocab.geospecimens.org/def/constituent-part-proportion>, <https://vocab.geospecimens.org/def/geological-material-name-type>, <http://vocab.geospecimens.org/def/geological-specimen-type>, <http://vocab.geospecimens.org/def/hazard-type>;
     prez:type prez:FocusNode;
-    prez:identifier "catalogue:gswa-vocabs";
-    prez:link "/catalogs/catalogue:gswa-vocabs";
-    prez:members "/catalogs/catalogue:gswa-vocabs/collections";
+    prez:identifier "catalogue:geosps-vocabs";
+    prez:link "/catalogs/catalogue:geosps-vocabs";
+    prez:members "/catalogs/catalogue:geosps-vocabs/collections";
     prez:label "Vocabularies"@en;
     prez:description "Published vocabularies."@en.
 <https://vocab.geospecimens.org/def/constituent-part-proportion> skos:prefLabel "Constituent Part Proportion"@en.
