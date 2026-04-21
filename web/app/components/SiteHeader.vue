@@ -18,7 +18,7 @@ const { navLinks } = useNavigation()
     </template>
 
     <slot name="navigation">
-      <UNavigationMenu :items="navLinks" :ui="{ content: 'z-[60]' }" />
+      <UNavigationMenu :items="navLinks" :ui="{ content: 'z-[60]' }" class="ml-auto" />
     </slot>
 
     <template #right>
