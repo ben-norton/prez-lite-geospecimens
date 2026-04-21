@@ -91,3 +91,4 @@ webtest/
 # Site repos (each subdirectory is its own git repo)
 packages/sites/
 /sources/deprecated-vocabs
+web/dist

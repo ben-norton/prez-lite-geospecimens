@@ -16,7 +16,7 @@
     <rdf:type rdf:resource="https://schema.org/DataCatalog"/>
     <sdo:name xml:lang="en">Vocabularies</sdo:name>
     <sdo:description xml:lang="en">Published vocabularies.</sdo:description>
-    <sdo:dateModified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2026-04-19</sdo:dateModified>
+    <sdo:dateModified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2026-04-20</sdo:dateModified>
     <sdo:hasPart rdf:resource="https://vocab.geospecimens.org/def/constituent-part-proportion"/>
     <sdo:hasPart rdf:resource="https://vocab.geospecimens.org/def/geological-material-name-type"/>
     <sdo:hasPart rdf:resource="http://vocab.geospecimens.org/def/geological-specimen-type"/>

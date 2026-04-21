@@ -73,9 +73,9 @@ export default defineNuxtConfig({
     preset: 'static',
     prerender: {
       failOnError: false,
-      routes: ['/authoring', '/authoring/getting-started', '/authoring/collections', '/authoring/profiles', '/authoring/vocabularies']
     },
     routeRules: {
+      '/': { redirect: '/vocabs' },
       // CORS headers for dev server only
       // For production static deployments, use public/_headers file
       // (supported by Netlify, Cloudflare Pages, etc.)

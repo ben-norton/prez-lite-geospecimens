@@ -13,7 +13,7 @@
 <https://example.org/catalogue/vocabularies> a sdo:DataCatalog;
     sdo:name "Vocabularies"@en;
     sdo:description "Published vocabularies."@en;
-    sdo:dateModified "2026-04-19"^^xsd:date;
+    sdo:dateModified "2026-04-20"^^xsd:date;
     sdo:hasPart <https://vocab.geospecimens.org/def/constituent-part-proportion>, <https://vocab.geospecimens.org/def/geological-material-name-type>, <http://vocab.geospecimens.org/def/geological-specimen-type>, <http://vocab.geospecimens.org/def/hazard-type>;
     prez:type prez:FocusNode;
     prez:identifier "catalogue:gswa-vocabs";

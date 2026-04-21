@@ -82,7 +82,7 @@ function handleEdit() {
 </script>
 
 <template>
-  <div>
+  <div class="tree-node">
     <div
       ref="nodeRef"
       class="flex items-center gap-2 py-1.5 px-2 rounded-md transition-colors group cursor-pointer"
@@ -107,7 +107,7 @@ function handleEdit() {
 
       <!-- Icon -->
       <UIcon
-        :name="hasChildren ? 'i-heroicons-folder' : 'i-heroicons-document'"
+        :name="hasChildren ? 'i-heroicons-folder' : ''"
         class="size-4 shrink-0"
         :class="hasChildren ? 'text-primary' : 'text-muted'"
       />

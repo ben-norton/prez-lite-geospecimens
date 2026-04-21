@@ -1687,7 +1687,7 @@ function copyIriToClipboard(iri: string) {
         <div v-if="editModeDefinition ?? displayScheme.definition">
           <p
             ref="descriptionRef"
-            :class="['text-lg text-muted', descriptionExpanded ? '' : 'line-clamp-[8]']"
+            :class="['text-muted', descriptionExpanded ? '' : 'line-clamp-[8]']"
           >
             {{ historySchemeDefinition ?? editModeDefinition ?? getLabel(displayScheme.definition) }}
             <UButton

@@ -28,8 +28,8 @@ const level = props.level ?? 0
 </script>
 
 <template>
-  <ul class="space-y-1" :class="{ 'pl-4': level > 0 }">
-    <li v-for="item in items" :key="item.id">
+  <ul class="concept-list space-y-1" :class="{ 'pl-4': level > 0 }">
+    <li class="concept-list-item" v-for="item in items" :key="item.id">
       <ConceptTreeNode
         :item="item"
         :expand-all="expandAll"

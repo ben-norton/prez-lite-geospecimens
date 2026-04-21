@@ -7,14 +7,13 @@ export default defineAppConfig({
     }
   },
   site: {
-    name: 'Prez Lite',
+    name: 'GeoSpecimens Vocabulary Browser',
     logo: null as string | null,
     icon: 'i-heroicons-book-open',
     tagline: 'Vocabulary Publishing Platform',
-    footerText: 'An open source vocabulary publishing system',
+    footerText: 'Part of the GeoSpecimens Data Mobilization Platform',
     footerLinks: [
-      { label: 'GitHub', href: 'https://github.com/Kurrawong/prez-lite' },
-      { label: 'Documentation', href: '/about' }
+      { label: 'GeoSpecimens.org', href: 'https://geoapis.io' },
     ],
     editor: {
       defaultMode: 'inline' as 'inline' | 'full'

@@ -341,7 +341,7 @@ const componentTypes = ['list']
       <!-- Header -->
       <div class="mb-8">
         <h1 class="text-3xl font-bold mb-2">{{ componentData.title }} Component</h1>
-        <p class="text-lg text-muted mb-4">{{ componentData.description }}</p>
+        <p class="text-muted mb-4">{{ componentData.description }}</p>
         <code class="text-primary bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm">
           &lt;{{ componentData.tag }}&gt;
         </code>
