@@ -3,6 +3,14 @@ Custom Styles for the Geospecimens Prez-lite Application
 20260420
 */
 
+h1, h2 {
+
+}
+
+h2, h3 {
+    color: rgb(27, 47, 166);
+}
+
 img#logo {
     height: 18px;
     width: auto;
@@ -20,3 +28,26 @@ ul.concept-list li span:hover {
     font-weight: 600;
     transition: all 1s ease;
 }
+h1,
+h1 a{
+
+}
+h2,
+h2 a,
+h3,
+h3 a,
+.prose h2,
+.prose h2 a {
+    color: #004643;
+}
+h2,
+h2 a,
+.prose h2 a,
+.prose h2 a:hover,
+.prose h2 a:visited {
+    text-decoration: none;
+    color: #2d353c;
+    font-weight: 500;
+    font-size: 24px;
+}
+

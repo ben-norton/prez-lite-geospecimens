@@ -12,7 +12,17 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 
-  modules: ['@nuxt/ui', '@nuxt/content', 'nuxt-monaco-editor'],
+  modules: ['@nuxt/ui', '@nuxt/content', 'nuxt-monaco-editor','@nuxt/fonts'],
+
+  colorMode: {
+    preference: 'dark',
+  },
+
+  fonts: {
+    adobe: {
+      id: 'nsg5gom' // Add your Adobe Project ID here
+    }
+  },
 
   // Monaco editor configuration
   monacoEditor: {
@@ -59,12 +69,12 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: 'Geospecimens Vocabularies',
+      title: 'GEOSPECIMENS Vocabularies',
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         { name: 'description', content: 'Lightweight vocabulary browser for the geospecimens.org platform' }
-      ]
+      ],
     }
   },
 
