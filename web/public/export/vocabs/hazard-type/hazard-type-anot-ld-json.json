@@ -1,6 +1,6 @@
 [
   {
-    "@id": "_:n3-90",
+    "@id": "_:n3-95",
     "https://prez.dev/currentProfile": [
       {
         "@id": "https://prez.dev/OGCSchemesObjectProfile"
@@ -150,12 +150,12 @@
     ],
     "https://prez.dev/link": [
       {
-        "@value": "/catalogs/catalogue:gswa-vocabs/collections/ns4:hazard-type"
+        "@value": "/catalogs/catalogue:geosps-vocabs/collections/ns4:hazard-type"
       }
     ],
     "https://prez.dev/members": [
       {
-        "@value": "/catalogs/catalogue:gswa-vocabs/collections/ns4:hazard-type/items"
+        "@value": "/catalogs/catalogue:geosps-vocabs/collections/ns4:hazard-type/items"
       }
     ],
     "https://prez.dev/type": [
@@ -183,14 +183,6 @@
     ]
   },
   {
-    "@id": "https://linked.data.gov.au/catalogue/gswa-vocabs",
-    "https://prez.dev/identifier": [
-      {
-        "@value": "catalogue:gswa-vocabs"
-      }
-    ]
-  },
-  {
     "@id": "https://prez.dev/link",
     "https://prez.dev/label": [
       {
@@ -203,6 +195,14 @@
     "https://prez.dev/label": [
       {
         "@value": "members"
+      }
+    ]
+  },
+  {
+    "@id": "https://vocabs.geospecimens.org/catalogue/geosps-vocabs",
+    "https://prez.dev/identifier": [
+      {
+        "@value": "catalogue:geosps-vocabs"
       }
     ]
   }

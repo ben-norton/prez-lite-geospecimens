@@ -30,10 +30,10 @@
     reg:derivationMode <https://linked.data.gov.au/def/vocdermods/subsetting-and-extension>;
     reg:status <https://linked.data.gov.au/def/reg-statuses/experimental>;
     skos:hasTopConcept <https://vocab.geospecimens.org/def/geological-material-name-type/formal-name>, <https://vocab.geospecimens.org/def/geological-material-name-type/alternate-name>, <https://vocab.geospecimens.org/def/geological-material-name-type/cataloged-name>;
-    prov:qualifiedAttribution _:n3-56, _:n3-57.
-_:n3-56 a prov:Attribution;
+    prov:qualifiedAttribution _:n3-61, _:n3-62.
+_:n3-61 a prov:Attribution;
     prov:agent <https://orcid.org/0000-0002-5819-9134>;
     dcat:hadRole <http://def.isotc211.org/iso19115-1/2014/CitationAndResponsiblePartyInformation/code/CI_RoleCode/editor>.
-_:n3-57 a prov:Attribution;
+_:n3-62 a prov:Attribution;
     prov:agent <https://www.tdwg.org/community/esp/mineralogy/>;
     dcat:hadRole <http://def.isotc211.org/iso19115-1/2014/CitationAndResponsiblePartyInformation/code/CI_RoleCode/publisher>, <http://def.isotc211.org/iso19115-1/2014/CitationAndResponsiblePartyInformation/code/CI_RoleCode/creator>.

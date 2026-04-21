@@ -31,14 +31,14 @@
     reg:derivationMode <https://linked.data.gov.au/def/vocdermods/subsetting-and-extension>;
     reg:status <https://linked.data.gov.au/def/reg-statuses/experimental>;
     skos:hasTopConcept <https://vocab.geospecimens.org/def/constituent-part-proportion/all>, <https://vocab.geospecimens.org/def/constituent-part-proportions/major>, <https://vocab.geospecimens.org/def/constituent-part-proportions/minor>, <https://vocab.geospecimens.org/def/constituent-part-proportions/rare>, <https://vocab.geospecimens.org/def/constituent-part-proportions/trace>, <https://vocab.geospecimens.org/def/constituent-part-proportions/present>, <https://vocab.geospecimens.org/def/constituent-part-proportions/variable>, <https://vocab.geospecimens.org/def/constituent-part-proportions/absent>;
-    prov:qualifiedAttribution _:n3-44, _:n3-45.
+    prov:qualifiedAttribution _:n3-49, _:n3-50.
 _:b1_agent_mineralogy_extension_task_group a sdo:Organization;
     sdo:name "Mineralogy Extension Task Group";
     sdo:affiliation <https://tdwg.org>;
-    sdo:parentOrganization _:n3-46.
-_:n3-44 a prov:Attribution;
+    sdo:parentOrganization _:n3-51.
+_:n3-49 a prov:Attribution;
     prov:agent <https://orcid.org/0000-0002-5819-9134>;
     dcat:hadRole <http://def.isotc211.org/iso19115-1/2014/CitationAndResponsiblePartyInformation/code/CI_RoleCode/editor>.
-_:n3-45 a prov:Attribution;
+_:n3-50 a prov:Attribution;
     prov:agent _:b1_agent_mineralogy_extension_task_group;
     dcat:hadRole <http://def.isotc211.org/iso19115-1/2014/CitationAndResponsiblePartyInformation/code/CI_RoleCode/publisher>, <http://def.isotc211.org/iso19115-1/2014/CitationAndResponsiblePartyInformation/code/CI_RoleCode/creator>.

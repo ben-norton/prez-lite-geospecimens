@@ -16,12 +16,12 @@
     ],
     "https://schema.org/parentOrganization": [
       {
-        "@id": "_:n3-46"
+        "@id": "_:n3-51"
       }
     ]
   },
   {
-    "@id": "_:n3-44",
+    "@id": "_:n3-49",
     "@type": [
       "http://www.w3.org/ns/prov#Attribution"
     ],
@@ -37,7 +37,7 @@
     ]
   },
   {
-    "@id": "_:n3-45",
+    "@id": "_:n3-50",
     "@type": [
       "http://www.w3.org/ns/prov#Attribution"
     ],
@@ -56,7 +56,7 @@
     ]
   },
   {
-    "@id": "_:n3-46",
+    "@id": "_:n3-51",
     "@type": [
       "https://schema.org/Organization"
     ],
@@ -67,18 +67,10 @@
     ]
   },
   {
-    "@id": "_:n3-47",
+    "@id": "_:n3-52",
     "https://prez.dev/currentProfile": [
       {
         "@id": "https://prez.dev/OGCSchemesObjectProfile"
-      }
-    ]
-  },
-  {
-    "@id": "https://linked.data.gov.au/catalogue/gswa-vocabs",
-    "https://prez.dev/identifier": [
-      {
-        "@value": "catalogue:gswa-vocabs"
       }
     ]
   },
@@ -228,10 +220,10 @@
     ],
     "http://www.w3.org/ns/prov#qualifiedAttribution": [
       {
-        "@id": "_:n3-44"
+        "@id": "_:n3-49"
       },
       {
-        "@id": "_:n3-45"
+        "@id": "_:n3-50"
       }
     ],
     "https://prez.dev/identifier": [
@@ -241,12 +233,12 @@
     ],
     "https://prez.dev/link": [
       {
-        "@value": "/catalogs/catalogue:gswa-vocabs/collections/ns4:constituent-part-proportion"
+        "@value": "/catalogs/catalogue:geosps-vocabs/collections/ns4:constituent-part-proportion"
       }
     ],
     "https://prez.dev/members": [
       {
-        "@value": "/catalogs/catalogue:gswa-vocabs/collections/ns4:constituent-part-proportion/items"
+        "@value": "/catalogs/catalogue:geosps-vocabs/collections/ns4:constituent-part-proportion/items"
       }
     ],
     "https://prez.dev/type": [
@@ -270,6 +262,14 @@
       {
         "@value": "Compiled by the TDWG Mineralogy Extension Task Group for community use and to support the extension release by providing standardized values for Constituent Part proportions, which is key attribute of Constituent Parts of a Component Specimen",
         "@language": "en"
+      }
+    ]
+  },
+  {
+    "@id": "https://vocabs.geospecimens.org/catalogue/geosps-vocabs",
+    "https://prez.dev/identifier": [
+      {
+        "@value": "catalogue:geosps-vocabs"
       }
     ]
   }

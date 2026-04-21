@@ -31,13 +31,13 @@
     reg:derivationMode <https://linked.data.gov.au/def/vocdermods/subsetting-and-extension>;
     reg:status <https://linked.data.gov.au/def/reg-statuses/experimental>;
     prez:identifier "ns4:hazard-type";
-    prez:link "/catalogs/catalogue:gswa-vocabs/collections/ns4:hazard-type";
-    prez:members "/catalogs/catalogue:gswa-vocabs/collections/ns4:hazard-type/items";
+    prez:link "/catalogs/catalogue:geosps-vocabs/collections/ns4:hazard-type";
+    prez:members "/catalogs/catalogue:geosps-vocabs/collections/ns4:hazard-type/items";
     prez:type prez:FocusNode;
     prez:label "Hazard Types"@en;
     prez:description "The Hazard Type vocabulary is a SKOS concept scheme for describing the nature of hazards associated with specific materials, with coverage spanning the biological and geological collections domains."@en;
     prez:provenance "Compiled by the TDWG Mineralogy Extension Task Group to support community use and the new term hazardType, released as part of a broader set of terms extending Darwin Core coverage to mineralogical and geological collections."@en.
 prez:link prez:label "link".
 prez:members prez:label "members".
-<https://linked.data.gov.au/catalogue/gswa-vocabs> prez:identifier "catalogue:gswa-vocabs".
-_:n3-90 prez:currentProfile prez:OGCSchemesObjectProfile.
+<https://vocabs.geospecimens.org/catalogue/geosps-vocabs> prez:identifier "catalogue:geosps-vocabs".
+_:n3-95 prez:currentProfile prez:OGCSchemesObjectProfile.

@@ -45,21 +45,21 @@
     <skos:hasTopConcept rdf:resource="https://vocab.geospecimens.org/def/constituent-part-proportions/present"/>
     <skos:hasTopConcept rdf:resource="https://vocab.geospecimens.org/def/constituent-part-proportions/variable"/>
     <skos:hasTopConcept rdf:resource="https://vocab.geospecimens.org/def/constituent-part-proportions/absent"/>
-    <prov:qualifiedAttribution rdf:nodeID="n3-44"/>
-    <prov:qualifiedAttribution rdf:nodeID="n3-45"/>
+    <prov:qualifiedAttribution rdf:nodeID="n3-49"/>
+    <prov:qualifiedAttribution rdf:nodeID="n3-50"/>
   </rdf:Description>
   <rdf:Description rdf:nodeID="b1_agent_mineralogy_extension_task_group">
     <rdf:type rdf:resource="https://schema.org/Organization"/>
     <sdo:name>Mineralogy Extension Task Group</sdo:name>
     <sdo:affiliation rdf:resource="https://tdwg.org"/>
-    <sdo:parentOrganization rdf:nodeID="n3-46"/>
+    <sdo:parentOrganization rdf:nodeID="n3-51"/>
   </rdf:Description>
-  <rdf:Description rdf:nodeID="n3-44">
+  <rdf:Description rdf:nodeID="n3-49">
     <rdf:type rdf:resource="http://www.w3.org/ns/prov#Attribution"/>
     <prov:agent rdf:resource="https://orcid.org/0000-0002-5819-9134"/>
     <dcat:hadRole rdf:resource="http://def.isotc211.org/iso19115-1/2014/CitationAndResponsiblePartyInformation/code/CI_RoleCode/editor"/>
   </rdf:Description>
-  <rdf:Description rdf:nodeID="n3-45">
+  <rdf:Description rdf:nodeID="n3-50">
     <rdf:type rdf:resource="http://www.w3.org/ns/prov#Attribution"/>
     <prov:agent rdf:nodeID="b1_agent_mineralogy_extension_task_group"/>
     <dcat:hadRole rdf:resource="http://def.isotc211.org/iso19115-1/2014/CitationAndResponsiblePartyInformation/code/CI_RoleCode/publisher"/>

@@ -140,7 +140,12 @@ export function getLabel(langMap: LangMap | undefined, lang = 'en'): string {
   const keys = Object.keys(langMap)
   const firstKey = keys[0] as string | undefined
   const value = langMap[lang] ?? langMap['none'] ?? (firstKey ? langMap[firstKey] : undefined)
-  return Array.isArray(value) ? value[0] : (value ?? '')
+  if (Array.isArray(value)) {
+    // @ts-ignore
+    return value[0]
+  } else {
+    return value ?? ''
+  }
 }
 
 // Get all labels as array

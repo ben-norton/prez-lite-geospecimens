@@ -39,15 +39,15 @@
     <skos:hasTopConcept rdf:resource="https://vocab.geospecimens.org/def/geological-material-name-type/formal-name"/>
     <skos:hasTopConcept rdf:resource="https://vocab.geospecimens.org/def/geological-material-name-type/alternate-name"/>
     <skos:hasTopConcept rdf:resource="https://vocab.geospecimens.org/def/geological-material-name-type/cataloged-name"/>
-    <prov:qualifiedAttribution rdf:nodeID="n3-56"/>
-    <prov:qualifiedAttribution rdf:nodeID="n3-57"/>
+    <prov:qualifiedAttribution rdf:nodeID="n3-61"/>
+    <prov:qualifiedAttribution rdf:nodeID="n3-62"/>
   </rdf:Description>
-  <rdf:Description rdf:nodeID="n3-56">
+  <rdf:Description rdf:nodeID="n3-61">
     <rdf:type rdf:resource="http://www.w3.org/ns/prov#Attribution"/>
     <prov:agent rdf:resource="https://orcid.org/0000-0002-5819-9134"/>
     <dcat:hadRole rdf:resource="http://def.isotc211.org/iso19115-1/2014/CitationAndResponsiblePartyInformation/code/CI_RoleCode/editor"/>
   </rdf:Description>
-  <rdf:Description rdf:nodeID="n3-57">
+  <rdf:Description rdf:nodeID="n3-62">
     <rdf:type rdf:resource="http://www.w3.org/ns/prov#Attribution"/>
     <prov:agent rdf:resource="https://www.tdwg.org/community/esp/mineralogy/"/>
     <dcat:hadRole rdf:resource="http://def.isotc211.org/iso19115-1/2014/CitationAndResponsiblePartyInformation/code/CI_RoleCode/publisher"/>

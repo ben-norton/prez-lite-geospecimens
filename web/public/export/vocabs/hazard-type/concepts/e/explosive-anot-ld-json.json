@@ -1,6 +1,6 @@
 [
   {
-    "@id": "_:n3-94",
+    "@id": "_:n3-99",
     "https://prez.dev/currentProfile": [
       {
         "@id": "https://prez.dev/OGCSchemesObjectProfile"
@@ -16,7 +16,7 @@
     ],
     "https://prez.dev/link": [
       {
-        "@value": "/catalogs/catalogue:gswa-vocabs/collections/ns1:hazard-type"
+        "@value": "/catalogs/catalogue:geosps-vocabs/collections/ns1:hazard-type"
       }
     ],
     "https://prez.dev/label": [
@@ -33,21 +33,13 @@
     ],
     "https://prez.dev/members": [
       {
-        "@value": "/catalogs/catalogue:gswa-vocabs/collections/ns1:hazard-type/items"
+        "@value": "/catalogs/catalogue:geosps-vocabs/collections/ns1:hazard-type/items"
       }
     ],
     "https://prez.dev/provenance": [
       {
         "@value": "Compiled by the TDWG Mineralogy Extension Task Group to support community use and the new term hazardType, released as part of a broader set of terms extending Darwin Core coverage to mineralogical and geological collections.",
         "@language": "en"
-      }
-    ]
-  },
-  {
-    "@id": "https://linked.data.gov.au/catalogue/gswa-vocabs",
-    "https://prez.dev/identifier": [
-      {
-        "@value": "catalogue:gswa-vocabs"
       }
     ]
   },
@@ -117,7 +109,7 @@
     ],
     "https://prez.dev/link": [
       {
-        "@value": "/catalogs/catalogue:gswa-vocabs/collections/ns1:hazard-type/items/ns1:explosive"
+        "@value": "/catalogs/catalogue:geosps-vocabs/collections/ns1:hazard-type/items/ns1:explosive"
       }
     ],
     "https://prez.dev/type": [
@@ -135,6 +127,14 @@
       {
         "@value": "A solid or liquid chemical which is in itself capable by chemical reaction of producing gas at such a temperature and pressure and at such a speed as to cause damage to the surroundings.",
         "@language": "en"
+      }
+    ]
+  },
+  {
+    "@id": "https://vocabs.geospecimens.org/catalogue/geosps-vocabs",
+    "https://prez.dev/identifier": [
+      {
+        "@value": "catalogue:geosps-vocabs"
       }
     ]
   }

@@ -29,21 +29,21 @@
     sdo:license <https://creativecommons.org/licenses/by/4.0/>;
     reg:derivationMode <https://linked.data.gov.au/def/vocdermods/subsetting-and-extension>;
     reg:status <https://linked.data.gov.au/def/reg-statuses/experimental>;
-    prov:qualifiedAttribution _:n3-56, _:n3-57;
+    prov:qualifiedAttribution _:n3-61, _:n3-62;
     prez:identifier "ns4:geological-material-name-type";
-    prez:link "/catalogs/catalogue:gswa-vocabs/collections/ns4:geological-material-name-type";
-    prez:members "/catalogs/catalogue:gswa-vocabs/collections/ns4:geological-material-name-type/items";
+    prez:link "/catalogs/catalogue:geosps-vocabs/collections/ns4:geological-material-name-type";
+    prez:members "/catalogs/catalogue:geosps-vocabs/collections/ns4:geological-material-name-type/items";
     prez:type prez:FocusNode;
     prez:label "Geological Material Name Type"@en;
     prez:description "A vocabulary of terms describing the types of names that may be applied to geological materials, including minerals and rocks, and their constituent parts. The vocabulary distinguishes between names that carry formal standing — those assigned or approved by an authoritative nomenclatural body such as the International Mineralogical Association (IMA) — and names used outside formal systems, including alternate, historical, and deprecated designations. Formally sanctioned name types include IMA Approved Name, Classification, Group Name, Structural Group, and Series. Names reflecting historical usage, discontinued classifications, or pending approval are represented by the Historical, Synonym, Obsolete, and Unapproved types. The Alternate Name type captures commonly used names that are not sanctioned by any authoritative body, while Material Name provides a general designation for use with non-geological materials."@en;
     prez:provenance "Compiled by the TDWG Mineralogy Extension Task Group for community use and to support the extension release by providing standardized categories for Constituent Part Names, especially those associated with Minerals"@en.
-_:n3-56 a prov:Attribution;
+_:n3-61 a prov:Attribution;
     prov:agent <https://orcid.org/0000-0002-5819-9134>;
     dcat:hadRole <http://def.isotc211.org/iso19115-1/2014/CitationAndResponsiblePartyInformation/code/CI_RoleCode/editor>.
-_:n3-57 a prov:Attribution;
+_:n3-62 a prov:Attribution;
     prov:agent <https://www.tdwg.org/community/esp/mineralogy/>;
     dcat:hadRole <http://def.isotc211.org/iso19115-1/2014/CitationAndResponsiblePartyInformation/code/CI_RoleCode/publisher>, <http://def.isotc211.org/iso19115-1/2014/CitationAndResponsiblePartyInformation/code/CI_RoleCode/creator>.
 prez:link prez:label "link".
 prez:members prez:label "members".
-<https://linked.data.gov.au/catalogue/gswa-vocabs> prez:identifier "catalogue:gswa-vocabs".
-_:n3-59 prez:currentProfile prez:OGCSchemesObjectProfile.
+<https://vocabs.geospecimens.org/catalogue/geosps-vocabs> prez:identifier "catalogue:geosps-vocabs".
+_:n3-64 prez:currentProfile prez:OGCSchemesObjectProfile.

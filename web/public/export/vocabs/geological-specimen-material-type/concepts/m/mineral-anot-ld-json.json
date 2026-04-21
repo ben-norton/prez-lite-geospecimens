@@ -1,6 +1,6 @@
 [
   {
-    "@id": "_:n3-82",
+    "@id": "_:n3-87",
     "https://prez.dev/currentProfile": [
       {
         "@id": "https://prez.dev/OGCSchemesObjectProfile"
@@ -16,7 +16,7 @@
     ],
     "https://prez.dev/link": [
       {
-        "@value": "/catalogs/catalogue:gswa-vocabs/collections/ns1:geological-specimen-type"
+        "@value": "/catalogs/catalogue:geosps-vocabs/collections/ns1:geological-specimen-type"
       }
     ],
     "https://prez.dev/label": [
@@ -33,21 +33,13 @@
     ],
     "https://prez.dev/members": [
       {
-        "@value": "/catalogs/catalogue:gswa-vocabs/collections/ns1:geological-specimen-type/items"
+        "@value": "/catalogs/catalogue:geosps-vocabs/collections/ns1:geological-specimen-type/items"
       }
     ],
     "https://prez.dev/provenance": [
       {
         "@value": "Compiled by the TDWG Mineralogy Extension Task Group for community use and to support the extension release by providing standardized values for Material Entity Type, which is central to the Extension and Compound Specimen Model.",
         "@language": "en"
-      }
-    ]
-  },
-  {
-    "@id": "https://linked.data.gov.au/catalogue/gswa-vocabs",
-    "https://prez.dev/identifier": [
-      {
-        "@value": "catalogue:gswa-vocabs"
       }
     ]
   },
@@ -111,7 +103,7 @@
     ],
     "https://prez.dev/link": [
       {
-        "@value": "/catalogs/catalogue:gswa-vocabs/collections/ns1:geological-specimen-type/items/ns1:mineral"
+        "@value": "/catalogs/catalogue:geosps-vocabs/collections/ns1:geological-specimen-type/items/ns1:mineral"
       }
     ],
     "https://prez.dev/type": [
@@ -129,6 +121,14 @@
       {
         "@value": "A naturally occurring element or chemical compound of homogeneous composition, normally with a crystalline structure, and resulting from some geological process on Earth or in extraterrestrial bodies",
         "@language": "en"
+      }
+    ]
+  },
+  {
+    "@id": "https://vocabs.geospecimens.org/catalogue/geosps-vocabs",
+    "https://prez.dev/identifier": [
+      {
+        "@value": "catalogue:geosps-vocabs"
       }
     ]
   }

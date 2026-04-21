@@ -5,7 +5,8 @@ Based heavily on Prez-lite (<https://github.com/Kurrawong/prez-lite>), this proj
 
 # prez-lite
 
-A lightweight vocabulary publishing platform that converts SKOS vocabularies (TTL) into browsable static websites.
+A lightweight vocabulary publishing platform that converts SKOS vocabularies (TTL) 
+into browsable static websites.
 
 ## Quick Start
 

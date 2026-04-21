@@ -1,17 +1,9 @@
 [
   {
-    "@id": "_:n3-51",
+    "@id": "_:n3-56",
     "https://prez.dev/currentProfile": [
       {
         "@id": "https://prez.dev/OGCSchemesObjectProfile"
-      }
-    ]
-  },
-  {
-    "@id": "https://linked.data.gov.au/catalogue/gswa-vocabs",
-    "https://prez.dev/identifier": [
-      {
-        "@value": "catalogue:gswa-vocabs"
       }
     ]
   },
@@ -40,7 +32,7 @@
     ],
     "https://prez.dev/link": [
       {
-        "@value": "/catalogs/catalogue:gswa-vocabs/collections/ns1:constituent-part-proportion"
+        "@value": "/catalogs/catalogue:geosps-vocabs/collections/ns1:constituent-part-proportion"
       }
     ],
     "https://prez.dev/label": [
@@ -57,7 +49,7 @@
     ],
     "https://prez.dev/members": [
       {
-        "@value": "/catalogs/catalogue:gswa-vocabs/collections/ns1:constituent-part-proportion/items"
+        "@value": "/catalogs/catalogue:geosps-vocabs/collections/ns1:constituent-part-proportion/items"
       }
     ],
     "https://prez.dev/provenance": [
@@ -123,7 +115,7 @@
     ],
     "https://prez.dev/link": [
       {
-        "@value": "/catalogs/catalogue:gswa-vocabs/collections/ns1:constituent-part-proportion/items/ns1:minor"
+        "@value": "/catalogs/catalogue:geosps-vocabs/collections/ns1:constituent-part-proportion/items/ns1:minor"
       }
     ],
     "https://prez.dev/type": [
@@ -141,6 +133,14 @@
       {
         "@value": "A material component comprises between 5% and 50% of the material entity by volume",
         "@language": "en"
+      }
+    ]
+  },
+  {
+    "@id": "https://vocabs.geospecimens.org/catalogue/geosps-vocabs",
+    "https://prez.dev/identifier": [
+      {
+        "@value": "catalogue:geosps-vocabs"
       }
     ]
   }

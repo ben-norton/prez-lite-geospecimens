@@ -33,14 +33,14 @@
     reg:derivationMode <https://linked.data.gov.au/def/vocdermods/subsetting-and-extension>;
     reg:status <https://linked.data.gov.au/def/reg-statuses/experimental>;
     skos:hasTopConcept <https://vocab.geospecimens.org/def/geological-specimen-material-type/geological-material>;
-    prov:qualifiedAttribution _:n3-73, _:n3-74.
+    prov:qualifiedAttribution _:n3-78, _:n3-79.
 _:b3_agent_mineralogy_extension_task_group a sdo:Organization;
     sdo:name "Mineralogy Extension Task Group";
     sdo:affiliation <https://www.tdwg.org/community/esp/mineralogy/>;
-    sdo:parentOrganization _:n3-75.
-_:n3-73 a prov:Attribution;
+    sdo:parentOrganization _:n3-80.
+_:n3-78 a prov:Attribution;
     prov:agent <https://orcid.org/0000-0002-5819-9134>;
     dcat:hadRole <http://def.isotc211.org/iso19115-1/2014/CitationAndResponsiblePartyInformation/code/CI_RoleCode/editor>.
-_:n3-74 a prov:Attribution;
+_:n3-79 a prov:Attribution;
     prov:agent _:b3_agent_mineralogy_extension_task_group;
     dcat:hadRole <http://def.isotc211.org/iso19115-1/2014/CitationAndResponsiblePartyInformation/code/CI_RoleCode/publisher>, <http://def.isotc211.org/iso19115-1/2014/CitationAndResponsiblePartyInformation/code/CI_RoleCode/creator>.

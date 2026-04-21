@@ -1,17 +1,9 @@
 [
   {
-    "@id": "_:n3-67",
+    "@id": "_:n3-72",
     "https://prez.dev/currentProfile": [
       {
         "@id": "https://prez.dev/OGCSchemesObjectProfile"
-      }
-    ]
-  },
-  {
-    "@id": "https://linked.data.gov.au/catalogue/gswa-vocabs",
-    "https://prez.dev/identifier": [
-      {
-        "@value": "catalogue:gswa-vocabs"
       }
     ]
   },
@@ -40,7 +32,7 @@
     ],
     "https://prez.dev/link": [
       {
-        "@value": "/catalogs/catalogue:gswa-vocabs/collections/ns1:geological-material-name-type"
+        "@value": "/catalogs/catalogue:geosps-vocabs/collections/ns1:geological-material-name-type"
       }
     ],
     "https://prez.dev/label": [
@@ -57,7 +49,7 @@
     ],
     "https://prez.dev/members": [
       {
-        "@value": "/catalogs/catalogue:gswa-vocabs/collections/ns1:geological-material-name-type/items"
+        "@value": "/catalogs/catalogue:geosps-vocabs/collections/ns1:geological-material-name-type/items"
       }
     ],
     "https://prez.dev/provenance": [
@@ -106,7 +98,7 @@
     ],
     "https://prez.dev/link": [
       {
-        "@value": "/catalogs/catalogue:gswa-vocabs/collections/ns1:geological-material-name-type/items/ns1:obsolete"
+        "@value": "/catalogs/catalogue:geosps-vocabs/collections/ns1:geological-material-name-type/items/ns1:obsolete"
       }
     ],
     "https://prez.dev/type": [
@@ -124,6 +116,14 @@
       {
         "@value": "A name defined in prior standards or classification systems but has since been removed from those authoritative sources. Includes names designated by the International Mineralogical Association as discredited or obsolete.",
         "@language": "en"
+      }
+    ]
+  },
+  {
+    "@id": "https://vocabs.geospecimens.org/catalogue/geosps-vocabs",
+    "https://prez.dev/identifier": [
+      {
+        "@value": "catalogue:geosps-vocabs"
       }
     ]
   }

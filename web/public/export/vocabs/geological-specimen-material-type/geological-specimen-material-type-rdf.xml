@@ -43,21 +43,21 @@
     <reg:derivationMode rdf:resource="https://linked.data.gov.au/def/vocdermods/subsetting-and-extension"/>
     <reg:status rdf:resource="https://linked.data.gov.au/def/reg-statuses/experimental"/>
     <skos:hasTopConcept rdf:resource="https://vocab.geospecimens.org/def/geological-specimen-material-type/geological-material"/>
-    <prov:qualifiedAttribution rdf:nodeID="n3-73"/>
-    <prov:qualifiedAttribution rdf:nodeID="n3-74"/>
+    <prov:qualifiedAttribution rdf:nodeID="n3-78"/>
+    <prov:qualifiedAttribution rdf:nodeID="n3-79"/>
   </rdf:Description>
   <rdf:Description rdf:nodeID="b3_agent_mineralogy_extension_task_group">
     <rdf:type rdf:resource="https://schema.org/Organization"/>
     <sdo:name>Mineralogy Extension Task Group</sdo:name>
     <sdo:affiliation rdf:resource="https://www.tdwg.org/community/esp/mineralogy/"/>
-    <sdo:parentOrganization rdf:nodeID="n3-75"/>
+    <sdo:parentOrganization rdf:nodeID="n3-80"/>
   </rdf:Description>
-  <rdf:Description rdf:nodeID="n3-73">
+  <rdf:Description rdf:nodeID="n3-78">
     <rdf:type rdf:resource="http://www.w3.org/ns/prov#Attribution"/>
     <prov:agent rdf:resource="https://orcid.org/0000-0002-5819-9134"/>
     <dcat:hadRole rdf:resource="http://def.isotc211.org/iso19115-1/2014/CitationAndResponsiblePartyInformation/code/CI_RoleCode/editor"/>
   </rdf:Description>
-  <rdf:Description rdf:nodeID="n3-74">
+  <rdf:Description rdf:nodeID="n3-79">
     <rdf:type rdf:resource="http://www.w3.org/ns/prov#Attribution"/>
     <prov:agent rdf:nodeID="b3_agent_mineralogy_extension_task_group"/>
     <dcat:hadRole rdf:resource="http://def.isotc211.org/iso19115-1/2014/CitationAndResponsiblePartyInformation/code/CI_RoleCode/publisher"/>
