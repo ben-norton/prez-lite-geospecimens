@@ -91,3 +91,4 @@ webtest/
 packages/sites/
 /sources/deprecated-vocabs
 web/dist
+pnpm-lock.yaml
