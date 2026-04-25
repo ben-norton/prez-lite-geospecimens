@@ -16,6 +16,7 @@ const PREZ_FOCUS_NODE = `${PREZ}FocusNode`
 const SKIP_PREDICATES = new Set([
   'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
   'http://www.w3.org/2004/02/skos/core#prefLabel',
+  'http://www.w3.org/2004/02/skos/core#definition',
   'http://www.w3.org/2004/02/skos/core#hasTopConcept',
   `${PREZ}label`,
   `${PREZ}description`,

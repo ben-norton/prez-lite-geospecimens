@@ -3,12 +3,18 @@ Custom Styles for the Geospecimens Prez-lite Application
 20260420
 */
 
+p.text-lg {
+    font-size: 16px;
+}
+p {
+    font-family: 'Inter', sans-serif;
+}
 h1, h2 {
-
+    font-family: 'Jost', sans-serif;
 }
 
 h2, h3 {
-    color: rgb(27, 47, 166);
+
 }
 
 img#logo {
@@ -49,5 +55,9 @@ h2 a,
     color: #2d353c;
     font-weight: 500;
     font-size: 24px;
+}
+
+.vocab-grid.grid {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
 }
 

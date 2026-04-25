@@ -1,0 +1,44 @@
+@use "sass:math"
+
+$mobile: 600px
+$desktop: 1200px
+$font-min: 26px
+$font-max: 32px
+$h2-font-min: 18px
+$h2-font-max: 24px
+$p-font-min: 12px
+$p-font-max: 14px
+$screen-diff: (math.div($desktop, 1px) - math.div($mobile, 1px))
+$font-diff: (math.div($font-max, 1px) - math.div($font-min, 1px))
+$breakpoint-md: 600px
+
+@media (max-width: $breakpoint-md)
+  h1
+    font-size: $font-min
+  h2.vocab-title
+    font-size: $h2-font-min
+  .vocab-grid .ring p
+    font-size: $p-font-min
+  main p
+    font-size: $p-font-min
+  .flex .header-flex-btn button
+    display: none
+
+@media (min-width: $breakpoint-md) and (max-width: 1200px)
+  h1
+    font-size: calc(#{$font-min} + (100vw - #{$mobile}) / #{$screen-diff} * #{$font-diff})
+  h2.vocab-title
+    font-size: calc(#{$h2-font-min} + (100vw - #{$mobile}) / #{$screen-diff} * #{$font-diff})
+  .vocab-grid .ring p
+    font-size: calc(#{$p-font-min} + (100vw - #{$mobile}) / #{$screen-diff} * #{$font-diff})
+
+@media (min-width: 1201px)
+  h1
+    font-size: $font-max
+    font-weight: 700
+    text-transform: uppercase
+    letter-spacing: 1px
+  h2.vocab-title
+    font-size: $h2-font-max
+  .vocab-grid .ring p
+    font-size: $p-font-max

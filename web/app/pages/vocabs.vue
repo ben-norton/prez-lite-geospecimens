@@ -98,7 +98,7 @@ const sortOptions = [
     />
 
     <!-- Card View -->
-    <div v-else-if="viewMode === 'cards' && paginatedSchemes.length" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div v-else-if="viewMode === 'cards' && paginatedSchemes.length" class="vocab-grid grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       <NuxtLink
         v-for="scheme in paginatedSchemes"
         :key="scheme.iri"
@@ -107,7 +107,7 @@ const sortOptions = [
       >
         <UCard class="h-full hover:ring-2 hover:ring-primary hover:bg-muted/30 transition-all cursor-pointer">
           <template #header>
-            <h2 class="text-lg font-semibold text-primary truncate">
+            <h2 class="vocab-title text-lg font-semibold text-primary truncate">
               {{ getLabel(scheme.prefLabel) }}
             </h2>
           </template>
@@ -190,7 +190,7 @@ const sortOptions = [
               class="size-4"
             />
           </button>
-        </template>
+        </template>Y
 
         <template #modified-header="{ column }">
           <button

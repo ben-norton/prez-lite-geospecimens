@@ -12,22 +12,6 @@ Download vocabularies in multiple formats or embed interactive components in you
 
 [Browse Downloads](/share)
 
----
-
-## Export Formats
-
-Every vocabulary is automatically exported in multiple formats:
-
-| Format | Extension | Use Case |
-|--------|-----------|----------|
-| Turtle | `.ttl` | RDF tools, SPARQL endpoints |
-| JSON-LD | `.jsonld` | Linked Data applications |
-| JSON | `.json` | Web apps, JavaScript |
-| RDF/XML | `.rdf` | Legacy RDF tools |
-| CSV | `.csv` | Spreadsheets, data import |
-
----
-
 ## Embeddable Web Components
 
 Add vocabulary selection to any web page with the `<prez-list>` custom element.

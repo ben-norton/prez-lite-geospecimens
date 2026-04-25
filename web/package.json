@@ -37,6 +37,7 @@
     "@iconify-json/heroicons": "^1.2.3",
     "@iconify-json/lucide": "^1.2.87",
     "@nuxt/test-utils": "^4.0.0",
+    "@types/n3": "^1.26.1",
     "@vitest/coverage-v8": "^4.0.18",
     "@vue/test-utils": "^2.4.6",
     "happy-dom": "^20.6.1",
