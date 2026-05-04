@@ -8,7 +8,7 @@ export default defineAppConfig({
   },
   site: {
     name: 'GeoSpecimens Vocabulary Browser',
-    logo: null as string | null,
+    logo: '',
     icon: 'i-heroicons-book-open',
     tagline: 'Vocabulary Publishing Platform',
     footerText: 'Part of the GeoSpecimens Data Mobilization Platform',
