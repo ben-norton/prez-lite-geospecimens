@@ -1,8 +1,6 @@
 # Geological Collections Vocabulary Publishing System
 Based heavily on Prez-lite (<https://github.com/Kurrawong/prez-lite>), this project is aimed at publishing vocabularies for the geological collections community as part of the GEOSPECIMENS project (https://geospecimens.org).
 
-
-
 # prez-lite
 
 A lightweight vocabulary publishing platform that converts SKOS vocabularies (TTL) 

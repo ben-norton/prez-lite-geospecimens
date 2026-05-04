@@ -33,7 +33,7 @@ const typeOptions = [
     </p>
 
     <!-- Quick Start -->
-    <UCard class="mb-8">
+    <UCard class="mb-8 quick-start-share ui-card">
       <template #header>
         <h2 class="text-lg font-semibold">Quick Start</h2>
       </template>
@@ -46,7 +46,7 @@ const typeOptions = [
     </UCard>
 
     <!-- Component Documentation -->
-    <UCard class="mb-8">
+    <UCard class="mb-8 web-components-share ui-card">
       <template #header>
         <div class="flex items-center justify-between">
           <h2 class="text-lg font-semibold">Web Components</h2>
@@ -82,7 +82,7 @@ const typeOptions = [
       </div>
     </UCard>
 
-    <!-- Export Formats -->
+    <!-- Export Formats
     <UCard class="mb-8">
       <template #header>
         <h2 class="text-lg font-semibold">Export Formats</h2>
@@ -96,7 +96,7 @@ const typeOptions = [
         </div>
       </div>
     </UCard>
-
+    -->
     <!-- Vocabulary List -->
     <h2 class="text-xl font-semibold mb-4">Available Vocabularies</h2>
 

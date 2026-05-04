@@ -6,13 +6,29 @@ import { execFileSync } from 'child_process'
 // Get absolute path for layer CSS
 const currentDir = dirname(fileURLToPath(import.meta.url))
 const layerCssPath = resolve(currentDir, 'app/assets/css/main.css')
+const responsiveCssPath = resolve(currentDir, 'app/assets/css/responsives.css')
+const colorsCssPath = resolve(currentDir, 'app/assets/css/colors.css')
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 
-  modules: ['@nuxt/ui', '@nuxt/content', 'nuxt-monaco-editor'],
+  modules: ['@nuxt/ui', '@nuxt/content', 'nuxt-monaco-editor','@nuxt/fonts'],
+
+  colorMode: {
+    preference: 'dark',
+  },
+
+  fonts: {
+    adobe: {
+      id: ['tsm3vjk']
+    },
+    families: [
+      { name: 'Inter', provider: 'google' },
+      { name: 'Jost', provider: 'google' }
+    ]
+  },
 
   // Monaco editor configuration
   monacoEditor: {
@@ -37,7 +53,11 @@ export default defineNuxtConfig({
   },
 
   // Layer CSS with absolute path for proper resolution
-  css: [layerCssPath],
+  css: [
+      layerCssPath,
+      responsiveCssPath,
+      colorsCssPath
+  ],
 
   runtimeConfig: {
     public: {
@@ -59,17 +79,18 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: 'Geospecimens Vocabularies',
+      title: 'GEOSPECIMENS Vocabularies',
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         { name: 'description', content: 'Lightweight vocabulary browser for the geospecimens.org platform' }
-      ]
+      ],
     }
   },
 
   // Nitro config for static generation
   nitro: {
+    minify: false,
     preset: 'static',
     prerender: {
       failOnError: false,
@@ -115,6 +136,9 @@ export default defineNuxtConfig({
 
   // Dedupe common dependencies to avoid version conflicts with layers
   vite: {
+    build: {
+      minify: false,
+    },
     resolve: {
       dedupe: ['vue', 'vue-router']
     },

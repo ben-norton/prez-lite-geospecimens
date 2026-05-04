@@ -1,0 +1,24 @@
+/*
+Colors
+YYYYYMMDD
+*/
+
+/* html.dark html.light */
+
+html.light p {
+    color: #051205;
+}
+html.light a {
+    color: rgb(13, 110, 253);
+}
+html.light main h1,
+html.light main h1 a {
+    color: #1b3554;
+}
+html.light main h2,
+html.light main h2 a {
+    color: #3f6593;
+}
+html.light .header-hover:hover {
+    background-color: rgba(220, 220, 240, 0.2);
+}

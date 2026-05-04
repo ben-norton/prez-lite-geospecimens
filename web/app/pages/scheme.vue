@@ -1501,6 +1501,7 @@ function copyIriToClipboard(iri: string) {
 </script>
 
 <template>
+  <div class="scheme-template">
   <div :class="immersiveMode ? 'py-2' : 'py-8'">
     <!-- Edit Toolbar (always visible, fixed at top below header) -->
     <EditToolbar
@@ -1783,7 +1784,7 @@ function copyIriToClipboard(iri: string) {
               <UIcon v-if="isTreeLoading" name="i-heroicons-arrow-path" class="size-4 text-primary animate-spin" />
             </h2>
 
-            <div v-if="conceptsPanelOpen" class="flex items-center gap-2">
+            <div v-if="conceptsPanelOpen" class="flex items-center gap-2 header-flex-btn">
               <UButton
                 :icon="immersiveMode ? 'i-heroicons-arrows-pointing-in' : 'i-heroicons-arrows-pointing-out'"
                 color="neutral"
@@ -2158,7 +2159,7 @@ function copyIriToClipboard(iri: string) {
       </UCard>
 
       <!-- Vocabulary -->
-      <UCard v-if="!immersiveMode" id="metadata-section" class="mb-8">
+      <UCard v-if="!immersiveMode" id="metadata-section" class="mb-8 hover-header">
         <template #header>
           <h2
             class="font-semibold flex items-center gap-2 cursor-pointer select-none"
@@ -2168,8 +2169,7 @@ function copyIriToClipboard(iri: string) {
               :name="metadataPanelOpen ? 'i-heroicons-chevron-down' : 'i-heroicons-chevron-right'"
               class="size-4"
             />
-            <UIcon name="i-heroicons-information-circle" />
-            Vocabulary
+            VOCABULARY PROPERTIES
             <UBadge
               v-if="schemeErrors.length"
               color="error"
@@ -2421,5 +2421,8 @@ function copyIriToClipboard(iri: string) {
 
     <UAlert v-else-if="status !== 'pending' && status !== 'idle'" color="error" title="Scheme not found" :description="`No scheme found with IRI: ${uri}`" />
   </div>
+
+  </div>
+
 </template>
 

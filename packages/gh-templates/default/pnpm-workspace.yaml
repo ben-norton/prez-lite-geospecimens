@@ -1,3 +1,0 @@
-# Self-contained workspace - prevents pnpm from inheriting parent workspace
-packages:
-  - '.'
